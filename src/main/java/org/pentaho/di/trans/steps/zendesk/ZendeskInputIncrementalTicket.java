@@ -1,0 +1,137 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+package org.pentaho.di.trans.steps.zendesk;
+
+import java.util.Date;
+
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.zendesk.client.v2.model.Ticket;
+
+
+public class ZendeskInputIncrementalTicket extends ZendeskInput {
+
+  ZendeskInputIncrementalTicketMeta thisMeta;
+  ZendeskInputIncrementalTicketData thisData;
+  
+  public ZendeskInputIncrementalTicket( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+      TransMeta transMeta, Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  @Override
+  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
+    if ( super.init( smi, sdi ) ) {
+      thisMeta = (ZendeskInputIncrementalTicketMeta) super.meta;
+      thisData = (ZendeskInputIncrementalTicketData) super.data;
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    Date startDate = new Date( 0L );
+    if ( first ) {
+      first = false;
+      try {
+      startDate = getIncrementalFieldValue();
+      } catch ( KettleStepException e ) {
+        setErrors( 1L );
+        logError( e.getMessage() );
+        setOutputDone();
+        return false;
+      }
+      if ( thisData.rowMeta == null ) {
+        thisData.rowMeta = new RowMeta();
+        thisData.rowMeta.addValueMeta( new ValueMetaInteger( environmentSubstitute( thisMeta.getOutputFieldName() ) ) );
+      }
+    }
+
+    for ( Ticket ticket : thisData.conn.getTicketsIncrementally( startDate ) ) {
+      putRow( thisData.rowMeta, processTicket( ticket ) );
+      incrementLinesInput();
+    }
+
+    setOutputDone();
+    return false;
+  }
+
+  private Date getIncrementalFieldValue( ) throws KettleException {
+    Date result = null;
+    boolean firstRow = true;
+    Object[] row;
+    RowMetaInterface inputRowMeta;
+
+    while ( ( row = getRow() ) != null ) {
+      if ( firstRow ) {
+        firstRow = false;
+        inputRowMeta = getInputRowMeta();
+
+        if ( inputRowMeta == null || inputRowMeta.size() <= 0 ) {
+          throw new KettleException( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+        }
+
+        String filenameField = environmentSubstitute( thisMeta.getTimestampFieldName() );
+        int fieldIndex = inputRowMeta.indexOfValue( filenameField );
+        if ( fieldIndex < 0 ) {
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "ZendeskInputIncrementalTicket.Exception.StartDateFieldNotFound", filenameField ) );
+        }
+        ValueMetaInterface fieldValueMeta = inputRowMeta.getValueMeta( fieldIndex );
+        if ( fieldValueMeta.getType() != ValueMetaInterface.TYPE_DATE ) {
+          throw new KettleStepException( BaseMessages.getString( PKG, "ZendeskInput.Error.WrongFieldType",
+            ValueMetaFactory.getValueMetaName( fieldValueMeta.getType() ) ) );
+        } else {
+          result = fieldValueMeta.getDate( row[fieldIndex] );
+        }
+      } else {
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Warning.IgnoringAdditionalInputRows" ) );
+        }
+      }
+    }
+
+    if ( firstRow ) {
+      throw new KettleStepException( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+    }
+
+    return result;
+  }
+
+  Object[] processTicket( Ticket ticket ) {
+
+    return new Object[]{ ticket.getId() };
+  }
+}
