@@ -392,6 +392,10 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     }
   }
 
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+
   public String getTicketIdFieldname() {
     return ticketIdFieldname;
   }

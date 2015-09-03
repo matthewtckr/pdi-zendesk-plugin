@@ -97,20 +97,30 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
     data.newTicket();
     Long currentTicketId = getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getInteger( row[ticketIdFieldIndex] );
     try {
-      for ( Audit ticketAudit : data.conn.getTicketAudits( currentTicketId ) ) {
+      Iterable<Audit> ticketAudits = data.conn.getTicketAudits( currentTicketId );
+      for ( Audit ticketAudit : ticketAudits ) {
         data.addAudit( ticketAudit );
       }
+      outputRows();
     } catch( ZendeskResponseException zre ) {
-      logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-      setErrors( 1L );
-      setOutputDone();
-      return false;
+      if ( 404 == zre.getStatusCode() ) {
+        putError( getInputRowMeta(), row, 1L, zre.toString(),
+          getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getName(), zre.getStatusText() );
+      } else {
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+        setErrors( 1L );
+        setOutputDone();
+        return false;
+      }
     }
-    outputRows();
     return true;
   }
 
   private void outputRows() throws KettleStepException {
+    if ( data == null || data.auditSummaries == null ) {
+      return;
+    }
+
     long i = 0;
     for ( ZendeskTicketAuditHistory audit : data.auditSummaries.values() ) {
       if ( audit == null ) {
