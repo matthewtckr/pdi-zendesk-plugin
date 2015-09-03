@@ -44,12 +44,12 @@ public class ZendeskInputTicketAuditMetaTest {
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
       Arrays.asList( "subDomain", "username", "password", "token", "ticketIdFieldname", "auditIdFieldname",
-        "createdTimeFieldname", "organizationIdFieldname", "requesterIdFieldname", "assigneeIdFieldname",
-        "groupIdFieldname", "subjectFieldname", "tagsFieldname", "statusFieldname", "priorityFieldname",
-        "channelFieldname", "typeFieldname", "satisfactionFieldname", "commentIdFieldname", "authorIdFieldname",
-        "publicCommentFieldname", "commentBodyFieldname", "commentHTMLBodyFieldname", "changedToPrivateFieldname",
-        "customFieldFieldname", "customFieldValueFieldname", "ticketOverviewStepName", "ticketCommentsStepName",
-        "ticketCustomFieldsStepName" );
+        "auditRownumFieldname", "createdTimeFieldname", "organizationIdFieldname", "requesterIdFieldname",
+        "assigneeIdFieldname", "groupIdFieldname", "subjectFieldname", "tagsFieldname", "collaboratorsFieldname",
+        "statusFieldname", "priorityFieldname", "channelFieldname", "typeFieldname", "satisfactionFieldname",
+        "commentIdFieldname", "authorIdFieldname", "publicCommentFieldname", "commentBodyFieldname",
+        "commentHTMLBodyFieldname", "changedToPrivateFieldname", "customFieldFieldname", "customFieldValueFieldname",
+        "ticketOverviewStepName", "ticketCommentsStepName", "ticketCustomFieldsStepName" );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputTicketAuditMeta.class, attributes, new HashMap<String, String>(),

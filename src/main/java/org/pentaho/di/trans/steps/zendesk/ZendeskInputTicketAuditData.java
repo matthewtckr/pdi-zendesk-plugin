@@ -30,7 +30,6 @@ import org.zendesk.client.v2.model.Audit;
 
 public class ZendeskInputTicketAuditData extends ZendeskInputData {
 
-  Long currentTicketId;
   AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries;
 
   RowMetaInterface ticketOverviewOutputRowMeta;
@@ -41,26 +40,16 @@ public class ZendeskInputTicketAuditData extends ZendeskInputData {
   RowSet ticketCommentsOutputRowSet;
   RowSet ticketCustomFieldsOutputRowSet;
 
-  private boolean isNewTicket( Long newTicketId ) {
-    if ( currentTicketId == null ) {
-      return true;
-    }
-    return currentTicketId.equals( newTicketId );
-  }
-
-  private void newTicket( Long newTicketId ) {
-    if ( isNewTicket( newTicketId ) ) {
-      currentTicketId = newTicketId;
-      auditSummaries = new LinkedMap<Long, ZendeskTicketAuditHistory>();
-    }
+  void newTicket() {
+    auditSummaries = null;
   }
 
   void addAudit( Audit audit ) {
     if ( auditSummaries == null ) {
-      newTicket( audit.getTicketId() );
+      auditSummaries = new LinkedMap<Long, ZendeskTicketAuditHistory>();
     }
     if ( auditSummaries.size() <= 0 ) {
-      auditSummaries.put( audit.getId(), ZendeskTicketAuditHistory.createFirstAudit( audit ) );
+      auditSummaries.put( audit.getId(), new ZendeskTicketAuditHistory( audit ) );
     } else {
       try {
         ZendeskTicketAuditHistory newAudit =

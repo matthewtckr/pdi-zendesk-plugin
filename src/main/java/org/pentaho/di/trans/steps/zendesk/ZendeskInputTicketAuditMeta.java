@@ -69,6 +69,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   private String ticketIdFieldname;
 
   private String auditIdFieldname;
+  private String auditRownumFieldname;
   private String createdTimeFieldname;
   private String organizationIdFieldname;
   private String requesterIdFieldname;
@@ -76,6 +77,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   private String groupIdFieldname;
   private String subjectFieldname;
   private String tagsFieldname;
+  private String collaboratorsFieldname;
   private String statusFieldname;
   private String priorityFieldname;
   private String channelFieldname;
@@ -115,29 +117,31 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   public void setDefault() {
     ticketIdFieldname = null;
 
-    auditIdFieldname = "Audit ID";
-    createdTimeFieldname = "Created Time";
-    organizationIdFieldname = "Organization ID";
-    requesterIdFieldname = "Requester ID";
-    assigneeIdFieldname = "Assignee ID";
-    groupIdFieldname = "Group ID";
+    auditIdFieldname = "Audit_ID";
+    auditRownumFieldname = "Audit_Rownum";
+    createdTimeFieldname = "Created_Time";
+    organizationIdFieldname = "Organization_ID";
+    requesterIdFieldname = "Requester_ID";
+    assigneeIdFieldname = "Assignee_ID";
+    groupIdFieldname = "Group_ID";
     subjectFieldname = "Subject";
     tagsFieldname = "Tags";
+    collaboratorsFieldname = "Collaborators";
     statusFieldname = "Status";
     priorityFieldname = "Priority";
     channelFieldname = "Channel";
     typeFieldname = "Type";
     satisfactionFieldname = "Satisfaction";
 
-    commentIdFieldname = "Comment ID";
-    authorIdFieldname = "Author ID";
-    publicCommentFieldname = "Is Public Comment";
-    commentBodyFieldname = "Comment Body";
-    commentHTMLBodyFieldname = "Comment HTML Body";
-    changedToPrivateFieldname = "Was Changed to Private";
+    commentIdFieldname = "Comment_ID";
+    authorIdFieldname = "Author_ID";
+    publicCommentFieldname = "Is_Public";
+    commentBodyFieldname = "Comment_Body";
+    commentHTMLBodyFieldname = "Comment_Body_HTML";
+    changedToPrivateFieldname = "Was_Changed_to_Private";
 
-    customFieldFieldname = "Custom Field Name";
-    customFieldValueFieldname = "Custom Field Value";
+    customFieldFieldname = "Custom_Field_Name";
+    customFieldValueFieldname = "Custom_Field_Value";
   }
 
   @Override
@@ -146,6 +150,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     builder.append( super.getXML() );
     builder.append( "    " ).append( XMLHandler.addTagValue( "ticketIdFieldname", getTicketIdFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "auditIdFieldname", getAuditIdFieldname() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "auditRownumFieldname", getAuditRownumFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "createdTimeFieldname", getCreatedTimeFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "organizationIdFieldname", getOrganizationIdFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "requesterIdFieldname", getRequesterIdFieldname() ) );
@@ -153,6 +158,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     builder.append( "    " ).append( XMLHandler.addTagValue( "groupIdFieldname", getGroupIdFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "subjectFieldname", getSubjectFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "tagsFieldname", getTagsFieldname() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "collaboratorsFieldname", getCollaboratorsFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "statusFieldname", getStatusFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "priorityFieldname", getPriorityFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "channelFieldname", getChannelFieldname() ) );
@@ -180,6 +186,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     super.loadXML( stepnode, databases, metaStore );
     setTicketIdFieldname( XMLHandler.getTagValue( stepnode, "ticketIdFieldname" ) );
     setAuditIdFieldname( XMLHandler.getTagValue( stepnode, "auditIdFieldname" ) );
+    setAuditRownumFieldname( XMLHandler.getTagValue( stepnode,  "auditRownumFieldname" ) );
     setCreatedTimeFieldname( XMLHandler.getTagValue( stepnode, "createdTimeFieldname" ) );
     setOrganizationIdFieldname( XMLHandler.getTagValue( stepnode, "organizationIdFieldname" ) );
     setRequesterIdFieldname( XMLHandler.getTagValue( stepnode, "requesterIdFieldname" ) );
@@ -187,6 +194,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setGroupIdFieldname( XMLHandler.getTagValue( stepnode, "groupIdFieldname" ) );
     setSubjectFieldname( XMLHandler.getTagValue( stepnode, "subjectFieldname" ) );
     setTagsFieldname( XMLHandler.getTagValue( stepnode, "tagsFieldname" ) );
+    setCollaboratorsFieldname( XMLHandler.getTagValue( stepnode, "collaboratorsFieldname" ) );
     setStatusFieldname( XMLHandler.getTagValue( stepnode, "statusFieldname" ) );
     setPriorityFieldname( XMLHandler.getTagValue( stepnode, "priorityFieldname" ) );
     setChannelFieldname( XMLHandler.getTagValue( stepnode, "channelFieldname" ) );
@@ -211,6 +219,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     super.readRep( rep, metaStore, id_step, databases );
     setTicketIdFieldname( rep.getStepAttributeString( id_step, "ticketIdFieldname" ) );
     setAuditIdFieldname( rep.getStepAttributeString( id_step, "auditIdFieldname" ) );
+    setAuditRownumFieldname( rep.getStepAttributeString( id_step, "auditRownumFieldname" ) );
     setCreatedTimeFieldname( rep.getStepAttributeString( id_step, "createdTimeFieldname" ) );
     setOrganizationIdFieldname( rep.getStepAttributeString( id_step, "organizationIdFieldname" ) );
     setRequesterIdFieldname( rep.getStepAttributeString( id_step, "requesterIdFieldname" ) );
@@ -218,6 +227,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setGroupIdFieldname( rep.getStepAttributeString( id_step, "groupIdFieldname" ) );
     setSubjectFieldname( rep.getStepAttributeString( id_step, "subjectFieldname" ) );
     setTagsFieldname( rep.getStepAttributeString( id_step, "tagsFieldname" ) );
+    setCollaboratorsFieldname( rep.getStepAttributeString( id_step, "collaboratorsFieldname" ) );
     setStatusFieldname( rep.getStepAttributeString( id_step, "statusFieldname" ) );
     setPriorityFieldname( rep.getStepAttributeString( id_step, "priorityFieldname" ) );
     setChannelFieldname( rep.getStepAttributeString( id_step, "channelFieldname" ) );
@@ -242,6 +252,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute( id_transformation, id_step, "ticketIdFieldname", getTicketIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "auditIdFieldname", getAuditIdFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "auditRownumFieldname", getAuditRownumFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "createdTimeFieldname", getCreatedTimeFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "organizationIdFieldname", getOrganizationIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "requesterIdFieldname", getRequesterIdFieldname() );
@@ -249,6 +260,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     rep.saveStepAttribute( id_transformation, id_step, "groupIdFieldname", getGroupIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "subjectFieldname", getSubjectFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "tagsFieldname", getTagsFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "collaboratorsFieldname", getCollaboratorsFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "statusFieldname", getStatusFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "priorityFieldname", getPriorityFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "channelFieldname", getChannelFieldname() );
@@ -285,8 +297,10 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   }
 
   private void prepareExecutionResultsTicketOverview( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
+    inputRowMeta.clear();
     addFieldToRow( inputRowMeta, getTicketIdFieldname(), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getAuditIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getAuditRownumFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getCreatedTimeFieldname() ), ValueMetaInterface.TYPE_DATE );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getOrganizationIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getRequesterIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
@@ -294,6 +308,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getGroupIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getSubjectFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getTagsFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getCollaboratorsFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getStatusFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getPriorityFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getChannelFieldname() ), ValueMetaInterface.TYPE_STRING );
@@ -302,6 +317,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   }
 
   private void prepareExecutionResultsTicketComments( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
+    inputRowMeta.clear();
     addFieldToRow( inputRowMeta, getTicketIdFieldname(), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getAuditIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getCommentIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
@@ -313,6 +329,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   }
 
   private void prepareExecutionResultsTicketCustomFields( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
+    inputRowMeta.clear();
     addFieldToRow( inputRowMeta, getTicketIdFieldname(), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getAuditIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getCustomFieldFieldname() ), ValueMetaInterface.TYPE_STRING );
@@ -391,6 +408,14 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     this.auditIdFieldname = auditIdFieldname;
   }
 
+  public String getAuditRownumFieldname() {
+    return auditRownumFieldname;
+  }
+
+  public void setAuditRownumFieldname( String auditRownumFieldname ) {
+    this.auditRownumFieldname = auditRownumFieldname;
+  }
+
   public String getCreatedTimeFieldname() {
     return createdTimeFieldname;
   }
@@ -445,6 +470,14 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
 
   public void setTagsFieldname( String tagsFieldname ) {
     this.tagsFieldname = tagsFieldname;
+  }
+
+  public String getCollaboratorsFieldname() {
+    return collaboratorsFieldname;
+  }
+
+  public void setCollaboratorsFieldname( String collaboratorsFieldname ) {
+    this.collaboratorsFieldname = collaboratorsFieldname;
   }
 
   public String getStatusFieldname() {

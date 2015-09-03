@@ -94,9 +94,10 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
     }
 
     // Process ticket audit
-    data.currentTicketId = getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getInteger( row[ticketIdFieldIndex] );
+    data.newTicket();
+    Long currentTicketId = getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getInteger( row[ticketIdFieldIndex] );
     try {
-      for ( Audit ticketAudit : data.conn.getTicketAudits( data.currentTicketId ) ) {
+      for ( Audit ticketAudit : data.conn.getTicketAudits( currentTicketId ) ) {
         data.addAudit( ticketAudit );
       }
     } catch( ZendeskResponseException zre ) {
@@ -110,33 +111,36 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
   }
 
   private void outputRows() throws KettleStepException {
+    long i = 0;
     for ( ZendeskTicketAuditHistory audit : data.auditSummaries.values() ) {
       if ( audit == null ) {
         continue;
       }
       if ( data.ticketOverviewOutputRowMeta != null && data.ticketOverviewOutputRowSet != null ) {
         Object[] ticketOverviewRow = RowDataUtil.allocateRowData( data.ticketOverviewOutputRowMeta.size() );
-        ticketOverviewRow[0] = data.currentTicketId;
+        ticketOverviewRow[0] = audit.ticketId;
         ticketOverviewRow[1] = audit.auditId;
-        ticketOverviewRow[2] = audit.createdTime;
-        ticketOverviewRow[3] = audit.organizationId;
-        ticketOverviewRow[4] = audit.requesterId;
-        ticketOverviewRow[5] = audit.assigneeId;
-        ticketOverviewRow[6] = audit.groupId;
-        ticketOverviewRow[7] = audit.subject;
-        ticketOverviewRow[8] = StringUtils.join( audit.tags, "," );
-        ticketOverviewRow[9] = audit.status;
-        ticketOverviewRow[10] = audit.priority;
-        ticketOverviewRow[11] = audit.channel;
-        ticketOverviewRow[12] = audit.type;
-        ticketOverviewRow[13] = audit.satisfaction;
+        ticketOverviewRow[2] = new Long(++i);
+        ticketOverviewRow[3] = audit.createdTime;
+        ticketOverviewRow[4] = audit.organizationId;
+        ticketOverviewRow[5] = audit.requesterId;
+        ticketOverviewRow[6] = audit.assigneeId;
+        ticketOverviewRow[7] = audit.groupId;
+        ticketOverviewRow[8] = audit.subject;
+        ticketOverviewRow[9] = StringUtils.join( audit.tags, "," );
+        ticketOverviewRow[10] = StringUtils.join( audit.collaborators, "," );
+        ticketOverviewRow[11] = audit.status;
+        ticketOverviewRow[12] = audit.priority;
+        ticketOverviewRow[13] = audit.channel;
+        ticketOverviewRow[14] = audit.type;
+        ticketOverviewRow[15] = audit.satisfaction;
         putRowTo( data.ticketOverviewOutputRowMeta, ticketOverviewRow, data.ticketOverviewOutputRowSet );
       }
 
       if ( audit.comment != null && data.ticketCommentsOutputRowMeta != null &&
           data.ticketCommentsOutputRowSet != null ) {
         Object[] ticketCommentRow = RowDataUtil.allocateRowData( data.ticketCommentsOutputRowMeta.size() );
-        ticketCommentRow[0] = data.currentTicketId;
+        ticketCommentRow[0] = audit.ticketId;
         ticketCommentRow[1] = audit.auditId;
         ticketCommentRow[2] = audit.comment.commentId;
         ticketCommentRow[3] = audit.comment.authorId;
@@ -151,7 +155,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
           data.ticketCustomFieldsOutputRowMeta != null && data.ticketCustomFieldsOutputRowSet != null ) {
         for ( String fieldName : audit.customFields.keySet() ) {
           Object[] customFieldRow = RowDataUtil.allocateRowData( data.ticketCustomFieldsOutputRowMeta.size() );
-          customFieldRow[0] = data.currentTicketId;
+          customFieldRow[0] = audit.ticketId;
           customFieldRow[1] = audit.auditId;
           customFieldRow[2] = fieldName;
           customFieldRow[3] = audit.customFields.get( fieldName );

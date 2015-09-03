@@ -69,6 +69,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
  private CCombo wTicketIdFieldname;
 
  private LabelTextVar wAuditIdFieldname;
+ private LabelTextVar wAuditRownumFieldname;
  private LabelTextVar wCreatedTimeFieldname;
  private LabelTextVar wOrganizationIdFieldname;
  private LabelTextVar wRequesterIdFieldname;
@@ -76,6 +77,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
  private LabelTextVar wGroupIdFieldname;
  private LabelTextVar wSubjectFieldname;
  private LabelTextVar wTagsFieldname;
+ private LabelTextVar wCollaboratorsFieldname;
  private LabelTextVar wStatusFieldname;
  private LabelTextVar wPriorityFieldname;
  private LabelTextVar wChannelFieldname;
@@ -95,6 +97,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
  private FormData fdlTicketIdFieldname;
  private FormData fdTicketIdFieldname;
  private FormData fdAuditIdFieldname;
+ private FormData fdAuditRownumFieldname;
  private FormData fdCreatedTimeFieldname;
  private FormData fdOrganizationIdFieldname;
  private FormData fdRequesterIdFieldname;
@@ -102,6 +105,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
  private FormData fdGroupIdFieldname;
  private FormData fdSubjectFieldname;
  private FormData fdTagsFieldname;
+ private FormData fdCollaboratorsFieldname;
  private FormData fdStatusFieldname;
  private FormData fdPriorityFieldname;
  private FormData fdChannelFieldname;
@@ -117,6 +121,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
 
  private FormData fdCustomFieldFieldname;
  private FormData fdCustomFieldValueFieldname;
+
  public ZendeskInputTicketAuditDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
    input = (ZendeskInputTicketAuditMeta) in;
@@ -283,6 +288,19 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    fdAuditIdFieldname.right = new FormAttachment( 100, -margin );
    wAuditIdFieldname.setLayoutData( fdAuditIdFieldname );
 
+   // auditRownumFieldname
+   wAuditRownumFieldname =
+     new LabelTextVar(
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditRownumFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditRownumFieldname.Tooltip" ) );
+   props.setLook( wAuditIdFieldname );
+   wAuditRownumFieldname.addModifyListener( lsMod );
+   fdAuditRownumFieldname = new FormData();
+   fdAuditRownumFieldname.left = new FormAttachment( 0, -margin );
+   fdAuditRownumFieldname.top = new FormAttachment( wAuditIdFieldname, 2 * margin );
+   fdAuditRownumFieldname.right = new FormAttachment( 100, -margin );
+   wAuditRownumFieldname.setLayoutData( fdAuditRownumFieldname );
+
    // wCreatedTimeFieldname
    wCreatedTimeFieldname =
      new LabelTextVar(
@@ -292,7 +310,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wCreatedTimeFieldname.addModifyListener( lsMod );
    fdCreatedTimeFieldname = new FormData();
    fdCreatedTimeFieldname.left = new FormAttachment( 0, -margin );
-   fdCreatedTimeFieldname.top = new FormAttachment( wAuditIdFieldname, 2 * margin );
+   fdCreatedTimeFieldname.top = new FormAttachment( wAuditRownumFieldname, 2 * margin );
    fdCreatedTimeFieldname.right = new FormAttachment( 100, -margin );
    wCreatedTimeFieldname.setLayoutData( fdCreatedTimeFieldname );
 
@@ -374,6 +392,19 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    fdTagsFieldname.right = new FormAttachment( 100, -margin );
    wTagsFieldname.setLayoutData( fdTagsFieldname );
 
+   // wCollaboratorsFieldname
+   wCollaboratorsFieldname =
+     new LabelTextVar(
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CollaboratorsFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CollaboratorsFieldname.Tooltip" ) );
+   props.setLook( wTagsFieldname );
+   wCollaboratorsFieldname.addModifyListener( lsMod );
+   fdCollaboratorsFieldname = new FormData();
+   fdCollaboratorsFieldname.left = new FormAttachment( 0, -margin );
+   fdCollaboratorsFieldname.top = new FormAttachment( wTagsFieldname, 2 * margin );
+   fdCollaboratorsFieldname.right = new FormAttachment( 100, -margin );
+   wCollaboratorsFieldname.setLayoutData( fdCollaboratorsFieldname );
+
    // wStatusFieldname
    wStatusFieldname =
      new LabelTextVar(
@@ -383,7 +414,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wStatusFieldname.addModifyListener( lsMod );
    fdStatusFieldname = new FormData();
    fdStatusFieldname.left = new FormAttachment( 0, -margin );
-   fdStatusFieldname.top = new FormAttachment( wTagsFieldname, 2 * margin );
+   fdStatusFieldname.top = new FormAttachment( wCollaboratorsFieldname, 2 * margin );
    fdStatusFieldname.right = new FormAttachment( 100, -margin );
    wStatusFieldname.setLayoutData( fdStatusFieldname );
 
@@ -606,6 +637,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wToken.setSelection( input.isToken() );
    wTicketIdFieldname.setText( Const.NVL( input.getTicketIdFieldname(), "" ) );
    wAuditIdFieldname.setText( Const.NVL( input.getAuditIdFieldname(), "" ) );
+   wAuditRownumFieldname.setText( Const.NVL( input.getAuditRownumFieldname(), "" ) );
    wCreatedTimeFieldname.setText( Const.NVL( input.getCreatedTimeFieldname(), "" ) );
    wOrganizationIdFieldname.setText( Const.NVL( input.getOrganizationIdFieldname(), "" )  );
    wRequesterIdFieldname.setText( Const.NVL( input.getRequesterIdFieldname(), "" ) );
@@ -613,6 +645,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wGroupIdFieldname.setText( Const.NVL( input.getGroupIdFieldname(), "" ) );
    wSubjectFieldname.setText( Const.NVL( input.getSubjectFieldname(), "" ) );
    wTagsFieldname.setText( Const.NVL( input.getTagsFieldname(), "" ) );
+   wCollaboratorsFieldname.setText( Const.NVL( input.getCollaboratorsFieldname(), "" ) );
    wStatusFieldname.setText( Const.NVL( input.getStatusFieldname(), "" ) );
    wPriorityFieldname.setText( Const.NVL( input.getPriorityFieldname(), "" ) );
    wChannelFieldname.setText( Const.NVL( input.getChannelFieldname(), "" ) );
@@ -656,6 +689,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    inf.setToken( wToken.getSelection() );
    inf.setTicketIdFieldname( wTicketIdFieldname.getText() );
    inf.setAuditIdFieldname( wAuditIdFieldname.getText() );
+   inf.setAuditRownumFieldname( wAuditRownumFieldname.getText() );
    inf.setCreatedTimeFieldname( wCreatedTimeFieldname.getText() );
    inf.setOrganizationIdFieldname( wOrganizationIdFieldname.getText() );
    inf.setRequesterIdFieldname( wRequesterIdFieldname.getText() );
@@ -663,6 +697,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    inf.setGroupIdFieldname( wGroupIdFieldname.getText() );
    inf.setSubjectFieldname( wSubjectFieldname.getText() );
    inf.setTagsFieldname( wTagsFieldname.getText() );
+   inf.setCollaboratorsFieldname( wCollaboratorsFieldname.getText() );
    inf.setStatusFieldname( wStatusFieldname.getText() );
    inf.setPriorityFieldname( wPriorityFieldname.getText() );
    inf.setChannelFieldname( wChannelFieldname.getText() );

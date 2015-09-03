@@ -43,6 +43,7 @@ import org.zendesk.client.v2.model.events.NotificationEvent;
 import org.zendesk.client.v2.model.events.VoiceCommentEvent;
 
 public class ZendeskTicketAuditHistory implements Cloneable {
+  Long ticketId;
   Long auditId;
   Date createdTime;
   Long organizationId;
@@ -50,6 +51,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
   Long assigneeId;
   Long groupId;
   String subject;
+  List<Long> collaborators;
   List<String> tags;
   String status;
   String priority;
@@ -62,19 +64,19 @@ public class ZendeskTicketAuditHistory implements Cloneable {
   public ZendeskTicketAuditHistory() {
   }
 
-  public static ZendeskTicketAuditHistory createFirstAudit( Audit audit ) {
-    ZendeskTicketAuditHistory newHistory = new ZendeskTicketAuditHistory();
-    newHistory.auditId = audit.getId();
-    newHistory.createdTime = audit.getCreatedAt();
-    newHistory.customFields = new LinkedHashMap<String, String>();
-    newHistory.processEvents( audit.getEvents(), null );
-    return newHistory;
+  public ZendeskTicketAuditHistory( Audit audit ) {
+    this.ticketId = audit.getTicketId();
+    this.auditId = audit.getId();
+    this.createdTime = audit.getCreatedAt();
+    this.customFields = new LinkedHashMap<String, String>();
+    this.processEvents( audit.getEvents(), null );
   }
 
   @Override
   public ZendeskTicketAuditHistory clone() {
     ZendeskTicketAuditHistory cloned = new ZendeskTicketAuditHistory();
-    cloned.createdTime = this.createdTime == null ? null : new Date( this.createdTime.getTime() );
+    cloned.ticketId = this.ticketId == null ? null : new Long( this.ticketId );
+    cloned.createdTime = null;
     cloned.organizationId = this.organizationId == null ? null : new Long( this.organizationId );
     cloned.requesterId = this.requesterId == null ? null : new Long( this.requesterId );
     cloned.assigneeId = this.assigneeId == null ? null : new Long( this.assigneeId );
@@ -87,11 +89,11 @@ public class ZendeskTicketAuditHistory implements Cloneable {
     cloned.type = this.type;
     cloned.satisfaction = this.satisfaction;
     cloned.customFields = new LinkedHashMap<String, String>( this.customFields );
+    cloned.comment = null;
     return cloned;
   }
   public ZendeskTicketAuditHistory createNextAudit( Audit audit, AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries ) throws CloneNotSupportedException {
     ZendeskTicketAuditHistory nextAudit = (ZendeskTicketAuditHistory) this.clone();
-    nextAudit.comment = null;
     nextAudit.auditId = audit.getId();
     nextAudit.createdTime = audit.getCreatedAt();
     nextAudit.processEvents( audit.getEvents(), auditSummaries );
@@ -106,7 +108,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
       Object fieldValueObject = new Object();
       String fieldValue = "";
 
-      if ( fieldType.equals( CcEvent.class.getName() ) || fieldType.equals( ExternalEvent.class.getName() ) ||
+      if ( fieldType.equals( ExternalEvent.class.getName() ) ||
           fieldType.equals( NotificationEvent.class.getName() ) || fieldType.equals( ErrorEvent.class.getName() ) ||
           fieldType.equals( "OrganizationActivity" ) || fieldType.equals( "AttachmentRedactionEvent" ) ||
           fieldType.equals( "CommentRedactionEvent" ) ) {
@@ -116,11 +118,12 @@ public class ZendeskTicketAuditHistory implements Cloneable {
         if ( auditSummaries != null ) {
           Long commentId = ( (CommentPrivacyChangeEvent) event ).getCommentId();
           Boolean commentVisibility = ( (CommentPrivacyChangeEvent) event ).getPublic();
-
-          for ( ZendeskTicketAuditHistory auditEntry : auditSummaries.values() ) {
-            if ( commentId != null && commentId.equals( auditEntry.comment.commentId ) ) {
-              auditEntry.comment.publicComment = commentVisibility;
-              auditEntry.comment.changedToPrivate = this.createdTime;
+          if ( commentId != null ) {
+            for ( ZendeskTicketAuditHistory auditEntry : auditSummaries.values() ) {
+              if ( auditEntry.comment != null && commentId.equals( auditEntry.comment.commentId ) ) {
+                auditEntry.comment.publicComment = commentVisibility;
+                auditEntry.comment.changedToPrivate = this.createdTime;
+              }
             }
           }
         }
@@ -136,21 +139,23 @@ public class ZendeskTicketAuditHistory implements Cloneable {
         this.comment = new TicketAuditComment( (CommentEvent) event );
       } else if ( fieldType.equals( VoiceCommentEvent.class.getName() ) ) {
         this.comment = new TicketAuditComment( (VoiceCommentEvent) event );
+      } else if ( fieldType.equals( CcEvent.class.getName() ) ) {
+        this.collaborators = ( (CcEvent) event ).getRecipients();
       }
 
       if ( !Const.isEmpty( fieldName ) ) {
         switch( fieldName ) {
           case "organization_id":
-            this.organizationId = Long.valueOf( fieldValue );
+            this.organizationId = Const.isEmpty( fieldValue ) ? null : Long.valueOf( fieldValue );
             break;
           case "requester_id":
-            this.requesterId = Long.valueOf( fieldValue );
+            this.requesterId = Const.isEmpty( fieldValue ) ? null : Long.valueOf( fieldValue );
             break;
           case "assignee_id":
-            this.assigneeId = Long.valueOf( fieldValue );
+            this.assigneeId = Const.isEmpty( fieldValue ) ? null : Long.valueOf( fieldValue );
             break;
           case "group_id":
-            this.groupId = Long.valueOf( fieldValue );
+            this.groupId = Const.isEmpty( fieldValue ) ? null : Long.valueOf( fieldValue );
             break;
           case "subject":
             this.subject = fieldValue;
@@ -172,6 +177,10 @@ public class ZendeskTicketAuditHistory implements Cloneable {
             break;
           case "satisfaction_score":
             this.satisfaction = fieldValue;
+            break;
+          case "current_collaborators":
+            // Ignore, these are "pretty-printed emails",
+            // and the CcEvent is used above instead
             break;
           default:
             this.customFields.put( fieldName, fieldValue );
