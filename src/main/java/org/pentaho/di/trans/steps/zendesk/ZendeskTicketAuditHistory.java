@@ -82,13 +82,13 @@ public class ZendeskTicketAuditHistory implements Cloneable {
     cloned.assigneeId = this.assigneeId == null ? null : new Long( this.assigneeId );
     cloned.groupId = this.groupId == null ? null : new Long( this.groupId );
     cloned.subject = this.subject;
-    cloned.tags = new ArrayList<String>( this.tags );
+    cloned.tags = this.tags == null ? null : new ArrayList<String>( this.tags );
     cloned.status = this.status;
     cloned.priority = this.priority;
     cloned.channel = this.channel;
     cloned.type = this.type;
     cloned.satisfaction = this.satisfaction;
-    cloned.customFields = new LinkedHashMap<String, String>( this.customFields );
+    cloned.customFields = this.customFields == null ? new LinkedHashMap<String, String>() : new LinkedHashMap<String, String>( this.customFields );
     cloned.comment = null;
     return cloned;
   }
