@@ -37,15 +37,17 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Ticket;
+import org.zendesk.client.v2.model.User;
 
 
-public class ZendeskInputIncrementalTicket extends ZendeskInput {
+public class ZendeskInputIncremental extends ZendeskInput {
 
-  ZendeskInputIncrementalTicketMeta thisMeta;
-  ZendeskInputIncrementalTicketData thisData;
+  ZendeskInputIncrementalMeta meta;
+  ZendeskInputIncrementalData data;
   
-  public ZendeskInputIncrementalTicket( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+  public ZendeskInputIncremental( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
@@ -53,8 +55,8 @@ public class ZendeskInputIncrementalTicket extends ZendeskInput {
   @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( super.init( smi, sdi ) ) {
-      thisMeta = (ZendeskInputIncrementalTicketMeta) super.meta;
-      thisData = (ZendeskInputIncrementalTicketData) super.data;
+      meta = (ZendeskInputIncrementalMeta) super.meta;
+      data = (ZendeskInputIncrementalData) super.data;
       return true;
     }
     return false;
@@ -73,17 +75,36 @@ public class ZendeskInputIncrementalTicket extends ZendeskInput {
         setOutputDone();
         return false;
       }
-      if ( thisData.rowMeta == null ) {
-        thisData.rowMeta = new RowMeta();
-        thisData.rowMeta.addValueMeta( new ValueMetaInteger( environmentSubstitute( thisMeta.getOutputFieldName() ) ) );
+      if ( data.rowMeta == null ) {
+        data.rowMeta = new RowMeta();
+        data.rowMeta.addValueMeta( new ValueMetaInteger( environmentSubstitute( meta.getOutputFieldName() ) ) );
       }
     }
 
-    for ( Ticket ticket : thisData.conn.getTicketsIncrementally( startDate ) ) {
-      putRow( thisData.rowMeta, processTicket( ticket ) );
-      incrementLinesInput();
+    switch( meta.getDownloadType() ) {
+      case TICKETS:
+        for ( Ticket ticket : data.conn.getTicketsIncrementally( startDate ) ) {
+          putRow( data.rowMeta, processTicket( ticket ) );
+          incrementLinesOutput();
+        }
+        break;
+      case USERS:
+        // TODO: Implement in Zendesk Client library
+        /*for ( User user : data.conn.getUsersIncrementally( startDate ) ) {
+          putRow( data.rowMeta, processUser( user ) );
+          incrementLinesOutput();
+        }*/
+        break;
+      case ORGANIZATIONS:
+        // TODO: Implement in Zendesk Client library
+        /*for ( Organization org : data.conn.getOrganizationssIncrementally( startDate ) ) {
+          putRow( data.rowMeta, processOrganization( org ) );
+          incrementLinesOutput();
+        }*/
+        break;
+        
+        
     }
-
     setOutputDone();
     return false;
   }
@@ -103,11 +124,11 @@ public class ZendeskInputIncrementalTicket extends ZendeskInput {
           throw new KettleException( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
         }
 
-        String filenameField = environmentSubstitute( thisMeta.getTimestampFieldName() );
+        String filenameField = environmentSubstitute( meta.getTimestampFieldName() );
         int fieldIndex = inputRowMeta.indexOfValue( filenameField );
         if ( fieldIndex < 0 ) {
           throw new KettleStepException( BaseMessages.getString(
-            PKG, "ZendeskInputIncrementalTicket.Exception.StartDateFieldNotFound", filenameField ) );
+            PKG, "ZendeskInputIncremental.Exception.StartDateFieldNotFound", filenameField ) );
         }
         ValueMetaInterface fieldValueMeta = inputRowMeta.getValueMeta( fieldIndex );
         if ( fieldValueMeta.getType() != ValueMetaInterface.TYPE_DATE ) {
@@ -131,7 +152,14 @@ public class ZendeskInputIncrementalTicket extends ZendeskInput {
   }
 
   Object[] processTicket( Ticket ticket ) {
-
     return new Object[]{ ticket.getId() };
+  }
+
+  Object[] processUser( User user ) {
+    return new Object[]{ user.getId() };
+  }
+
+  Object[] processOrganization( Organization org ) {
+    return new Object[]{ org.getId() };
   }
 }

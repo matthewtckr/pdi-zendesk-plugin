@@ -22,6 +22,9 @@
 
 package org.pentaho.di.ui.trans.steps.zendesk;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -48,27 +51,30 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.zendesk.ZendeskInputIncrementalTicketMeta;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputIncrementalMeta;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputIncrementalMeta.IncrementalType;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class ZendeskInputIncrementalTicketDialog extends BaseStepDialog implements StepDialogInterface {
+public class ZendeskInputIncrementalDialog extends BaseStepDialog implements StepDialogInterface {
 
- private static Class<?> PKG = ZendeskInputIncrementalTicketMeta.class; // for i18n purposes, needed by Translator2!!
- private ZendeskInputIncrementalTicketMeta input;
+ private static Class<?> PKG = ZendeskInputIncrementalMeta.class; // for i18n purposes, needed by Translator2!!
+ private ZendeskInputIncrementalMeta input;
 
  private LabelTextVar wSubDomain, wUsername, wOutputFieldname;
- private Label wlPassword, wlFieldname, wlToken;
+ private Label wlPassword, wlDownloadType, wlFieldname, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
+ private CCombo wDownloadType;
  private CCombo wFieldname;
- private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken, fdlFieldname, fdFieldname, fdOutputFieldname;
+ private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken;
+ private FormData fdlDownloadType, fdDownloadType, fdlFieldname, fdFieldname, fdOutputFieldname;
 
- public ZendeskInputIncrementalTicketDialog( Shell parent, Object in, TransMeta tr, String sname ) {
+ public ZendeskInputIncrementalDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
-   input = (ZendeskInputIncrementalTicketMeta) in;
+   input = (ZendeskInputIncrementalMeta) in;
  }
 
  public String open() {
@@ -91,7 +97,7 @@ public class ZendeskInputIncrementalTicketDialog extends BaseStepDialog implemen
    formLayout.marginHeight = Const.FORM_MARGIN;
 
    shell.setLayout( formLayout );
-   shell.setText( BaseMessages.getString( PKG, "ZendeskInputIncrementalTicket.Shell.Title" ) );
+   shell.setText( BaseMessages.getString( PKG, "ZendeskInputIncremental.Shell.Title" ) );
 
    int middle = props.getMiddlePct();
    int margin = Const.MARGIN;
@@ -184,13 +190,43 @@ public class ZendeskInputIncrementalTicketDialog extends BaseStepDialog implemen
      }
    } );
 
+   // Download Type Field Name
+   wlDownloadType = new Label( shell, SWT.RIGHT );
+   wlDownloadType.setText( BaseMessages.getString( PKG, "ZendeskInputIncremental.TimestampFieldname.Label" ) );
+   props.setLook( wlDownloadType );
+   fdlDownloadType = new FormData();
+   fdlDownloadType.left = new FormAttachment( 0, 0 );
+   fdlDownloadType.top = new FormAttachment( wToken, 2 * margin );
+   fdlDownloadType.right = new FormAttachment( middle, -margin );
+   wlDownloadType.setLayoutData( fdlDownloadType );
+
+   wDownloadType = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
+   props.setLook( wDownloadType );
+   wDownloadType.addModifyListener( lsMod );
+   fdDownloadType = new FormData();
+   fdDownloadType.left = new FormAttachment( middle, 0 );
+   fdDownloadType.top = new FormAttachment( wToken, margin );
+   fdDownloadType.right = new FormAttachment( 100, -margin );
+   wDownloadType.setLayoutData( fdDownloadType );
+   
+   List<String> downloadTypes = new ArrayList<String>();
+   for ( IncrementalType downloadType : IncrementalType.values() ) {
+     downloadTypes.add( downloadType.toString() );
+   }
+   wDownloadType.setItems( downloadTypes.toArray( new String[downloadTypes.size()] ) );
+   wDownloadType.addSelectionListener( new SelectionAdapter() {
+     public void widgetSelected( SelectionEvent e ) {
+       input.setChanged();
+     }
+   } );
+
    // Incoming Timestamp Field Name
    wlFieldname = new Label( shell, SWT.RIGHT );
-   wlFieldname.setText( BaseMessages.getString( PKG, "ZendeskInputIncrementalTicket.TimestampFieldname.Label" ) );
+   wlFieldname.setText( BaseMessages.getString( PKG, "ZendeskInputIncremental.TimestampFieldname.Label" ) );
    props.setLook( wlFieldname );
    fdlFieldname = new FormData();
    fdlFieldname.left = new FormAttachment( 0, 0 );
-   fdlFieldname.top = new FormAttachment( wToken, 2 * margin );
+   fdlFieldname.top = new FormAttachment( wDownloadType, 2 * margin );
    fdlFieldname.right = new FormAttachment( middle, -margin );
    wlFieldname.setLayoutData( fdlFieldname );
 
@@ -221,8 +257,8 @@ public class ZendeskInputIncrementalTicketDialog extends BaseStepDialog implemen
 
    // Output Fieldname
    wOutputFieldname = new LabelTextVar( transMeta, shell,
-     BaseMessages.getString( PKG, "ZendeskInputIncrementalTicket.OutputFieldName.Label" ),
-     BaseMessages.getString( PKG, "ZendeskInputIncrementalTicket.OutputFieldName.Tooltip" ) );
+     BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Label" ),
+     BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Tooltip" ) );
    props.setLook( wSubDomain );
    wOutputFieldname.addModifyListener( lsMod );
    fdOutputFieldname = new FormData();
@@ -292,6 +328,12 @@ public class ZendeskInputIncrementalTicketDialog extends BaseStepDialog implemen
    wUsername.setText( Const.NVL( input.getUsername(), "" ) );
    wPassword.setText( Const.NVL( input.getPassword(), "" ) );
    wToken.setSelection( input.isToken() );
+   if ( null == input.getDownloadType() ) {
+     input.setChanged();
+     wDownloadType.setText( IncrementalType.TICKETS.toString() );
+   } else {
+     wDownloadType.setText( input.getDownloadType().toString() );
+   }
    wFieldname.setText( Const.NVL( input.getTimestampFieldName(), "" ) );
    wOutputFieldname.setText( Const.NVL( input.getOutputFieldName(), "" ) );
 
@@ -306,7 +348,6 @@ public class ZendeskInputIncrementalTicketDialog extends BaseStepDialog implemen
  }
 
  private void ok() {
-
    if ( Const.isEmpty( wStepname.getText() ) ) {
      return;
    }
@@ -317,11 +358,12 @@ public class ZendeskInputIncrementalTicketDialog extends BaseStepDialog implemen
    dispose();
  }
 
- private void getInfo( ZendeskInputIncrementalTicketMeta inf ) {
+ private void getInfo( ZendeskInputIncrementalMeta inf ) {
    inf.setSubDomain( wSubDomain.getText() );
    inf.setUsername( wUsername.getText() );
    inf.setPassword( wPassword.getText() );
    inf.setToken( wToken.getSelection() );
+   inf.setDownloadType( IncrementalType.values()[wDownloadType.getSelectionIndex()] );
    inf.setTimestampFieldName( wFieldname.getText() );
    inf.setOutputFieldName( wOutputFieldname.getText() );
    stepname = wStepname.getText(); // return value

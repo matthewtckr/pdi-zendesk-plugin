@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.zendesk;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 
-public class ZendeskInputIncrementalTicketData extends ZendeskInputData {
+public class ZendeskInputIncrementalData extends ZendeskInputData {
 
   RowMetaInterface rowMeta;
 }

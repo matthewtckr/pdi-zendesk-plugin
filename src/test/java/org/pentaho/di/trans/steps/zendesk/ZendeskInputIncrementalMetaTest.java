@@ -25,15 +25,19 @@ package org.pentaho.di.trans.steps.zendesk;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputIncrementalMeta.IncrementalType;
 
 
-public class ZendeskInputIncrementalTicketMetaTest {
+public class ZendeskInputIncrementalMetaTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
@@ -43,14 +47,41 @@ public class ZendeskInputIncrementalTicketMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "subDomain", "username", "password",
-        "token", "timestampFieldName", "outputFieldName" );
+      Arrays.asList( "subDomain", "username", "password", "token",
+        "downloadType", "timestampFieldName", "outputFieldName" );
+
+    Map<String, FieldLoadSaveValidator<?>> attributeMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    attributeMap.put( "downloadType", new IncrementalTypeFieldLoadSaveValidator() );
 
     LoadSaveTester loadSaveTester =
-      new LoadSaveTester( ZendeskInputIncrementalTicketMeta.class, attributes, new HashMap<String, String>(),
-        new HashMap<String, String>() );
+      new LoadSaveTester( ZendeskInputIncrementalMeta.class, attributes, new HashMap<String, String>(),
+        new HashMap<String, String>(), attributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  public class IncrementalTypeFieldLoadSaveValidator implements FieldLoadSaveValidator<IncrementalType> {
+    @Override
+    public IncrementalType getTestObject() {
+      int index = new Random().nextInt( IncrementalType.values().length + 1 );
+      if ( 0 == index ) {
+        return null;
+      } else {
+        return IncrementalType.values()[( index - 1 )];
+      }
+    }
+
+    @Override
+    public boolean validateTestObject( IncrementalType testObject, Object actual ) {
+      if ( testObject == null && actual == null ) {
+        return true;
+      }
+      if ( testObject != null ) {
+        return testObject.equals( actual );
+      }
+      return false;
+    }
+    
   }
 }

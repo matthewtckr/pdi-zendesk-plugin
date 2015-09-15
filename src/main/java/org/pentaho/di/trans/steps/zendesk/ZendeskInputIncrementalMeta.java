@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.zendesk;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -48,19 +49,53 @@ import org.w3c.dom.Node;
     id = "ZendeskInputIncrementalTicket",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
     i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputIncrementalTicket.Name",
-    description = "ZendeskInputIncrementalTicket.TooltipDesc",
+    name="ZendeskInputIncremental.Name",
+    description = "ZendeskInputIncremental.TooltipDesc",
     categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
 )
-public class ZendeskInputIncrementalTicketMeta extends ZendeskInputMeta implements StepMetaInterface {
+public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements StepMetaInterface {
 
+  public enum IncrementalType {
+    TICKETS {
+      @Override
+      public String toString() {
+        return "Tickets";
+      }
+    }, USERS {
+      @Override
+      public String toString() {
+        return "Users";
+      }
+    }, ORGANIZATIONS {
+      @Override
+      public String toString() {
+        return "Organizations";
+      }
+    };
+  }
+
+  private IncrementalType downloadType;
   private String timestampFieldName;
   private String outputFieldName;
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {
-    return new ZendeskInputIncrementalTicket( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    return new ZendeskInputIncremental( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  @Override
+  public void setDefault() {
+    super.setDefault();
+    setDownloadType( IncrementalType.TICKETS );
+  }
+
+  public IncrementalType getDownloadType() {
+    return downloadType;
+  }
+
+  public void setDownloadType( IncrementalType it ) {
+    this.downloadType = it;
   }
 
   public String getTimestampFieldName() {
@@ -83,6 +118,8 @@ public class ZendeskInputIncrementalTicketMeta extends ZendeskInputMeta implemen
   public String getXML() throws KettleException {
     StringBuilder builder = new StringBuilder();
     builder.append( super.getXML() );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "downloadType",
+      getDownloadType() == null ? null : getDownloadType().name() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "timestampFieldName", getTimestampFieldName() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "outputFieldName", getOutputFieldName() ) );
     return builder.toString();
@@ -91,6 +128,12 @@ public class ZendeskInputIncrementalTicketMeta extends ZendeskInputMeta implemen
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
+    String downloadTypeValue = XMLHandler.getTagValue( stepnode, "downloadType" );
+    if ( !Const.isEmpty( downloadTypeValue ) ) {
+      setDownloadType( IncrementalType.valueOf( downloadTypeValue ) );
+    } else {
+      setDownloadType( null );
+    }
     setTimestampFieldName( XMLHandler.getTagValue( stepnode, "timestampFieldName" ) );
     setOutputFieldName( XMLHandler.getTagValue( stepnode, "outputFieldName" ) );
   }
@@ -99,6 +142,12 @@ public class ZendeskInputIncrementalTicketMeta extends ZendeskInputMeta implemen
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
+    String downloadTypeValue = rep.getStepAttributeString( id_step, "downloadType" );
+    if ( !Const.isEmpty( downloadTypeValue ) ) {
+      setDownloadType( IncrementalType.valueOf( downloadTypeValue ) );
+    } else {
+      setDownloadType( null );
+    }
     setTimestampFieldName( rep.getStepAttributeString( id_step, "timestampFieldName" ) );
     setOutputFieldName( rep.getStepAttributeString( id_step, "outputFieldName" ) );
   }
@@ -107,13 +156,15 @@ public class ZendeskInputIncrementalTicketMeta extends ZendeskInputMeta implemen
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
+    rep.saveStepAttribute( id_transformation, id_step, "downloadType",
+      getDownloadType() == null ? null : getDownloadType().name() );
     rep.saveStepAttribute( id_transformation, id_step, "timestampFieldName", getTimestampFieldName() );
     rep.saveStepAttribute( id_transformation, id_step, "outputFieldName", getOutputFieldName() );
   }
 
   @Override
   public StepDataInterface getStepData() {
-    return new ZendeskInputIncrementalTicketData();
+    return new ZendeskInputIncrementalData();
   }
 
   @Override
