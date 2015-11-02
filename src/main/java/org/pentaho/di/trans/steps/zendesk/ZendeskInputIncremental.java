@@ -68,7 +68,7 @@ public class ZendeskInputIncremental extends ZendeskInput {
     if ( first ) {
       first = false;
       try {
-      startDate = getIncrementalFieldValue();
+        startDate = getIncrementalFieldValue();
       } catch ( KettleStepException e ) {
         setErrors( 1L );
         logError( e.getMessage() );
