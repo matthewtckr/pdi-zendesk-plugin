@@ -62,7 +62,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>${project.artifactId}-${pom.version}</finalName>
+							<finalName>${project.artifactId}-${project.version}</finalName>
 							<descriptors>
 								<descriptor>src/main/assembly/assembly.xml</descriptor>
 							</descriptors>
