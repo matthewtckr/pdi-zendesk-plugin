@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>org.pentaho.pdi</groupId>
 	<artifactId>pdi-zendesk-plugin</artifactId>
-	<version>5.4-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>PDI Zendesk Plugin</name>
 
 	<properties>
@@ -62,7 +62,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>${project.artifactId}</finalName>
+							<finalName>${project.artifactId}-${pom.version}</finalName>
 							<descriptors>
 								<descriptor>src/main/assembly/assembly.xml</descriptor>
 							</descriptors>
