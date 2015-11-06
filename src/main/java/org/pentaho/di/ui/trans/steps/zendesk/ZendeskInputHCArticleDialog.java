@@ -58,7 +58,10 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
  private Label wlPassword, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
  private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken;
+=======
+>>>>>>> Add HelpCenter Input Steps
 
  private LabelTextVar wArticleIdFieldname;
  private LabelTextVar wArticleUrlFieldname;
@@ -79,6 +82,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
  private LabelTextVar wCreatedAtFieldname;
  private LabelTextVar wUpdatedAtFieldname;
 
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
  private FormData fdArticleIdFieldname;
  private FormData fdArticleUrlFieldname;
  private FormData fdArticleTitleFieldname;
@@ -98,6 +102,8 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
  private FormData fdCreatedAtFieldname;
  private FormData fdUpdatedAtFieldname;
 
+=======
+>>>>>>> Add HelpCenter Input Steps
  public ZendeskInputHCArticleDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
    input = (ZendeskInputHCArticleMeta) in;
@@ -153,7 +159,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
    wSubDomain.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdSubDomain = new FormData();
+=======
+   FormData fdSubDomain = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdSubDomain.left = new FormAttachment( 0, -margin );
    fdSubDomain.top = new FormAttachment( wStepname, 2 * margin );
    fdSubDomain.right = new FormAttachment( 100, -margin );
@@ -166,7 +176,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdUsername = new FormData();
+=======
+   FormData fdUsername = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdUsername.left = new FormAttachment( 0, -margin );
    fdUsername.top = new FormAttachment( wSubDomain, 2 * margin );
    fdUsername.right = new FormAttachment( 100, -margin );
@@ -186,7 +200,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdPassword = new FormData();
+=======
+   FormData fdPassword = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdPassword.left = new FormAttachment( middle, 0 );
    fdPassword.top = new FormAttachment( wUsername, margin );
    fdPassword.right = new FormAttachment( 100, -margin );
@@ -196,7 +214,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    wlToken = new Label( shell, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdlToken = new FormData();
+=======
+   FormData fdlToken = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdlToken.left = new FormAttachment( 0, 0 );
    fdlToken.top = new FormAttachment( wlPassword, 2 * margin );
    fdlToken.right = new FormAttachment( middle, -margin );
@@ -205,7 +227,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    wToken = new Button( shell, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdToken = new FormData();
+=======
+   FormData fdToken = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdToken.left = new FormAttachment( middle, 0 );
    fdToken.top = new FormAttachment( wPassword, margin );
    fdToken.right = new FormAttachment( 100, -margin );
@@ -223,7 +249,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleIdFieldname.Tooltip" ) );
    props.setLook( wArticleIdFieldname );
    wArticleIdFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdArticleIdFieldname = new FormData();
+=======
+   FormData fdArticleIdFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdArticleIdFieldname.left = new FormAttachment( 0, -margin );
    fdArticleIdFieldname.top = new FormAttachment( wToken, 2 * margin );
    fdArticleIdFieldname.right = new FormAttachment( 100, -margin );
@@ -236,7 +266,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleURLFieldname.Tooltip" ) );
    props.setLook( wArticleUrlFieldname );
    wArticleUrlFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdArticleUrlFieldname = new FormData();
+=======
+   FormData fdArticleUrlFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdArticleUrlFieldname.left = new FormAttachment( 0, -margin );
    fdArticleUrlFieldname.top = new FormAttachment( wArticleIdFieldname, 2 * margin );
    fdArticleUrlFieldname.right = new FormAttachment( 100, -margin );
@@ -249,7 +283,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleTitleFieldname.Tooltip" ) );
    props.setLook( wArticleTitleFieldname );
    wArticleTitleFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdArticleTitleFieldname = new FormData();
+=======
+   FormData fdArticleTitleFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdArticleTitleFieldname.left = new FormAttachment( 0, -margin );
    fdArticleTitleFieldname.top = new FormAttachment( wArticleUrlFieldname, 2 * margin );
    fdArticleTitleFieldname.right = new FormAttachment( 100, -margin );
@@ -262,7 +300,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleBodyFieldname.Tooltip" ) );
    props.setLook( wArticleBodyFieldname );
    wArticleBodyFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdArticleBodyFieldname = new FormData();
+=======
+   FormData fdArticleBodyFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdArticleBodyFieldname.left = new FormAttachment( 0, -margin );
    fdArticleBodyFieldname.top = new FormAttachment( wArticleTitleFieldname, 2 * margin );
    fdArticleBodyFieldname.right = new FormAttachment( 100, -margin );
@@ -275,7 +317,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LocaleFieldname.Tooltip" ) );
    props.setLook( wLocaleFieldname );
    wLocaleFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdLocaleFieldname = new FormData();
+=======
+   FormData fdLocaleFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdLocaleFieldname.left = new FormAttachment( 0, -margin );
    fdLocaleFieldname.top = new FormAttachment( wArticleBodyFieldname, 2 * margin );
    fdLocaleFieldname.right = new FormAttachment( 100, -margin );
@@ -288,7 +334,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SourceLocaleFieldname.Tooltip" ) );
    props.setLook( wSourceLocaleFieldname );
    wSourceLocaleFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdSourceLocaleFieldname = new FormData();
+=======
+   FormData fdSourceLocaleFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdSourceLocaleFieldname.left = new FormAttachment( 0, -margin );
    fdSourceLocaleFieldname.top = new FormAttachment( wLocaleFieldname, 2 * margin );
    fdSourceLocaleFieldname.right = new FormAttachment( 100, -margin );
@@ -301,7 +351,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.AuthorIDFieldname.Tooltip" ) );
    props.setLook( wAuthorIdFieldname );
    wAuthorIdFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdAuthorIdFieldname = new FormData();
+=======
+   FormData fdAuthorIdFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdAuthorIdFieldname.left = new FormAttachment( 0, -margin );
    fdAuthorIdFieldname.top = new FormAttachment( wSourceLocaleFieldname, 2 * margin );
    fdAuthorIdFieldname.right = new FormAttachment( 100, -margin );
@@ -314,7 +368,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CommentsDisabledFieldname.Tooltip" ) );
    props.setLook( wCommentsDisabledFieldname );
    wCommentsDisabledFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdCommentsDisabledFieldname = new FormData();
+=======
+   FormData fdCommentsDisabledFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdCommentsDisabledFieldname.left = new FormAttachment( 0, -margin );
    fdCommentsDisabledFieldname.top = new FormAttachment( wAuthorIdFieldname, 2 * margin );
    fdCommentsDisabledFieldname.right = new FormAttachment( 100, -margin );
@@ -327,7 +385,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.OutdatedFieldname.Tooltip" ) );
    props.setLook( wOutdatedFieldname );
    wOutdatedFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdOutdatedFieldname = new FormData();
+=======
+   FormData fdOutdatedFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdOutdatedFieldname.left = new FormAttachment( 0, -margin );
    fdOutdatedFieldname.top = new FormAttachment( wCommentsDisabledFieldname, 2 * margin );
    fdOutdatedFieldname.right = new FormAttachment( 100, -margin );
@@ -340,7 +402,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LabelsFieldname.Tooltip" ) );
    props.setLook( wLabelsFieldname );
    wLabelsFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdLabelsFieldname = new FormData();
+=======
+   FormData fdLabelsFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdLabelsFieldname.left = new FormAttachment( 0, -margin );
    fdLabelsFieldname.top = new FormAttachment( wOutdatedFieldname, 2 * margin );
    fdLabelsFieldname.right = new FormAttachment( 100, -margin );
@@ -353,7 +419,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.DraftFieldname.Tooltip" ) );
    props.setLook( wDraftFieldname );
    wDraftFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdDraftFieldname = new FormData();
+=======
+   FormData fdDraftFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdDraftFieldname.left = new FormAttachment( 0, -margin );
    fdDraftFieldname.top = new FormAttachment( wLabelsFieldname, 2 * margin );
    fdDraftFieldname.right = new FormAttachment( 100, -margin );
@@ -366,7 +436,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PromotedFieldname.Tooltip" ) );
    props.setLook( wPromotedFieldname );
    wPromotedFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdPromotedFieldname = new FormData();
+=======
+   FormData fdPromotedFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdPromotedFieldname.left = new FormAttachment( 0, -margin );
    fdPromotedFieldname.top = new FormAttachment( wDraftFieldname, 2 * margin );
    fdPromotedFieldname.right = new FormAttachment( 100, -margin );
@@ -379,7 +453,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PositionFieldname.Tooltip" ) );
    props.setLook( wPositionFieldname );
    wPositionFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdPositionFieldname = new FormData();
+=======
+   FormData fdPositionFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdPositionFieldname.left = new FormAttachment( 0, -margin );
    fdPositionFieldname.top = new FormAttachment( wPromotedFieldname, 2 * margin );
    fdPositionFieldname.right = new FormAttachment( 100, -margin );
@@ -392,7 +470,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteSumFieldname.Tooltip" ) );
    props.setLook( wVoteSumFieldname );
    wVoteSumFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdVoteSumFieldname = new FormData();
+=======
+   FormData fdVoteSumFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdVoteSumFieldname.left = new FormAttachment( 0, -margin );
    fdVoteSumFieldname.top = new FormAttachment( wPositionFieldname, 2 * margin );
    fdVoteSumFieldname.right = new FormAttachment( 100, -margin );
@@ -405,7 +487,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteCountFieldname.Tooltip" ) );
    props.setLook( wVoteCountFieldname );
    wVoteCountFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdVoteCountFieldname = new FormData();
+=======
+   FormData fdVoteCountFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdVoteCountFieldname.left = new FormAttachment( 0, -margin );
    fdVoteCountFieldname.top = new FormAttachment( wVoteSumFieldname, 2 * margin );
    fdVoteCountFieldname.right = new FormAttachment( 100, -margin );
@@ -418,7 +504,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SectionIDFieldname.Tooltip" ) );
    props.setLook( wSectionIdFieldname );
    wSectionIdFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdSectionIdFieldname = new FormData();
+=======
+   FormData fdSectionIdFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdSectionIdFieldname.left = new FormAttachment( 0, -margin );
    fdSectionIdFieldname.top = new FormAttachment( wVoteCountFieldname, 2 * margin );
    fdSectionIdFieldname.right = new FormAttachment( 100, -margin );
@@ -431,7 +521,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdCreatedAtFieldname = new FormData();
+=======
+   FormData fdCreatedAtFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdCreatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdCreatedAtFieldname.top = new FormAttachment( wSectionIdFieldname, 2 * margin );
    fdCreatedAtFieldname.right = new FormAttachment( 100, -margin );
@@ -444,7 +538,11 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
+<<<<<<< fb598b87be28291e4809091caeba3a9a94e05024
    fdUpdatedAtFieldname = new FormData();
+=======
+   FormData fdUpdatedAtFieldname = new FormData();
+>>>>>>> Add HelpCenter Input Steps
    fdUpdatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdUpdatedAtFieldname.top = new FormAttachment( wCreatedAtFieldname, 2 * margin );
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
