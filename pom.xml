@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>org.pentaho.pdi</groupId>
 	<artifactId>pdi-zendesk-plugin</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>PDI Zendesk Plugin</name>
 
 	<properties>
