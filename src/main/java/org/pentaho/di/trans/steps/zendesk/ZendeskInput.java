@@ -76,7 +76,7 @@ public abstract class ZendeskInput extends BaseStep implements StepInterface {
     if ( username.contains( "/token" ) ) {
       token = true;
       username = username.replaceAll( "/token", "" );
-      logBasic( BaseMessages.getString( PKG, "ZendeskInput.UsernameContainsToken.Warning" ) );
+      logDetailed( BaseMessages.getString( PKG, "ZendeskInput.UsernameContainsToken.Warning" ) );
     }
     builder.setUsername( username );
 

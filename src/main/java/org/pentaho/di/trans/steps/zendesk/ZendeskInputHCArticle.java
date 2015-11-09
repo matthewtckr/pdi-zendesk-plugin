@@ -76,7 +76,7 @@ public class ZendeskInputHCArticle extends ZendeskInput {
     }
     Iterable<Article> articles = null;
     try {
-      articles = data.conn.getArticlesFromPage( 1 );
+      articles = data.conn.getArticles();
     } catch ( ZendeskResponseException zre ) {
       logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
       setErrors( 1L );
