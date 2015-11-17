@@ -41,8 +41,9 @@ public class ZendeskInputGroupMembershipsMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "groupMembershipIdFieldname", "groupMembershipUrlFieldname", "userIdFieldname",
-        "groupIdFieldname", "createdAtFieldname", "updatedAtFieldname", "defaultGroupFieldname" );
+      Arrays.asList( "subDomain", "username", "password", "token", "groupMembershipIdFieldname",
+        "groupMembershipUrlFieldname", "userIdFieldname", "groupIdFieldname", "createdAtFieldname",
+        "updatedAtFieldname", "defaultGroupFieldname" );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputGroupMembershipsMeta.class, attributes, new HashMap<String, String>(),

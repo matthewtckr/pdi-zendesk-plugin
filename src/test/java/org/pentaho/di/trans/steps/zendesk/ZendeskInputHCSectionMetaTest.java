@@ -41,9 +41,10 @@ public class ZendeskInputHCSectionMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "sectionIdFieldname", "sectionUrlFieldname", "sectionNameFieldname", "categoryIdFieldname", 
-        "localeFieldname", "sourceLocaleFieldname", "sectionHtmlUrlFieldname", "outdatedFieldname", 
-        "positionFieldname",  "createdAtFieldname", "updatedAtFieldname" );
+      Arrays.asList( "subDomain", "username", "password", "token", "sectionIdFieldname", "sectionUrlFieldname",
+        "sectionNameFieldname", "categoryIdFieldname", "localeFieldname", "sourceLocaleFieldname",
+        "sectionHtmlUrlFieldname", "outdatedFieldname", "positionFieldname",  "createdAtFieldname",
+        "updatedAtFieldname" );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputHCSectionMeta.class, attributes, new HashMap<String, String>(),
