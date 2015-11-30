@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -30,6 +32,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.map.AbstractLinkedMap;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.events.CcEvent;
 import org.zendesk.client.v2.model.events.ChangeEvent;
@@ -43,6 +46,10 @@ import org.zendesk.client.v2.model.events.NotificationEvent;
 import org.zendesk.client.v2.model.events.VoiceCommentEvent;
 
 public class ZendeskTicketAuditHistory implements Cloneable {
+
+  private static final String DUE_AT_DATE_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
+  private static final SimpleDateFormat DUE_AT_DATE_FORMAT = new SimpleDateFormat( DUE_AT_DATE_FORMAT_STRING );
+
   Long ticketId;
   Long auditId;
   Date createdTime;
@@ -58,13 +65,19 @@ public class ZendeskTicketAuditHistory implements Cloneable {
   String channel;
   String type;
   String satisfaction;
+
+  Long locale;
+  Date dueAt;
+  String satisfactionComment;
+  Long formId;
+  Long brandId;
   Map<String, String> customFields;
   TicketAuditComment comment;
 
   public ZendeskTicketAuditHistory() {
   }
 
-  public ZendeskTicketAuditHistory( Audit audit ) {
+  public ZendeskTicketAuditHistory( Audit audit ) throws KettleValueException {
     this.ticketId = audit.getTicketId();
     this.auditId = audit.getId();
     this.createdTime = audit.getCreatedAt();
@@ -92,7 +105,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
     cloned.comment = null;
     return cloned;
   }
-  public ZendeskTicketAuditHistory createNextAudit( Audit audit, AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries ) throws CloneNotSupportedException {
+  public ZendeskTicketAuditHistory createNextAudit( Audit audit, AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries ) throws CloneNotSupportedException, KettleValueException {
     ZendeskTicketAuditHistory nextAudit = (ZendeskTicketAuditHistory) this.clone();
     nextAudit.auditId = audit.getId();
     nextAudit.createdTime = audit.getCreatedAt();
@@ -101,7 +114,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
   }
 
   @SuppressWarnings( "unchecked" )
-  void processEvents( List<Event> events, AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries ) {
+  void processEvents( List<Event> events, AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries ) throws KettleValueException {
     for ( Event event : events ) {
       String fieldType = event.getClass().getName();
       String fieldName = "";
@@ -178,6 +191,24 @@ public class ZendeskTicketAuditHistory implements Cloneable {
           case "satisfaction_score":
             this.satisfaction = fieldValue;
             break;
+          case "brand_id":
+            this.brandId = Long.valueOf( fieldValue );
+            break;
+          case "ticket_form_id":
+            this.formId = Long.valueOf( fieldValue );
+            break;
+          case "locale_id":
+            this.locale = Long.valueOf( fieldValue );
+            break;
+          case "satisfaction_comment":
+            this.satisfactionComment = fieldValue;
+            break;
+          case "due_at":
+            try {
+              this.dueAt = DUE_AT_DATE_FORMAT.parse( fieldValue );
+            } catch ( ParseException e ) {
+              throw new KettleValueException( "Unable to parse [" + fieldValue + "] + with format [" + DUE_AT_DATE_FORMAT_STRING + "]", e );
+            }
           case "current_collaborators":
             // Ignore, these are "pretty-printed emails",
             // and the CcEvent is used above instead

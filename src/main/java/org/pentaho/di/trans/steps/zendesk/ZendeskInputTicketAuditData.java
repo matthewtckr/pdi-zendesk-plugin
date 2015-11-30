@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.zendesk;
 import org.apache.commons.collections4.map.AbstractLinkedMap;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.zendesk.client.v2.model.Audit;
 
@@ -35,16 +36,18 @@ public class ZendeskInputTicketAuditData extends ZendeskInputData {
   RowMetaInterface ticketOverviewOutputRowMeta;
   RowMetaInterface ticketCommentsOutputRowMeta;
   RowMetaInterface ticketCustomFieldsOutputRowMeta;
+  RowMetaInterface ticketTagsOutputRowMeta;
 
   RowSet ticketOverviewOutputRowSet;
   RowSet ticketCommentsOutputRowSet;
   RowSet ticketCustomFieldsOutputRowSet;
+  RowSet ticketTagsOutputRowSet;
 
   void newTicket() {
     auditSummaries = null;
   }
 
-  void addAudit( Audit audit ) {
+  void addAudit( Audit audit ) throws KettleValueException {
     if ( auditSummaries == null ) {
       auditSummaries = new LinkedMap<Long, ZendeskTicketAuditHistory>();
     }

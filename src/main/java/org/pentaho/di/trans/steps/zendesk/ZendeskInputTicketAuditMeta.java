@@ -24,16 +24,13 @@ package org.pentaho.di.trans.steps.zendesk;
 
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -83,6 +80,11 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   private String channelFieldname;
   private String typeFieldname;
   private String satisfactionFieldname;
+  private String localeFieldname;
+  private String dueAtFieldname;
+  private String satisfactionCommentFieldname;
+  private String formIdFieldname;
+  private String brandIdFieldname;
 
   private String commentIdFieldname;
   private String authorIdFieldname;
@@ -98,9 +100,12 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   private String ticketOverviewStepName;
   private String ticketCommentsStepName;
   private String ticketCustomFieldsStepName;
+  private String ticketTagsStepName;
+
   private StepMeta ticketOverviewStepMeta;
   private StepMeta ticketCustomFieldsStepMeta;
   private StepMeta ticketCommentsStepMeta;
+  private StepMeta ticketTagsStepMeta;
   
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
@@ -132,6 +137,10 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     channelFieldname = "Channel";
     typeFieldname = "Type";
     satisfactionFieldname = "Satisfaction";
+    localeFieldname = "Locale";
+    dueAtFieldname = "Due At";
+    satisfactionCommentFieldname = "Satisfaction_Comment";
+    formIdFieldname = "Form ID";
 
     commentIdFieldname = "Comment_ID";
     authorIdFieldname = "Author_ID";
@@ -164,6 +173,11 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     builder.append( "    " ).append( XMLHandler.addTagValue( "channelFieldname", getChannelFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "typeFieldname", getTypeFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "satisfactionFieldname", getSatisfactionFieldname() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "localeFieldname", getLocaleFieldname() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "dueAtFieldname", getDueAtFieldname() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "satisfactionCommentFieldname", getSatisfactionCommentFieldname() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "formIdFieldname", getFormIdFieldname() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "brandIdFieldname", getBrandIdFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "commentIdFieldname", getCommentIdFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "authorIdFieldname", getAuthorIdFieldname() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "publicCommentFieldname", getPublicCommentFieldname() ) );
@@ -178,6 +192,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
       getTicketCustomFieldsStepMeta() != null ? getTicketCustomFieldsStepMeta().getName() : getTicketCustomFieldsStepName() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "ticketCommentsStepName",
       getTicketCommentsStepMeta() != null ? getTicketCommentsStepMeta().getName() : getTicketCommentsStepName() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "ticketTagsStepName",
+      getTicketTagsStepMeta() != null ? getTicketTagsStepMeta().getName() : getTicketTagsStepName() ) );
     return builder.toString();
   }
 
@@ -200,6 +216,11 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setChannelFieldname( XMLHandler.getTagValue( stepnode, "channelFieldname" ) );
     setTypeFieldname( XMLHandler.getTagValue( stepnode, "typeFieldname" ) );
     setSatisfactionFieldname( XMLHandler.getTagValue( stepnode, "satisfactionFieldname" ) );
+    setLocaleFieldname( XMLHandler.getTagValue( stepnode, "localeFieldname" ) );
+    setDueAtFieldname( XMLHandler.getTagValue( stepnode, "dueAtFieldname" ) );
+    setSatisfactionCommentFieldname( XMLHandler.getTagValue( stepnode, "satisfactionCommentFieldname" ) );
+    setFormIdFieldname( XMLHandler.getTagValue( stepnode, "formIdFieldname" ) );
+    setBrandIdFieldname( XMLHandler.getTagValue( stepnode, "brandIdFieldname" ) );
     setCommentIdFieldname( XMLHandler.getTagValue( stepnode, "commentIdFieldname" ) );
     setAuthorIdFieldname( XMLHandler.getTagValue( stepnode, "authorIdFieldname" ) );
     setPublicCommentFieldname( XMLHandler.getTagValue( stepnode, "publicCommentFieldname" ) );
@@ -211,6 +232,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setTicketOverviewStepName( XMLHandler.getTagValue( stepnode, "ticketOverviewStepName" ) );
     setTicketCustomFieldsStepName( XMLHandler.getTagValue( stepnode, "ticketCustomFieldsStepName" ) );
     setTicketCommentsStepName( XMLHandler.getTagValue( stepnode, "ticketCommentsStepName" ) );
+    setTicketTagsStepName( XMLHandler.getTagValue( stepnode, "ticketTagsStepName" ) );
   }
 
   @Override
@@ -233,6 +255,11 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setChannelFieldname( rep.getStepAttributeString( id_step, "channelFieldname" ) );
     setTypeFieldname( rep.getStepAttributeString( id_step, "typeFieldname" ) );
     setSatisfactionFieldname( rep.getStepAttributeString( id_step, "satisfactionFieldname" ) );
+    setLocaleFieldname( rep.getStepAttributeString( id_step, "localeFieldname" ) );
+    setDueAtFieldname( rep.getStepAttributeString( id_step, "dueAtFieldname" ) );
+    setSatisfactionCommentFieldname( rep.getStepAttributeString( id_step, "satisfactionCommentFieldname" ) );
+    setFormIdFieldname( rep.getStepAttributeString( id_step, "formIdFieldname" ) );
+    setBrandIdFieldname( rep.getStepAttributeString( id_step, "brandIdFieldname" ) );
     setCommentIdFieldname( rep.getStepAttributeString( id_step, "commentIdFieldname" ) );
     setAuthorIdFieldname( rep.getStepAttributeString( id_step, "authorIdFieldname" ) );
     setPublicCommentFieldname( rep.getStepAttributeString( id_step, "publicCommentFieldname" ) );
@@ -244,6 +271,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setTicketOverviewStepName( rep.getStepAttributeString( id_step, "ticketOverviewStepName" ) );
     setTicketCustomFieldsStepName( rep.getStepAttributeString( id_step, "ticketCustomFieldsStepName" ) );
     setTicketCommentsStepName( rep.getStepAttributeString( id_step, "ticketCommentsStepName" ) );
+    setTicketTagsStepName( rep.getStepAttributeString( id_step, "ticketTagsStepName" ) );
   }
 
   @Override
@@ -266,6 +294,11 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     rep.saveStepAttribute( id_transformation, id_step, "channelFieldname", getChannelFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "typeFieldname", getTypeFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "satisfactionFieldname", getSatisfactionFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "localeFieldname", getLocaleFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "dueAtFieldname", getDueAtFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "satisfactionCommentFieldname", getSatisfactionCommentFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "formIdFieldname", getFormIdFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "brandIdFieldname", getBrandIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "commentIdFieldname", getCommentIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "authorIdFieldname", getAuthorIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "publicCommentFieldname", getPublicCommentFieldname() );
@@ -280,6 +313,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
       getTicketCustomFieldsStepMeta() != null ? getTicketCustomFieldsStepMeta().getName() : getTicketCustomFieldsStepName() );
     rep.saveStepAttribute( id_transformation, id_step, "ticketCommentsStepName",
       getTicketCommentsStepMeta() != null ? getTicketCommentsStepMeta().getName() : getTicketCommentsStepName() );
+    rep.saveStepAttribute( id_transformation, id_step, "ticketTagsStepName",
+      getTicketTagsStepMeta() != null ? getTicketTagsStepMeta().getName() : getTicketTagsStepName() );
   }
 
   @Override
@@ -292,6 +327,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
         prepareExecutionResultsTicketComments( inputRowMeta, space );
       } else if ( nextStep.equals( ticketCustomFieldsStepMeta ) ) {
         prepareExecutionResultsTicketCustomFields( inputRowMeta, space );
+      } else if ( nextStep.equals( ticketTagsStepMeta ) ) {
+        prepareExecutionResultsTicketTags( inputRowMeta, space );
       }
     }
   }
@@ -314,6 +351,11 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getChannelFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getTypeFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getSatisfactionFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getLocaleFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getDueAtFieldname() ), ValueMetaInterface.TYPE_DATE );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getSatisfactionCommentFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getFormIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getBrandIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
   }
 
   private void prepareExecutionResultsTicketComments( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
@@ -336,19 +378,12 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getCustomFieldValueFieldname() ), ValueMetaInterface.TYPE_STRING );
   }
 
-  protected void addFieldToRow( RowMetaInterface row, String fieldName, int type )
-      throws KettleStepException {
-      if ( !Const.isEmpty( fieldName ) ) {
-        try {
-          ValueMetaInterface value = ValueMetaFactory.createValueMeta( fieldName, type );
-          value.setOrigin( getName() );
-          row.addValueMeta( value );
-        } catch ( KettlePluginException e ) {
-          throw new KettleStepException( BaseMessages.getString( PKG,
-            "TransExecutorMeta.ValueMetaInterfaceCreation", fieldName ), e );
-        }
-      }
-    }
+  private void prepareExecutionResultsTicketTags( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
+    inputRowMeta.clear();
+    addFieldToRow( inputRowMeta, getTicketIdFieldname(), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getAuditIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTagsFieldname() ), ValueMetaInterface.TYPE_STRING );
+  }
 
   @Override
   public StepIOMetaInterface getStepIOMeta() {
@@ -361,6 +396,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
         PKG, "ZendeskInputTicketAuditMeta.TicketCommentStream.Description" ), StreamIcon.TARGET, null ) );
       ioMeta.addStream( new Stream( StreamType.TARGET, ticketCustomFieldsStepMeta, BaseMessages.getString(
         PKG, "ZendeskInputTicketAuditMeta.TicketCustomFieldsStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, ticketTagsStepMeta, BaseMessages.getString(
+        PKG, "ZendeskInputTicketAuditMeta.TicketTagsStream.Description" ), StreamIcon.TARGET, null ) );
     }
     return ioMeta;
   }
@@ -370,6 +407,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     ticketOverviewStepMeta = StepMeta.findStep( steps, ticketOverviewStepName );
     ticketCommentsStepMeta = StepMeta.findStep( steps, ticketCommentsStepName );
     ticketCustomFieldsStepMeta = StepMeta.findStep( steps, ticketCustomFieldsStepName );
+    ticketTagsStepMeta = StepMeta.findStep( steps, ticketTagsStepName );
   }
 
   @Override
@@ -387,6 +425,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
       case 2:
         setTicketCustomFieldsStepMeta( step );
         break;
+      case 3:
+        setTicketTagsStepMeta( step );
       default:
         break;
     }
@@ -634,6 +674,62 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
 
   public void setTicketCommentsStepMeta( StepMeta ticketCommentsStepMeta ) {
     this.ticketCommentsStepMeta = ticketCommentsStepMeta;
+  }
+
+  public String getLocaleFieldname() {
+    return localeFieldname;
+  }
+
+  public void setLocaleFieldname( String localeFieldname ) {
+    this.localeFieldname = localeFieldname;
+  }
+
+  public String getDueAtFieldname() {
+    return dueAtFieldname;
+  }
+
+  public void setDueAtFieldname( String dueAtFieldname ) {
+    this.dueAtFieldname = dueAtFieldname;
+  }
+
+  public String getSatisfactionCommentFieldname() {
+    return satisfactionCommentFieldname;
+  }
+
+  public void setSatisfactionCommentFieldname( String satisfactionCommentFieldname ) {
+    this.satisfactionCommentFieldname = satisfactionCommentFieldname;
+  }
+
+  public String getFormIdFieldname() {
+    return formIdFieldname;
+  }
+
+  public void setFormIdFieldname( String formIdFieldname ) {
+    this.formIdFieldname = formIdFieldname;
+  }
+
+  public String getBrandIdFieldname() {
+    return brandIdFieldname;
+  }
+
+  public void setBrandIdFieldname( String brandIdFieldname ) {
+    this.brandIdFieldname = brandIdFieldname;
+  }
+
+  public String getTicketTagsStepName() {
+    return ticketTagsStepName;
+  }
+
+  public void setTicketTagsStepName( String ticketTagsStepName ) {
+    this.ticketTagsStepName = ticketTagsStepName;
+  }
+
+  public StepMeta getTicketTagsStepMeta() {
+    return ticketTagsStepMeta;
+  }
+
+  public void setTicketTagsStepMeta( StepMeta ticketTagsStepMeta ) {
+    this.ticketTagsStepMeta = ticketTagsStepMeta;
   }
 
 }

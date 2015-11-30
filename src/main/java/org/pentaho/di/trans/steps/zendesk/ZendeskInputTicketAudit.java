@@ -66,6 +66,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
       return false;
     }
     if ( first ) {
+      first = false;
       ticketIdFieldIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getTicketIdFieldname() ) );
       if ( ticketIdFieldIndex < 0 ) {
         throw new KettleStepException( BaseMessages.getString( PKG, "ZendeskInputTicketAudit.Error.NoTicketIDField" ) );
@@ -90,6 +91,13 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         meta.getFields( data.ticketCustomFieldsOutputRowMeta, getStepname(), null,
             meta.getTicketCustomFieldsStepMeta(), this, repository, metaStore );
         data.ticketCustomFieldsOutputRowSet = findOutputRowSet( meta.getTicketCustomFieldsStepMeta().getName() );
+      }
+
+      if ( meta.getTicketTagsStepMeta() != null ) {
+        data.ticketTagsOutputRowMeta = new RowMeta();
+        meta.getFields( data.ticketTagsOutputRowMeta, getStepname(), null,
+          meta.getTicketTagsStepMeta(), this, repository, metaStore );
+        data.ticketTagsOutputRowSet = findOutputRowSet( meta.getTicketTagsStepMeta().getName() );
       }
     }
 
@@ -170,6 +178,16 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
           customFieldRow[2] = fieldName;
           customFieldRow[3] = audit.customFields.get( fieldName );
           putRowTo( data.ticketCustomFieldsOutputRowMeta, customFieldRow, data.ticketCustomFieldsOutputRowSet );
+        }
+      }
+      if ( audit.tags != null && audit.tags.size() > 0 &&
+          data.ticketTagsOutputRowMeta != null && data.ticketTagsOutputRowSet != null ) {
+        for ( String tag : audit.tags ) {
+          Object[] tagRow = RowDataUtil.allocateRowData( data.ticketTagsOutputRowMeta.size() );
+          tagRow[0] = audit.ticketId;
+          tagRow[1] = audit.auditId;
+          tagRow[2] = tag;
+          putRowTo( data.ticketTagsOutputRowMeta, tagRow, data.ticketTagsOutputRowSet );
         }
       }
     }
