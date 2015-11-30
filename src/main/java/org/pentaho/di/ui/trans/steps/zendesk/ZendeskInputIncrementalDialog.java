@@ -69,8 +69,6 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
  private Button wToken;
  private CCombo wDownloadType;
  private CCombo wFieldname;
- private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken;
- private FormData fdlDownloadType, fdDownloadType, fdlFieldname, fdFieldname, fdOutputFieldname;
 
  public ZendeskInputIncrementalDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
@@ -127,7 +125,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
    wSubDomain.addModifyListener( lsMod );
-   fdSubDomain = new FormData();
+   FormData fdSubDomain = new FormData();
    fdSubDomain.left = new FormAttachment( 0, -margin );
    fdSubDomain.top = new FormAttachment( wStepname, 2 * margin );
    fdSubDomain.right = new FormAttachment( 100, -margin );
@@ -140,7 +138,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wSubDomain );
    wUsername.addModifyListener( lsMod );
-   fdUsername = new FormData();
+   FormData fdUsername = new FormData();
    fdUsername.left = new FormAttachment( 0, -margin );
    fdUsername.top = new FormAttachment( wSubDomain, 2 * margin );
    fdUsername.right = new FormAttachment( 100, -margin );
@@ -160,7 +158,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
-   fdPassword = new FormData();
+   FormData fdPassword = new FormData();
    fdPassword.left = new FormAttachment( middle, 0 );
    fdPassword.top = new FormAttachment( wUsername, margin );
    fdPassword.right = new FormAttachment( 100, -margin );
@@ -170,7 +168,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wlToken = new Label( shell, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
-   fdlToken = new FormData();
+   FormData fdlToken = new FormData();
    fdlToken.left = new FormAttachment( 0, 0 );
    fdlToken.top = new FormAttachment( wlPassword, 2 * margin );
    fdlToken.right = new FormAttachment( middle, -margin );
@@ -179,7 +177,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wToken = new Button( shell, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
-   fdToken = new FormData();
+   FormData fdToken = new FormData();
    fdToken.left = new FormAttachment( middle, 0 );
    fdToken.top = new FormAttachment( wPassword, margin );
    fdToken.right = new FormAttachment( 100, -margin );
@@ -194,7 +192,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wlDownloadType = new Label( shell, SWT.RIGHT );
    wlDownloadType.setText( BaseMessages.getString( PKG, "ZendeskInputIncremental.TimestampFieldname.Label" ) );
    props.setLook( wlDownloadType );
-   fdlDownloadType = new FormData();
+   FormData fdlDownloadType = new FormData();
    fdlDownloadType.left = new FormAttachment( 0, 0 );
    fdlDownloadType.top = new FormAttachment( wToken, 2 * margin );
    fdlDownloadType.right = new FormAttachment( middle, -margin );
@@ -203,7 +201,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wDownloadType = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
    props.setLook( wDownloadType );
    wDownloadType.addModifyListener( lsMod );
-   fdDownloadType = new FormData();
+   FormData fdDownloadType = new FormData();
    fdDownloadType.left = new FormAttachment( middle, 0 );
    fdDownloadType.top = new FormAttachment( wToken, margin );
    fdDownloadType.right = new FormAttachment( 100, -margin );
@@ -224,7 +222,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wlFieldname = new Label( shell, SWT.RIGHT );
    wlFieldname.setText( BaseMessages.getString( PKG, "ZendeskInputIncremental.TimestampFieldname.Label" ) );
    props.setLook( wlFieldname );
-   fdlFieldname = new FormData();
+   FormData fdlFieldname = new FormData();
    fdlFieldname.left = new FormAttachment( 0, 0 );
    fdlFieldname.top = new FormAttachment( wDownloadType, 2 * margin );
    fdlFieldname.right = new FormAttachment( middle, -margin );
@@ -243,7 +241,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wFieldname = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
    props.setLook( wFieldname );
    wFieldname.addModifyListener( lsMod );
-   fdFieldname = new FormData();
+   FormData fdFieldname = new FormData();
    fdFieldname.left = new FormAttachment( middle, 0 );
    fdFieldname.top = new FormAttachment( wToken, margin );
    fdFieldname.right = new FormAttachment( 100, -margin );
@@ -261,7 +259,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
      BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Tooltip" ) );
    props.setLook( wSubDomain );
    wOutputFieldname.addModifyListener( lsMod );
-   fdOutputFieldname = new FormData();
+   FormData fdOutputFieldname = new FormData();
    fdOutputFieldname.left = new FormAttachment( 0, -margin );
    fdOutputFieldname.top = new FormAttachment( wFieldname, 2 * margin );
    fdOutputFieldname.right = new FormAttachment( 100, -margin );

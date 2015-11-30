@@ -58,7 +58,6 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
  private Label wlPassword, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
- private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken;
 
  private LabelTextVar wTicketFieldIdFieldname;
  private LabelTextVar wTicketFieldUrlFieldname;
@@ -69,16 +68,6 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
  private LabelTextVar wTicketFieldVisibleEndUsersFieldname;
  private LabelTextVar wCreatedAtFieldname;
  private LabelTextVar wUpdatedAtFieldname;
-
- private FormData fdTicketFieldIdFieldname;
- private FormData fdTicketFieldUrlFieldname;
- private FormData fdTicketFieldTypeFieldname;
- private FormData fdTicketFieldTitleFieldname;
- private FormData fdTicketFieldActiveFieldname;
- private FormData fdTicketFieldRequiredFieldname;
- private FormData fdTicketFieldVisibleEndUsersFieldname;
- private FormData fdCreatedAtFieldname;
- private FormData fdUpdatedAtFieldname;
 
  public ZendeskInputTicketFieldsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
@@ -135,7 +124,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
    wSubDomain.addModifyListener( lsMod );
-   fdSubDomain = new FormData();
+   FormData fdSubDomain = new FormData();
    fdSubDomain.left = new FormAttachment( 0, -margin );
    fdSubDomain.top = new FormAttachment( wStepname, 2 * margin );
    fdSubDomain.right = new FormAttachment( 100, -margin );
@@ -148,7 +137,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
-   fdUsername = new FormData();
+   FormData fdUsername = new FormData();
    fdUsername.left = new FormAttachment( 0, -margin );
    fdUsername.top = new FormAttachment( wSubDomain, 2 * margin );
    fdUsername.right = new FormAttachment( 100, -margin );
@@ -168,7 +157,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
-   fdPassword = new FormData();
+   FormData fdPassword = new FormData();
    fdPassword.left = new FormAttachment( middle, 0 );
    fdPassword.top = new FormAttachment( wUsername, margin );
    fdPassword.right = new FormAttachment( 100, -margin );
@@ -178,7 +167,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
    wlToken = new Label( shell, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
-   fdlToken = new FormData();
+   FormData fdlToken = new FormData();
    fdlToken.left = new FormAttachment( 0, 0 );
    fdlToken.top = new FormAttachment( wlPassword, 2 * margin );
    fdlToken.right = new FormAttachment( middle, -margin );
@@ -187,7 +176,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
    wToken = new Button( shell, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
-   fdToken = new FormData();
+   FormData fdToken = new FormData();
    fdToken.left = new FormAttachment( middle, 0 );
    fdToken.top = new FormAttachment( wPassword, margin );
    fdToken.right = new FormAttachment( 100, -margin );
@@ -205,7 +194,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldIdFieldname.Tooltip" ) );
    props.setLook( wTicketFieldIdFieldname );
    wTicketFieldIdFieldname.addModifyListener( lsMod );
-   fdTicketFieldIdFieldname = new FormData();
+   FormData fdTicketFieldIdFieldname = new FormData();
    fdTicketFieldIdFieldname.left = new FormAttachment( 0, -margin );
    fdTicketFieldIdFieldname.top = new FormAttachment( wToken, 2 * margin );
    fdTicketFieldIdFieldname.right = new FormAttachment( 100, -margin );
@@ -218,7 +207,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldUrlFieldname.Tooltip" ) );
    props.setLook( wTicketFieldUrlFieldname );
    wTicketFieldUrlFieldname.addModifyListener( lsMod );
-   fdTicketFieldUrlFieldname = new FormData();
+   FormData fdTicketFieldUrlFieldname = new FormData();
    fdTicketFieldUrlFieldname.left = new FormAttachment( 0, -margin );
    fdTicketFieldUrlFieldname.top = new FormAttachment( wTicketFieldIdFieldname, 2 * margin );
    fdTicketFieldUrlFieldname.right = new FormAttachment( 100, -margin );
@@ -231,7 +220,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTypeFieldname.Tooltip" ) );
    props.setLook( wTicketFieldTypeFieldname );
    wTicketFieldTypeFieldname.addModifyListener( lsMod );
-   fdTicketFieldTypeFieldname = new FormData();
+   FormData fdTicketFieldTypeFieldname = new FormData();
    fdTicketFieldTypeFieldname.left = new FormAttachment( 0, -margin );
    fdTicketFieldTypeFieldname.top = new FormAttachment( wTicketFieldUrlFieldname, 2 * margin );
    fdTicketFieldTypeFieldname.right = new FormAttachment( 100, -margin );
@@ -244,7 +233,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTitleFieldname.Tooltip" ) );
    props.setLook( wTicketFieldTitleFieldname );
    wTicketFieldTitleFieldname.addModifyListener( lsMod );
-   fdTicketFieldTitleFieldname = new FormData();
+   FormData fdTicketFieldTitleFieldname = new FormData();
    fdTicketFieldTitleFieldname.left = new FormAttachment( 0, -margin );
    fdTicketFieldTitleFieldname.top = new FormAttachment( wTicketFieldTypeFieldname, 2 * margin );
    fdTicketFieldTitleFieldname.right = new FormAttachment( 100, -margin );
@@ -257,7 +246,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldActiveFieldname.Tooltip" ) );
    props.setLook( wTicketFieldActiveFieldname );
    wTicketFieldActiveFieldname.addModifyListener( lsMod );
-   fdTicketFieldActiveFieldname = new FormData();
+   FormData fdTicketFieldActiveFieldname = new FormData();
    fdTicketFieldActiveFieldname.left = new FormAttachment( 0, -margin );
    fdTicketFieldActiveFieldname.top = new FormAttachment( wTicketFieldTitleFieldname, 2 * margin );
    fdTicketFieldActiveFieldname.right = new FormAttachment( 100, -margin );
@@ -270,7 +259,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldRequiredFieldname.Tooltip" ) );
    props.setLook( wTicketFieldRequiredFieldname );
    wTicketFieldRequiredFieldname.addModifyListener( lsMod );
-   fdTicketFieldRequiredFieldname = new FormData();
+   FormData fdTicketFieldRequiredFieldname = new FormData();
    fdTicketFieldRequiredFieldname.left = new FormAttachment( 0, -margin );
    fdTicketFieldRequiredFieldname.top = new FormAttachment( wTicketFieldActiveFieldname, 2 * margin );
    fdTicketFieldRequiredFieldname.right = new FormAttachment( 100, -margin );
@@ -283,7 +272,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldVisibleEndUsersFieldname.Tooltip" ) );
    props.setLook( wTicketFieldVisibleEndUsersFieldname );
    wTicketFieldVisibleEndUsersFieldname.addModifyListener( lsMod );
-   fdTicketFieldVisibleEndUsersFieldname = new FormData();
+   FormData fdTicketFieldVisibleEndUsersFieldname = new FormData();
    fdTicketFieldVisibleEndUsersFieldname.left = new FormAttachment( 0, -margin );
    fdTicketFieldVisibleEndUsersFieldname.top = new FormAttachment( wTicketFieldRequiredFieldname, 2 * margin );
    fdTicketFieldVisibleEndUsersFieldname.right = new FormAttachment( 100, -margin );
@@ -296,7 +285,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
-   fdCreatedAtFieldname = new FormData();
+   FormData fdCreatedAtFieldname = new FormData();
    fdCreatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdCreatedAtFieldname.top = new FormAttachment( wTicketFieldVisibleEndUsersFieldname, 2 * margin );
    fdCreatedAtFieldname.right = new FormAttachment( 100, -margin );
@@ -309,7 +298,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
-   fdUpdatedAtFieldname = new FormData();
+   FormData fdUpdatedAtFieldname = new FormData();
    fdUpdatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdUpdatedAtFieldname.top = new FormAttachment( wCreatedAtFieldname, 2 * margin );
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
