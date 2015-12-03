@@ -24,6 +24,8 @@ package org.pentaho.di.ui.trans.steps.zendesk;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +36,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -41,6 +44,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -58,6 +62,10 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
 
  private static Class<?> PKG = ZendeskInputTicketAuditMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskInputTicketAuditMeta input;
+
+ private CTabFolder wTabFolder;
+ private CTabItem wGeneralTab, wTicketSummaryTab, wTicketCommentTab;
+ private Composite wGeneralComp, wTicketSummaryComp, wTicketCommentComp;
 
  private LabelTextVar wSubDomain, wUsername;
  private Label wlPassword, wlToken;
@@ -127,7 +135,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wlStepname = new Label( shell, SWT.RIGHT );
    wlStepname.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Stepname.Label" ) );
    props.setLook( wlStepname );
-   fdlStepname = new FormData();
+   FormData fdlStepname = new FormData();
    fdlStepname.left = new FormAttachment( 0, 0 );
    fdlStepname.right = new FormAttachment( middle, -margin );
    fdlStepname.top = new FormAttachment( 0, margin );
@@ -136,28 +144,47 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wStepname.setText( stepname );
    props.setLook( wStepname );
    wStepname.addModifyListener( lsMod );
-   fdStepname = new FormData();
+   FormData fdStepname = new FormData();
    fdStepname.left = new FormAttachment( middle, 0 );
    fdStepname.top = new FormAttachment( 0, margin );
    fdStepname.right = new FormAttachment( 100, 0 );
    wStepname.setLayoutData( fdStepname );
 
+   // The Tab Folders
+   wTabFolder = new CTabFolder( shell, SWT.BORDER );
+   props.setLook(  wTabFolder, Props.WIDGET_STYLE_TAB );
+
+   // ///////////////////////
+   // START OF GENERAL TAB //
+   // ///////////////////////
+
+   wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+   wGeneralTab.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.GeneralTab.TabItem" ) );
+
+   wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wGeneralComp );
+
+   FormLayout generalLayout = new FormLayout();
+   generalLayout.marginWidth = margin;
+   generalLayout.marginHeight = margin;
+   wGeneralComp.setLayout( generalLayout );
+   
    // Subdomain
-   wSubDomain = new LabelTextVar( transMeta, shell,
+   wSubDomain = new LabelTextVar( transMeta, wGeneralComp,
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Label" ),
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
    wSubDomain.addModifyListener( lsMod );
    FormData fdSubDomain = new FormData();
    fdSubDomain.left = new FormAttachment( 0, -margin );
-   fdSubDomain.top = new FormAttachment( wStepname, 2 * margin );
+   fdSubDomain.top = new FormAttachment( 0, 2 * margin );
    fdSubDomain.right = new FormAttachment( 100, -margin );
    wSubDomain.setLayoutData( fdSubDomain );
 
    // Username
    wUsername =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
+       transMeta, wGeneralComp, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
@@ -168,7 +195,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wUsername.setLayoutData( fdUsername );
 
    // Password
-   wlPassword = new Label( shell, SWT.RIGHT );
+   wlPassword = new Label( wGeneralComp, SWT.RIGHT );
    wlPassword.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Label" ) );
    props.setLook( wlPassword );
    FormData fdlPassword = new FormData();
@@ -177,7 +204,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    fdlPassword.right = new FormAttachment( middle, -margin );
    wlPassword.setLayoutData( fdlPassword );
    
-   wPassword = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+   wPassword = new PasswordTextVar( transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
@@ -188,7 +215,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wPassword.setLayoutData( fdPassword );
 
    // Token
-   wlToken = new Label( shell, SWT.RIGHT );
+   wlToken = new Label( wGeneralComp, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
    FormData fdlToken = new FormData();
@@ -197,7 +224,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    fdlToken.right = new FormAttachment( middle, -margin );
    wlToken.setLayoutData( fdlToken );
 
-   wToken = new Button( shell, SWT.CHECK );
+   wToken = new Button( wGeneralComp, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
    FormData fdToken = new FormData();
@@ -211,8 +238,37 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
      }
    } );
 
+   FormData fdGeneralComp = new FormData();
+   fdGeneralComp.left = new FormAttachment( 0, 0 );
+   fdGeneralComp.top = new FormAttachment( 0, 0 );
+   fdGeneralComp.right = new FormAttachment( 100, 0 );
+   fdGeneralComp.bottom = new FormAttachment( 100, 0 );
+   wGeneralComp.setLayoutData( fdGeneralComp );
+
+   wGeneralComp.layout();
+   wGeneralTab.setControl( wGeneralComp );
+
+   // /////////////////////
+   // END OF GENERAL TAB //
+   // /////////////////////
+
+   // //////////////////////////////
+   // START OF TICKET SUMMARY TAB //
+   // //////////////////////////////
+
+   wTicketSummaryTab = new CTabItem( wTabFolder, SWT.NONE );
+   wTicketSummaryTab.setText( BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TicketSummaryTab.TabItem" ) );
+
+   wTicketSummaryComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wTicketSummaryComp );
+
+   FormLayout summaryLayout = new FormLayout();
+   summaryLayout.marginWidth = margin;
+   summaryLayout.marginHeight = margin;
+   wTicketSummaryComp.setLayout( summaryLayout );
+
    // TicketIdFieldname
-   wlTicketIdFieldname = new Label( shell, SWT.RIGHT );
+   wlTicketIdFieldname = new Label( wTicketSummaryComp, SWT.RIGHT );
    wlTicketIdFieldname.setText( BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TicketIdFieldname.Label" ) );
    props.setLook( wlTicketIdFieldname );
    FormData fdlTicketIdFieldname = new FormData();
@@ -231,7 +287,7 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
      previousFields = new RowMeta();
    }
 
-   wTicketIdFieldname = new CCombo( shell, SWT.BORDER | SWT.READ_ONLY );
+   wTicketIdFieldname = new CCombo( wTicketSummaryComp, SWT.BORDER | SWT.READ_ONLY );
    props.setLook( wTicketIdFieldname );
    wTicketIdFieldname.addModifyListener( lsMod );
    FormData fdTicketIdFieldname = new FormData();
@@ -249,7 +305,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // auditIdFieldname
    wAuditIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditIdFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditIdFieldname.Tooltip" ) );
    props.setLook( wAuditIdFieldname );
    wAuditIdFieldname.addModifyListener( lsMod );
@@ -262,7 +319,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // auditRownumFieldname
    wAuditRownumFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditRownumFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditRownumFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuditRownumFieldname.Tooltip" ) );
    props.setLook( wAuditIdFieldname );
    wAuditRownumFieldname.addModifyListener( lsMod );
@@ -275,7 +333,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wCreatedTimeFieldname
    wCreatedTimeFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CreatedTimeFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CreatedTimeFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CreatedTimeFieldname.Tooltip" ) );
    props.setLook( wCreatedTimeFieldname );
    wCreatedTimeFieldname.addModifyListener( lsMod );
@@ -288,7 +347,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wOrganizationIdFieldname
    wOrganizationIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.OrganizationIdFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.OrganizationIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.OrganizationIdFieldname.Tooltip" ) );
    props.setLook( wOrganizationIdFieldname );
    wOrganizationIdFieldname.addModifyListener( lsMod );
@@ -301,7 +361,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wRequesterIdFieldname
    wRequesterIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.RequesterIdFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.RequesterIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.RequesterIdFieldname.Tooltip" ) );
    props.setLook( wRequesterIdFieldname );
    wRequesterIdFieldname.addModifyListener( lsMod );
@@ -314,7 +375,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wAssigneeIdFieldname
    wAssigneeIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AssigneeIdFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AssigneeIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AssigneeIdFieldname.Tooltip" ) );
    props.setLook( wAssigneeIdFieldname );
    wAssigneeIdFieldname.addModifyListener( lsMod );
@@ -327,7 +389,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wGroupIdFieldname
    wGroupIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.GroupIdFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.GroupIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.GroupIdFieldname.Tooltip" ) );
    props.setLook( wGroupIdFieldname );
    wGroupIdFieldname.addModifyListener( lsMod );
@@ -340,7 +403,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wSubjectFieldname
    wSubjectFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SubjectFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SubjectFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SubjectFieldname.Tooltip" ) );
    props.setLook( wSubjectFieldname );
    wSubjectFieldname.addModifyListener( lsMod );
@@ -353,7 +417,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wTagsFieldname
    wTagsFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TagsFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TagsFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TagsFieldname.Tooltip" ) );
    props.setLook( wTagsFieldname );
    wTagsFieldname.addModifyListener( lsMod );
@@ -366,7 +431,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wCollaboratorsFieldname
    wCollaboratorsFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CollaboratorsFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CollaboratorsFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CollaboratorsFieldname.Tooltip" ) );
    props.setLook( wTagsFieldname );
    wCollaboratorsFieldname.addModifyListener( lsMod );
@@ -379,7 +445,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wStatusFieldname
    wStatusFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.StatusFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.StatusFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.StatusFieldname.Tooltip" ) );
    props.setLook( wStatusFieldname );
    wStatusFieldname.addModifyListener( lsMod );
@@ -392,7 +459,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wPriorityFieldname
    wPriorityFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.PriorityFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.PriorityFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.PriorityFieldname.Tooltip" ) );
    props.setLook( wPriorityFieldname );
    wPriorityFieldname.addModifyListener( lsMod );
@@ -405,7 +473,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wChannelFieldname
    wChannelFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.ChannelFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.ChannelFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.ChannelFieldname.Tooltip" ) );
    props.setLook( wChannelFieldname );
    wChannelFieldname.addModifyListener( lsMod );
@@ -418,7 +487,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wTypeFieldname
    wTypeFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TypeFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TypeFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TypeFieldname.Tooltip" ) );
    props.setLook( wTypeFieldname );
    wTypeFieldname.addModifyListener( lsMod );
@@ -431,7 +501,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wSatisfactionFieldname
    wSatisfactionFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SatisfactionFieldname.Label" ),
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SatisfactionFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SatisfactionFieldname.Tooltip" ) );
    props.setLook( wSatisfactionFieldname );
    wSatisfactionFieldname.addModifyListener( lsMod );
@@ -441,10 +512,40 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    fdSatisfactionFieldname.right = new FormAttachment( 100, -margin );
    wSatisfactionFieldname.setLayoutData( fdSatisfactionFieldname );
 
+   FormData fdSummaryComp = new FormData();
+   fdSummaryComp.left = new FormAttachment( 0, 0 );
+   fdSummaryComp.top = new FormAttachment( 0, 0 );
+   fdSummaryComp.right = new FormAttachment( 100, 0 );
+   fdSummaryComp.bottom = new FormAttachment( 100, 0 );
+   wTicketSummaryComp.setLayoutData( fdSummaryComp );
+
+   wTicketSummaryComp.layout();
+   wTicketSummaryTab.setControl( wTicketSummaryComp );
+
+   // ////////////////////////////
+   // END OF TICKET SUMMARY TAB //
+   // ////////////////////////////
+
+   // //////////////////////////////
+   // START OF TICKET COMMENT TAB //
+   // //////////////////////////////
+
+   wTicketCommentTab = new CTabItem( wTabFolder, SWT.NONE );
+   wTicketCommentTab.setText( BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.TicketCommentTab.TabItem" ) );
+
+   wTicketCommentComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wTicketCommentComp );
+
+   FormLayout commentLayout = new FormLayout();
+   commentLayout.marginWidth = margin;
+   commentLayout.marginHeight = margin;
+   wTicketCommentComp.setLayout( commentLayout );
+
    // wCommentIdFieldname
    wCommentIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentIdFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentIdFieldname.Tooltip" ) );
    props.setLook( wCommentIdFieldname );
    wCommentIdFieldname.addModifyListener( lsMod );
@@ -457,7 +558,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wAuthorIdFieldname
    wAuthorIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuthorIdFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuthorIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.AuthorIdFieldname.Tooltip" ) );
    props.setLook( wAuthorIdFieldname );
    wAuthorIdFieldname.addModifyListener( lsMod );
@@ -470,7 +572,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wPublicCommentFieldname
    wPublicCommentFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.PublicCommentFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.PublicCommentFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.PublicCommentFieldname.Tooltip" ) );
    props.setLook( wPublicCommentFieldname );
    wPublicCommentFieldname.addModifyListener( lsMod );
@@ -483,7 +586,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wCommentBodyFieldname
    wCommentBodyFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentBodyFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentBodyFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentBodyFieldname.Tooltip" ) );
    props.setLook( wCommentBodyFieldname );
    wCommentBodyFieldname.addModifyListener( lsMod );
@@ -496,7 +600,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wCommentHTMLBodyFieldname
    wCommentHTMLBodyFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentHTMLBodyFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentHTMLBodyFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CommentHTMLBodyFieldname.Tooltip" ) );
    props.setLook( wCommentHTMLBodyFieldname );
    wCommentHTMLBodyFieldname.addModifyListener( lsMod );
@@ -509,7 +614,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wChangedToPrivateFieldname
    wChangedToPrivateFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.ChangedToPrivateFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.ChangedToPrivateFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.ChangedToPrivateFieldname.Tooltip" ) );
    props.setLook( wChangedToPrivateFieldname );
    wChangedToPrivateFieldname.addModifyListener( lsMod );
@@ -522,7 +628,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wCustomFieldFieldname
    wCustomFieldFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CustomFieldFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CustomFieldFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CustomFieldFieldname.Tooltip" ) );
    props.setLook( wCustomFieldFieldname );
    wCustomFieldFieldname.addModifyListener( lsMod );
@@ -535,7 +642,8 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    // wCustomFieldValueFieldname
    wCustomFieldValueFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CustomFieldValueFieldname.Label" ),
+       transMeta, wTicketCommentComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CustomFieldValueFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.CustomFieldValueFieldname.Tooltip" ) );
    props.setLook( wCustomFieldValueFieldname );
    wCustomFieldValueFieldname.addModifyListener( lsMod );
@@ -545,13 +653,40 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    fdCustomFieldValueFieldname.right = new FormAttachment( 100, -margin );
    wCustomFieldValueFieldname.setLayoutData( fdCustomFieldValueFieldname );
 
+   FormData fdTicketCommentComp = new FormData();
+   fdTicketCommentComp.left = new FormAttachment( 0, 0 );
+   fdTicketCommentComp.top = new FormAttachment( 0, 0 );
+   fdTicketCommentComp.right = new FormAttachment( 100, 0 );
+   fdTicketCommentComp.bottom = new FormAttachment( 100, 0 );
+   wTicketCommentComp.setLayoutData( fdTicketCommentComp );
+
+   wTicketCommentComp.layout();
+   wTicketCommentTab.setControl( wTicketCommentComp );
+
+   // ////////////////////////////
+   // END OF TICKET COMMENT TAB //
+   // ////////////////////////////
+
+   FormData fdTabFolder = new FormData();
+   fdTabFolder.left = new FormAttachment( 0, 0 );
+   fdTabFolder.top = new FormAttachment( wStepname, margin );
+   fdTabFolder.right = new FormAttachment( 100, 0 );
+   fdTabFolder.bottom = new FormAttachment( 100, -50 );
+   wTabFolder.setLayoutData( fdTabFolder );
+
+   wTabFolder.setSelection( 0 );
+
+   // ////////////////////
+   // END OF TAB FOLDER //
+   // ////////////////////
+
    // Some buttons
    wOK = new Button( shell, SWT.PUSH );
    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
    wCancel = new Button( shell, SWT.PUSH );
    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-   setButtonPositions( new Button[] { wOK, wCancel }, margin, wCustomFieldValueFieldname );
+   setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
    // Add listeners
    lsCancel = new Listener() {
