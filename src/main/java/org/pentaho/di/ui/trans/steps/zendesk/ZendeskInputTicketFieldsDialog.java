@@ -44,36 +44,34 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.zendesk.ZendeskInputHCSectionMeta;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputTicketFieldsMeta;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepDialogInterface {
+public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements StepDialogInterface {
 
- private static Class<?> PKG = ZendeskInputHCSectionMeta.class; // for i18n purposes, needed by Translator2!!
- private ZendeskInputHCSectionMeta input;
+ private static Class<?> PKG = ZendeskInputTicketFieldsMeta.class; // for i18n purposes, needed by Translator2!!
+ private ZendeskInputTicketFieldsMeta input;
 
  private LabelTextVar wSubDomain, wUsername;
  private Label wlPassword, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
 
- private LabelTextVar wSectionIdFieldname;
- private LabelTextVar wSectionUrlFieldname;
- private LabelTextVar wSectionNameFieldname;
- private LabelTextVar wCategoryIdFieldname;
- private LabelTextVar wLocaleFieldname;
- private LabelTextVar wSourceLocaleFieldname;
- private LabelTextVar wSectionHtmlUrlFieldname;
- private LabelTextVar wOutdatedFieldname;
- private LabelTextVar wPositionFieldname;
+ private LabelTextVar wTicketFieldIdFieldname;
+ private LabelTextVar wTicketFieldUrlFieldname;
+ private LabelTextVar wTicketFieldTypeFieldname;
+ private LabelTextVar wTicketFieldTitleFieldname;
+ private LabelTextVar wTicketFieldActiveFieldname;
+ private LabelTextVar wTicketFieldRequiredFieldname;
+ private LabelTextVar wTicketFieldVisibleEndUsersFieldname;
  private LabelTextVar wCreatedAtFieldname;
  private LabelTextVar wUpdatedAtFieldname;
 
- public ZendeskInputHCSectionDialog( Shell parent, Object in, TransMeta tr, String sname ) {
+ public ZendeskInputTicketFieldsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
-   input = (ZendeskInputHCSectionMeta) in;
+   input = (ZendeskInputTicketFieldsMeta) in;
  }
 
  public String open() {
@@ -96,7 +94,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    formLayout.marginHeight = Const.FORM_MARGIN;
 
    shell.setLayout( formLayout );
-   shell.setText( BaseMessages.getString( PKG, "ZendeskInputHCSections.Shell.Title" ) );
+   shell.setText( BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.Shell.Title" ) );
 
    int middle = props.getMiddlePct();
    int margin = Const.MARGIN;
@@ -189,141 +187,115 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
      }
    } );
 
-   // sectionIdFieldname
-   wSectionIdFieldname =
+   // ticketFieldIdFieldname
+   wTicketFieldIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionIdFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionIdFieldname.Tooltip" ) );
-   props.setLook( wSectionIdFieldname );
-   wSectionIdFieldname.addModifyListener( lsMod );
-   FormData fdSectionIdFieldname = new FormData();
-   fdSectionIdFieldname.left = new FormAttachment( 0, -margin );
-   fdSectionIdFieldname.top = new FormAttachment( wToken, 2 * margin );
-   fdSectionIdFieldname.right = new FormAttachment( 100, -margin );
-   wSectionIdFieldname.setLayoutData( fdSectionIdFieldname );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldIdFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldIdFieldname.Tooltip" ) );
+   props.setLook( wTicketFieldIdFieldname );
+   wTicketFieldIdFieldname.addModifyListener( lsMod );
+   FormData fdTicketFieldIdFieldname = new FormData();
+   fdTicketFieldIdFieldname.left = new FormAttachment( 0, -margin );
+   fdTicketFieldIdFieldname.top = new FormAttachment( wToken, 2 * margin );
+   fdTicketFieldIdFieldname.right = new FormAttachment( 100, -margin );
+   wTicketFieldIdFieldname.setLayoutData( fdTicketFieldIdFieldname );
 
-   // sectionUrlFieldname
-   wSectionUrlFieldname =
+   // ticketFieldUrlFieldname
+   wTicketFieldUrlFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionURLFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionURLFieldname.Tooltip" ) );
-   props.setLook( wSectionUrlFieldname );
-   wSectionUrlFieldname.addModifyListener( lsMod );
-   FormData fdSectionUrlFieldname = new FormData();
-   fdSectionUrlFieldname.left = new FormAttachment( 0, -margin );
-   fdSectionUrlFieldname.top = new FormAttachment( wSectionIdFieldname, 2 * margin );
-   fdSectionUrlFieldname.right = new FormAttachment( 100, -margin );
-   wSectionUrlFieldname.setLayoutData( fdSectionUrlFieldname );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldUrlFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldUrlFieldname.Tooltip" ) );
+   props.setLook( wTicketFieldUrlFieldname );
+   wTicketFieldUrlFieldname.addModifyListener( lsMod );
+   FormData fdTicketFieldUrlFieldname = new FormData();
+   fdTicketFieldUrlFieldname.left = new FormAttachment( 0, -margin );
+   fdTicketFieldUrlFieldname.top = new FormAttachment( wTicketFieldIdFieldname, 2 * margin );
+   fdTicketFieldUrlFieldname.right = new FormAttachment( 100, -margin );
+   wTicketFieldUrlFieldname.setLayoutData( fdTicketFieldUrlFieldname );
 
-   // sectionNameFieldname
-   wSectionNameFieldname =
+   // ticketFieldTypeFieldname
+   wTicketFieldTypeFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionNameFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionNameFieldname.Tooltip" ) );
-   props.setLook( wSectionNameFieldname );
-   wSectionNameFieldname.addModifyListener( lsMod );
-   FormData fdSectionNameFieldname = new FormData();
-   fdSectionNameFieldname.left = new FormAttachment( 0, -margin );
-   fdSectionNameFieldname.top = new FormAttachment( wSectionUrlFieldname, 2 * margin );
-   fdSectionNameFieldname.right = new FormAttachment( 100, -margin );
-   wSectionNameFieldname.setLayoutData( fdSectionNameFieldname );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTypeFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTypeFieldname.Tooltip" ) );
+   props.setLook( wTicketFieldTypeFieldname );
+   wTicketFieldTypeFieldname.addModifyListener( lsMod );
+   FormData fdTicketFieldTypeFieldname = new FormData();
+   fdTicketFieldTypeFieldname.left = new FormAttachment( 0, -margin );
+   fdTicketFieldTypeFieldname.top = new FormAttachment( wTicketFieldUrlFieldname, 2 * margin );
+   fdTicketFieldTypeFieldname.right = new FormAttachment( 100, -margin );
+   wTicketFieldTypeFieldname.setLayoutData( fdTicketFieldTypeFieldname );
 
-   // categoryIdFieldname
-   wCategoryIdFieldname =
+   // ticketFieldTitleFieldname
+   wTicketFieldTitleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CategoryIdFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CategoryIdFieldname.Tooltip" ) );
-   props.setLook( wCategoryIdFieldname );
-   wCategoryIdFieldname.addModifyListener( lsMod );
-   FormData fdCategoryIdFieldname = new FormData();
-   fdCategoryIdFieldname.left = new FormAttachment( 0, -margin );
-   fdCategoryIdFieldname.top = new FormAttachment( wSectionNameFieldname, 2 * margin );
-   fdCategoryIdFieldname.right = new FormAttachment( 100, -margin );
-   wCategoryIdFieldname.setLayoutData( fdCategoryIdFieldname );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTitleFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTitleFieldname.Tooltip" ) );
+   props.setLook( wTicketFieldTitleFieldname );
+   wTicketFieldTitleFieldname.addModifyListener( lsMod );
+   FormData fdTicketFieldTitleFieldname = new FormData();
+   fdTicketFieldTitleFieldname.left = new FormAttachment( 0, -margin );
+   fdTicketFieldTitleFieldname.top = new FormAttachment( wTicketFieldTypeFieldname, 2 * margin );
+   fdTicketFieldTitleFieldname.right = new FormAttachment( 100, -margin );
+   wTicketFieldTitleFieldname.setLayoutData( fdTicketFieldTitleFieldname );
 
-   // localeFieldname
-   wLocaleFieldname =
+   // ticketFieldActiveFieldname
+   wTicketFieldActiveFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.LocaleFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.LocaleFieldname.Tooltip" ) );
-   props.setLook( wLocaleFieldname );
-   wLocaleFieldname.addModifyListener( lsMod );
-   FormData fdLocaleFieldname = new FormData();
-   fdLocaleFieldname.left = new FormAttachment( 0, -margin );
-   fdLocaleFieldname.top = new FormAttachment( wCategoryIdFieldname, 2 * margin );
-   fdLocaleFieldname.right = new FormAttachment( 100, -margin );
-   wLocaleFieldname.setLayoutData( fdLocaleFieldname );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldActiveFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldActiveFieldname.Tooltip" ) );
+   props.setLook( wTicketFieldActiveFieldname );
+   wTicketFieldActiveFieldname.addModifyListener( lsMod );
+   FormData fdTicketFieldActiveFieldname = new FormData();
+   fdTicketFieldActiveFieldname.left = new FormAttachment( 0, -margin );
+   fdTicketFieldActiveFieldname.top = new FormAttachment( wTicketFieldTitleFieldname, 2 * margin );
+   fdTicketFieldActiveFieldname.right = new FormAttachment( 100, -margin );
+   wTicketFieldActiveFieldname.setLayoutData( fdTicketFieldActiveFieldname );
 
-   // sourceLocaleFieldname
-   wSourceLocaleFieldname =
+   // ticketFieldRequiredFieldname
+   wTicketFieldRequiredFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SourceLocaleFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SourceLocaleFieldname.Tooltip" ) );
-   props.setLook( wSourceLocaleFieldname );
-   wSourceLocaleFieldname.addModifyListener( lsMod );
-   FormData fdSourceLocaleFieldname = new FormData();
-   fdSourceLocaleFieldname.left = new FormAttachment( 0, -margin );
-   fdSourceLocaleFieldname.top = new FormAttachment( wLocaleFieldname, 2 * margin );
-   fdSourceLocaleFieldname.right = new FormAttachment( 100, -margin );
-   wSourceLocaleFieldname.setLayoutData( fdSourceLocaleFieldname );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldRequiredFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldRequiredFieldname.Tooltip" ) );
+   props.setLook( wTicketFieldRequiredFieldname );
+   wTicketFieldRequiredFieldname.addModifyListener( lsMod );
+   FormData fdTicketFieldRequiredFieldname = new FormData();
+   fdTicketFieldRequiredFieldname.left = new FormAttachment( 0, -margin );
+   fdTicketFieldRequiredFieldname.top = new FormAttachment( wTicketFieldActiveFieldname, 2 * margin );
+   fdTicketFieldRequiredFieldname.right = new FormAttachment( 100, -margin );
+   wTicketFieldRequiredFieldname.setLayoutData( fdTicketFieldRequiredFieldname );
 
-   // sectionHtmlUrlFieldname
-   wSectionHtmlUrlFieldname =
+   // ticketFieldVisibleEndUsersFieldname
+   wTicketFieldVisibleEndUsersFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionHTMLURLFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionHTMLURLFieldname.Tooltip" ) );
-   props.setLook( wSectionHtmlUrlFieldname );
-   wSectionHtmlUrlFieldname.addModifyListener( lsMod );
-   FormData fdSectionHtmlUrlFieldname = new FormData();
-   fdSectionHtmlUrlFieldname.left = new FormAttachment( 0, -margin );
-   fdSectionHtmlUrlFieldname.top = new FormAttachment( wSourceLocaleFieldname, 2 * margin );
-   fdSectionHtmlUrlFieldname.right = new FormAttachment( 100, -margin );
-   wSectionHtmlUrlFieldname.setLayoutData( fdSectionHtmlUrlFieldname );
-
-   // outdatedFieldname
-   wOutdatedFieldname =
-     new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.OutdatedFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.OutdatedFieldname.Tooltip" ) );
-   props.setLook( wOutdatedFieldname );
-   wOutdatedFieldname.addModifyListener( lsMod );
-   FormData fdOutdatedFieldname = new FormData();
-   fdOutdatedFieldname.left = new FormAttachment( 0, -margin );
-   fdOutdatedFieldname.top = new FormAttachment( wSectionHtmlUrlFieldname, 2 * margin );
-   fdOutdatedFieldname.right = new FormAttachment( 100, -margin );
-   wOutdatedFieldname.setLayoutData( fdOutdatedFieldname );
-
-   // positionFieldname
-   wPositionFieldname =
-     new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.PositionFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.PositionFieldname.Tooltip" ) );
-   props.setLook( wPositionFieldname );
-   wPositionFieldname.addModifyListener( lsMod );
-   FormData fdPositionFieldname = new FormData();
-   fdPositionFieldname.left = new FormAttachment( 0, -margin );
-   fdPositionFieldname.top = new FormAttachment( wOutdatedFieldname, 2 * margin );
-   fdPositionFieldname.right = new FormAttachment( 100, -margin );
-   wPositionFieldname.setLayoutData( fdPositionFieldname );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldVisibleEndUsersFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldVisibleEndUsersFieldname.Tooltip" ) );
+   props.setLook( wTicketFieldVisibleEndUsersFieldname );
+   wTicketFieldVisibleEndUsersFieldname.addModifyListener( lsMod );
+   FormData fdTicketFieldVisibleEndUsersFieldname = new FormData();
+   fdTicketFieldVisibleEndUsersFieldname.left = new FormAttachment( 0, -margin );
+   fdTicketFieldVisibleEndUsersFieldname.top = new FormAttachment( wTicketFieldRequiredFieldname, 2 * margin );
+   fdTicketFieldVisibleEndUsersFieldname.right = new FormAttachment( 100, -margin );
+   wTicketFieldVisibleEndUsersFieldname.setLayoutData( fdTicketFieldVisibleEndUsersFieldname );
 
    // createdAtFieldname
    wCreatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CreatedAtFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CreatedAtFieldname.Tooltip" ) );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.CreatedAtFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
    FormData fdCreatedAtFieldname = new FormData();
    fdCreatedAtFieldname.left = new FormAttachment( 0, -margin );
-   fdCreatedAtFieldname.top = new FormAttachment( wPositionFieldname, 2 * margin );
+   fdCreatedAtFieldname.top = new FormAttachment( wTicketFieldVisibleEndUsersFieldname, 2 * margin );
    fdCreatedAtFieldname.right = new FormAttachment( 100, -margin );
    wCreatedAtFieldname.setLayoutData( fdCreatedAtFieldname );
 
    // updatedAtFieldname
    wUpdatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.UpdatedAtFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.UpdatedAtFieldname.Tooltip" ) );
+       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.UpdatedAtFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
    FormData fdUpdatedAtFieldname = new FormData();
@@ -393,17 +365,15 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    wUsername.setText( Const.NVL( input.getUsername(), "" ) );
    wPassword.setText( Const.NVL( input.getPassword(), "" ) );
    wToken.setSelection( input.isToken() );
-   wSectionIdFieldname.setText( Const.NVL( input.getSectionIdFieldname(), "" ) );
-   wSectionUrlFieldname.setText( Const.NVL( input.getSectionUrlFieldname(), "" ) );
-   wSectionNameFieldname.setText( Const.NVL( input.getSectionNameFieldname(), "" ) );
-   wCategoryIdFieldname.setText( Const.NVL( input.getCategoryIdFieldname(), "" ) );
-   wLocaleFieldname.setText( Const.NVL( input.getLocaleFieldname(), "" ) );
-   wSourceLocaleFieldname.setText( Const.NVL( input.getSourceLocaleFieldname(), "" ) );
-   wSectionHtmlUrlFieldname.setText( Const.NVL( input.getSectionHtmlUrlFieldname(), "" ) );
-   wOutdatedFieldname.setText( Const.NVL( input.getOutdatedFieldname(), "" ) );
-   wPositionFieldname.setText( Const.NVL( input.getPositionFieldname(), "" ) );
-   wCreatedAtFieldname.setText( Const.NVL( input.getCreatedAtFieldname() , "" ) );
-   wUpdatedAtFieldname.setText( Const.NVL( input.getUpdatedAtFieldname() , "" ) );
+   wTicketFieldIdFieldname.setText( Const.NVL( input.getTicketFieldIdFieldname(), "" ) );
+   wTicketFieldUrlFieldname.setText( Const.NVL( input.getTicketFieldUrlFieldname(), "" ) );
+   wTicketFieldTypeFieldname.setText( Const.NVL( input.getTicketFieldTypeFieldname(), "" ) );
+   wTicketFieldTitleFieldname.setText( Const.NVL( input.getTicketFieldTitleFieldname(), "" ) );
+   wTicketFieldActiveFieldname.setText( Const.NVL( input.getTicketFieldActiveFieldname(), "" ) );
+   wTicketFieldRequiredFieldname.setText( Const.NVL( input.getTicketFieldRequiredFieldname(), "" ) );
+   wTicketFieldVisibleEndUsersFieldname.setText( Const.NVL( input.getTicketFieldVisibleEndUsersFieldname(), "" ) );
+   wCreatedAtFieldname.setText( Const.NVL( input.getCreatedAtFieldname(), "" ) );
+   wUpdatedAtFieldname.setText( Const.NVL( input.getUpdatedAtFieldname(), "" ) );
 
    wStepname.selectAll();
    wStepname.setFocus();
@@ -427,20 +397,18 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    dispose();
  }
 
- private void getInfo( ZendeskInputHCSectionMeta inf ) {
+ private void getInfo( ZendeskInputTicketFieldsMeta inf ) {
    inf.setSubDomain( wSubDomain.getText() );
    inf.setUsername( wUsername.getText() );
    inf.setPassword( wPassword.getText() );
    inf.setToken( wToken.getSelection() );
-   inf.setSectionIdFieldname( wSectionIdFieldname.getText() );
-   inf.setSectionUrlFieldname( wSectionUrlFieldname.getText() );
-   inf.setSectionNameFieldname( wSectionNameFieldname.getText() );
-   inf.setCategoryIdFieldname( wCategoryIdFieldname.getText() );
-   inf.setLocaleFieldname( wLocaleFieldname.getText() );
-   inf.setSourceLocaleFieldname( wSourceLocaleFieldname.getText() );
-   inf.setSectionHtmlUrlFieldname( wSectionHtmlUrlFieldname.getText() );
-   inf.setOutdatedFieldname( wOutdatedFieldname.getText() );
-   inf.setPositionFieldname( wPositionFieldname.getText() );
+   inf.setTicketFieldIdFieldname( wTicketFieldIdFieldname.getText() );
+   inf.setTicketFieldUrlFieldname( wTicketFieldUrlFieldname.getText() );
+   inf.setTicketFieldTypeFieldname( wTicketFieldTypeFieldname.getText() );
+   inf.setTicketFieldTitleFieldname( wTicketFieldTitleFieldname.getText() );
+   inf.setTicketFieldActiveFieldname( wTicketFieldActiveFieldname.getText() );
+   inf.setTicketFieldRequiredFieldname( wTicketFieldRequiredFieldname.getText() );
+   inf.setTicketFieldVisibleEndUsersFieldname( wTicketFieldVisibleEndUsersFieldname.getText() );
    inf.setCreatedAtFieldname( wCreatedAtFieldname.getText() );
    inf.setUpdatedAtFieldname( wUpdatedAtFieldname.getText() );
 

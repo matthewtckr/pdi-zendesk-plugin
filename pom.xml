@@ -12,7 +12,7 @@
 	<name>PDI Zendesk Plugin</name>
 
 	<properties>
-		<zendesk.client.version>0.3.1</zendesk.client.version>
+		<zendesk.client.version>0.3.2-SNAPSHOT</zendesk.client.version>
 		<kettle.version>5.4.0.1-130</kettle.version>
 	</properties>
 
@@ -112,12 +112,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 			<version>4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>versions-maven-plugin</artifactId>
-			<version>2.2</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<packaging>jar</packaging>

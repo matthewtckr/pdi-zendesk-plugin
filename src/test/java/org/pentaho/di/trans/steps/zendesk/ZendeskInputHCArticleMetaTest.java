@@ -41,10 +41,11 @@ public class ZendeskInputHCArticleMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "articleIdFieldname", "articleUrlFieldname", "articleTitleFieldname", "articleBodyFieldname",
-        "localeFieldname", "sourceLocaleFieldname", "authorIdFieldname", "commentsDisabledFieldname",
-        "outdatedFieldname", "labelsFieldname", "draftFieldname", "promotedFieldname", "positionFieldname",
-        "voteSumFieldname", "voteCountFieldname", "sectionIdFieldname", "createdAtFieldname", "updatedAtFieldname" );
+      Arrays.asList( "subDomain", "username", "password", "token", "articleIdFieldname", "articleUrlFieldname",
+        "articleTitleFieldname", "articleBodyFieldname", "localeFieldname", "sourceLocaleFieldname",
+        "authorIdFieldname", "commentsDisabledFieldname", "outdatedFieldname", "labelsFieldname", "draftFieldname",
+        "promotedFieldname", "positionFieldname", "voteSumFieldname", "voteCountFieldname", "sectionIdFieldname",
+        "createdAtFieldname", "updatedAtFieldname" );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputHCArticleMeta.class, attributes, new HashMap<String, String>(),

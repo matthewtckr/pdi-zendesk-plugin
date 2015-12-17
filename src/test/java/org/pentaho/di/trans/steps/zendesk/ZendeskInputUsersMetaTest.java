@@ -31,7 +31,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
-public class ZendeskInputGroupsMetaTest {
+public class ZendeskInputUsersMetaTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
@@ -41,11 +41,19 @@ public class ZendeskInputGroupsMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "subDomain", "username", "password", "token", "groupIdFieldname", "groupUrlFieldname",
-        "groupNameFieldname", "deletedFieldname", "createdAtFieldname", "updatedAtFieldname" );
+      Arrays.asList( "subDomain", "username", "password", "token", "incomingFieldname", "userIdFieldname",
+        "urlFieldname", "externalIdFieldname", "nameFieldname", "emailFieldname", "aliasFieldname",
+        "createdAtFieldname", "updatedAtFieldname", "activeFieldname", "verifiedFieldname", "sharedFieldname",
+        "localeIdFieldname", "timeZoneFieldname", "lastLoginAtFieldname", "phoneFieldname", "signatureFieldname",
+        "detailsFieldname", "notesFieldname", "organizationIdFieldname", "roleFieldname", "customRoleIdFieldname",
+        "moderatorFieldname", "ticketRestrictionFieldname", "onlyPrivateCommentsFieldname", "tagsFieldname",
+        "suspendedFieldname", "remotePhotoUrlFieldname", "userFieldsFieldname", "identityIdFieldname",
+        "identityUrlFieldname", "identityTypeFieldname", "identityValueFieldname", "identityVerifiedFieldname",
+        "identityPrimaryFieldname", "identityCreatedAtFieldname", "identityUpdatedAtFieldname", "userStepName",
+        "userIdentityStepName" );
 
     LoadSaveTester loadSaveTester =
-      new LoadSaveTester( ZendeskInputGroupsMeta.class, attributes, new HashMap<String, String>(),
+      new LoadSaveTester( ZendeskInputUsersMeta.class, attributes, new HashMap<String, String>(),
         new HashMap<String, String>() );
 
     loadSaveTester.testRepoRoundTrip();

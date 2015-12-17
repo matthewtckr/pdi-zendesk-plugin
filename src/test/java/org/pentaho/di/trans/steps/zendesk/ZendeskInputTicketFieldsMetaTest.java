@@ -31,7 +31,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
-public class ZendeskInputGroupsMetaTest {
+public class ZendeskInputTicketFieldsMetaTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
@@ -41,11 +41,13 @@ public class ZendeskInputGroupsMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "subDomain", "username", "password", "token", "groupIdFieldname", "groupUrlFieldname",
-        "groupNameFieldname", "deletedFieldname", "createdAtFieldname", "updatedAtFieldname" );
+      Arrays.asList( "subDomain", "username", "password", "token", "ticketFieldIdFieldname", "ticketFieldUrlFieldname",
+        "ticketFieldTypeFieldname", "ticketFieldTitleFieldname", "ticketFieldActiveFieldname",
+        "ticketFieldRequiredFieldname", "ticketFieldVisibleEndUsersFieldname", "createdAtFieldname",
+        "updatedAtFieldname" );
 
     LoadSaveTester loadSaveTester =
-      new LoadSaveTester( ZendeskInputGroupsMeta.class, attributes, new HashMap<String, String>(),
+      new LoadSaveTester( ZendeskInputTicketFieldsMeta.class, attributes, new HashMap<String, String>(),
         new HashMap<String, String>() );
 
     loadSaveTester.testRepoRoundTrip();

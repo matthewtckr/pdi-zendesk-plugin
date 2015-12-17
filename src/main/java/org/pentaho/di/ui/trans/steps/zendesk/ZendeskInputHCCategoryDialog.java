@@ -58,7 +58,6 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
  private Label wlPassword, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
- private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken;
 
  private LabelTextVar wCategoryIdFieldname;
  private LabelTextVar wCategoryUrlFieldname;
@@ -71,18 +70,6 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
  private LabelTextVar wPositionFieldname;
  private LabelTextVar wCreatedAtFieldname;
  private LabelTextVar wUpdatedAtFieldname;
-
- private FormData fdCategoryIdFieldname;
- private FormData fdCategoryUrlFieldname;
- private FormData fdCategoryNameFieldname;
- private FormData fdDescriptionFieldname;
- private FormData fdLocaleFieldname;
- private FormData fdSourceLocaleFieldname;
- private FormData fdCategoryHtmlUrlFieldname;
- private FormData fdOutdatedFieldname;
- private FormData fdPositionFieldname;
- private FormData fdCreatedAtFieldname;
- private FormData fdUpdatedAtFieldname;
 
  public ZendeskInputHCCategoryDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
@@ -139,7 +126,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
    wSubDomain.addModifyListener( lsMod );
-   fdSubDomain = new FormData();
+   FormData fdSubDomain = new FormData();
    fdSubDomain.left = new FormAttachment( 0, -margin );
    fdSubDomain.top = new FormAttachment( wStepname, 2 * margin );
    fdSubDomain.right = new FormAttachment( 100, -margin );
@@ -152,7 +139,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
-   fdUsername = new FormData();
+   FormData fdUsername = new FormData();
    fdUsername.left = new FormAttachment( 0, -margin );
    fdUsername.top = new FormAttachment( wSubDomain, 2 * margin );
    fdUsername.right = new FormAttachment( 100, -margin );
@@ -172,7 +159,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
-   fdPassword = new FormData();
+   FormData fdPassword = new FormData();
    fdPassword.left = new FormAttachment( middle, 0 );
    fdPassword.top = new FormAttachment( wUsername, margin );
    fdPassword.right = new FormAttachment( 100, -margin );
@@ -182,7 +169,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    wlToken = new Label( shell, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
-   fdlToken = new FormData();
+   FormData fdlToken = new FormData();
    fdlToken.left = new FormAttachment( 0, 0 );
    fdlToken.top = new FormAttachment( wlPassword, 2 * margin );
    fdlToken.right = new FormAttachment( middle, -margin );
@@ -191,7 +178,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    wToken = new Button( shell, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
-   fdToken = new FormData();
+   FormData fdToken = new FormData();
    fdToken.left = new FormAttachment( middle, 0 );
    fdToken.top = new FormAttachment( wPassword, margin );
    fdToken.right = new FormAttachment( 100, -margin );
@@ -209,7 +196,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryIdFieldname.Tooltip" ) );
    props.setLook( wCategoryIdFieldname );
    wCategoryIdFieldname.addModifyListener( lsMod );
-   fdCategoryIdFieldname = new FormData();
+   FormData fdCategoryIdFieldname = new FormData();
    fdCategoryIdFieldname.left = new FormAttachment( 0, -margin );
    fdCategoryIdFieldname.top = new FormAttachment( wToken, 2 * margin );
    fdCategoryIdFieldname.right = new FormAttachment( 100, -margin );
@@ -222,7 +209,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryURLFieldname.Tooltip" ) );
    props.setLook( wCategoryUrlFieldname );
    wCategoryUrlFieldname.addModifyListener( lsMod );
-   fdCategoryUrlFieldname = new FormData();
+   FormData fdCategoryUrlFieldname = new FormData();
    fdCategoryUrlFieldname.left = new FormAttachment( 0, -margin );
    fdCategoryUrlFieldname.top = new FormAttachment( wCategoryIdFieldname, 2 * margin );
    fdCategoryUrlFieldname.right = new FormAttachment( 100, -margin );
@@ -235,7 +222,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryNameFieldname.Tooltip" ) );
    props.setLook( wCategoryNameFieldname );
    wCategoryNameFieldname.addModifyListener( lsMod );
-   fdCategoryNameFieldname = new FormData();
+   FormData fdCategoryNameFieldname = new FormData();
    fdCategoryNameFieldname.left = new FormAttachment( 0, -margin );
    fdCategoryNameFieldname.top = new FormAttachment( wCategoryUrlFieldname, 2 * margin );
    fdCategoryNameFieldname.right = new FormAttachment( 100, -margin );
@@ -248,7 +235,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.DescriptionFieldname.Tooltip" ) );
    props.setLook( wDescriptionFieldname );
    wDescriptionFieldname.addModifyListener( lsMod );
-   fdDescriptionFieldname = new FormData();
+   FormData fdDescriptionFieldname = new FormData();
    fdDescriptionFieldname.left = new FormAttachment( 0, -margin );
    fdDescriptionFieldname.top = new FormAttachment( wCategoryNameFieldname, 2 * margin );
    fdDescriptionFieldname.right = new FormAttachment( 100, -margin );
@@ -261,7 +248,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.LocaleFieldname.Tooltip" ) );
    props.setLook( wLocaleFieldname );
    wLocaleFieldname.addModifyListener( lsMod );
-   fdLocaleFieldname = new FormData();
+   FormData fdLocaleFieldname = new FormData();
    fdLocaleFieldname.left = new FormAttachment( 0, -margin );
    fdLocaleFieldname.top = new FormAttachment( wDescriptionFieldname, 2 * margin );
    fdLocaleFieldname.right = new FormAttachment( 100, -margin );
@@ -274,7 +261,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.SourceLocaleFieldname.Tooltip" ) );
    props.setLook( wSourceLocaleFieldname );
    wSourceLocaleFieldname.addModifyListener( lsMod );
-   fdSourceLocaleFieldname = new FormData();
+   FormData fdSourceLocaleFieldname = new FormData();
    fdSourceLocaleFieldname.left = new FormAttachment( 0, -margin );
    fdSourceLocaleFieldname.top = new FormAttachment( wLocaleFieldname, 2 * margin );
    fdSourceLocaleFieldname.right = new FormAttachment( 100, -margin );
@@ -287,7 +274,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryHTMLURLFieldname.Tooltip" ) );
    props.setLook( wCategoryHtmlUrlFieldname );
    wCategoryHtmlUrlFieldname.addModifyListener( lsMod );
-   fdCategoryHtmlUrlFieldname = new FormData();
+   FormData fdCategoryHtmlUrlFieldname = new FormData();
    fdCategoryHtmlUrlFieldname.left = new FormAttachment( 0, -margin );
    fdCategoryHtmlUrlFieldname.top = new FormAttachment( wSourceLocaleFieldname, 2 * margin );
    fdCategoryHtmlUrlFieldname.right = new FormAttachment( 100, -margin );
@@ -300,7 +287,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.OutdatedFieldname.Tooltip" ) );
    props.setLook( wOutdatedFieldname );
    wOutdatedFieldname.addModifyListener( lsMod );
-   fdOutdatedFieldname = new FormData();
+   FormData fdOutdatedFieldname = new FormData();
    fdOutdatedFieldname.left = new FormAttachment( 0, -margin );
    fdOutdatedFieldname.top = new FormAttachment( wCategoryHtmlUrlFieldname, 2 * margin );
    fdOutdatedFieldname.right = new FormAttachment( 100, -margin );
@@ -313,7 +300,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.PositionFieldname.Tooltip" ) );
    props.setLook( wPositionFieldname );
    wPositionFieldname.addModifyListener( lsMod );
-   fdPositionFieldname = new FormData();
+   FormData fdPositionFieldname = new FormData();
    fdPositionFieldname.left = new FormAttachment( 0, -margin );
    fdPositionFieldname.top = new FormAttachment( wOutdatedFieldname, 2 * margin );
    fdPositionFieldname.right = new FormAttachment( 100, -margin );
@@ -326,7 +313,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
-   fdCreatedAtFieldname = new FormData();
+   FormData fdCreatedAtFieldname = new FormData();
    fdCreatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdCreatedAtFieldname.top = new FormAttachment( wPositionFieldname, 2 * margin );
    fdCreatedAtFieldname.right = new FormAttachment( 100, -margin );
@@ -339,7 +326,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
-   fdUpdatedAtFieldname = new FormData();
+   FormData fdUpdatedAtFieldname = new FormData();
    fdUpdatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdUpdatedAtFieldname.top = new FormAttachment( wCreatedAtFieldname, 2 * margin );
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );

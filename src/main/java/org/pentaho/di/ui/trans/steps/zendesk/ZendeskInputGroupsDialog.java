@@ -58,7 +58,6 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
  private Label wlPassword, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
- private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken;
 
  private LabelTextVar wGroupIdFieldname;
  private LabelTextVar wGroupUrlFieldname;
@@ -66,13 +65,6 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
  private LabelTextVar wDeletedFieldname;
  private LabelTextVar wCreatedAtFieldname;
  private LabelTextVar wUpdatedAtFieldname;
-
- private FormData fdGroupIdFieldname;
- private FormData fdGroupUrlFieldname;
- private FormData fdGroupNameFieldname;
- private FormData fdDeletedFieldname;
- private FormData fdCreatedAtFieldname;
- private FormData fdUpdatedAtFieldname;
 
  public ZendeskInputGroupsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
@@ -129,7 +121,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
    wSubDomain.addModifyListener( lsMod );
-   fdSubDomain = new FormData();
+   FormData fdSubDomain = new FormData();
    fdSubDomain.left = new FormAttachment( 0, -margin );
    fdSubDomain.top = new FormAttachment( wStepname, 2 * margin );
    fdSubDomain.right = new FormAttachment( 100, -margin );
@@ -142,7 +134,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
-   fdUsername = new FormData();
+   FormData fdUsername = new FormData();
    fdUsername.left = new FormAttachment( 0, -margin );
    fdUsername.top = new FormAttachment( wSubDomain, 2 * margin );
    fdUsername.right = new FormAttachment( 100, -margin );
@@ -162,7 +154,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
-   fdPassword = new FormData();
+   FormData fdPassword = new FormData();
    fdPassword.left = new FormAttachment( middle, 0 );
    fdPassword.top = new FormAttachment( wUsername, margin );
    fdPassword.right = new FormAttachment( 100, -margin );
@@ -172,7 +164,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    wlToken = new Label( shell, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
-   fdlToken = new FormData();
+   FormData fdlToken = new FormData();
    fdlToken.left = new FormAttachment( 0, 0 );
    fdlToken.top = new FormAttachment( wlPassword, 2 * margin );
    fdlToken.right = new FormAttachment( middle, -margin );
@@ -181,7 +173,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    wToken = new Button( shell, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
-   fdToken = new FormData();
+   FormData fdToken = new FormData();
    fdToken.left = new FormAttachment( middle, 0 );
    fdToken.top = new FormAttachment( wPassword, margin );
    fdToken.right = new FormAttachment( 100, -margin );
@@ -199,7 +191,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupIdFieldname.Tooltip" ) );
    props.setLook( wGroupIdFieldname );
    wGroupIdFieldname.addModifyListener( lsMod );
-   fdGroupIdFieldname = new FormData();
+   FormData fdGroupIdFieldname = new FormData();
    fdGroupIdFieldname.left = new FormAttachment( 0, -margin );
    fdGroupIdFieldname.top = new FormAttachment( wToken, 2 * margin );
    fdGroupIdFieldname.right = new FormAttachment( 100, -margin );
@@ -212,7 +204,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupURLFieldname.Tooltip" ) );
    props.setLook( wGroupUrlFieldname );
    wGroupUrlFieldname.addModifyListener( lsMod );
-   fdGroupUrlFieldname = new FormData();
+   FormData fdGroupUrlFieldname = new FormData();
    fdGroupUrlFieldname.left = new FormAttachment( 0, -margin );
    fdGroupUrlFieldname.top = new FormAttachment( wGroupIdFieldname, 2 * margin );
    fdGroupUrlFieldname.right = new FormAttachment( 100, -margin );
@@ -225,7 +217,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupNameFieldname.Tooltip" ) );
    props.setLook( wGroupNameFieldname );
    wGroupNameFieldname.addModifyListener( lsMod );
-   fdGroupNameFieldname = new FormData();
+   FormData fdGroupNameFieldname = new FormData();
    fdGroupNameFieldname.left = new FormAttachment( 0, -margin );
    fdGroupNameFieldname.top = new FormAttachment( wGroupUrlFieldname, 2 * margin );
    fdGroupNameFieldname.right = new FormAttachment( 100, -margin );
@@ -238,7 +230,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.DeletedFieldname.Tooltip" ) );
    props.setLook( wDeletedFieldname );
    wGroupIdFieldname.addModifyListener( lsMod );
-   fdDeletedFieldname = new FormData();
+   FormData fdDeletedFieldname = new FormData();
    fdDeletedFieldname.left = new FormAttachment( 0, -margin );
    fdDeletedFieldname.top = new FormAttachment( wGroupNameFieldname, 2 * margin );
    fdDeletedFieldname.right = new FormAttachment( 100, -margin );
@@ -251,7 +243,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
-   fdCreatedAtFieldname = new FormData();
+   FormData fdCreatedAtFieldname = new FormData();
    fdCreatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdCreatedAtFieldname.top = new FormAttachment( wDeletedFieldname, 2 * margin );
    fdCreatedAtFieldname.right = new FormAttachment( 100, -margin );
@@ -264,7 +256,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
-   fdUpdatedAtFieldname = new FormData();
+   FormData fdUpdatedAtFieldname = new FormData();
    fdUpdatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdUpdatedAtFieldname.top = new FormAttachment( wCreatedAtFieldname, 2 * margin );
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );

@@ -58,7 +58,6 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
  private Label wlPassword, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
- private FormData fdSubDomain, fdUsername, fdPassword, fdlToken, fdToken;
 
  private LabelTextVar wGroupMembershipIdFieldname;
  private LabelTextVar wGroupMembershipUrlFieldname;
@@ -67,14 +66,6 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
  private LabelTextVar wCreatedAtFieldname;
  private LabelTextVar wUpdatedAtFieldname;
  private LabelTextVar wDefaultGroupFieldname;
-
- private FormData fdGroupMembershipIdFieldname;
- private FormData fdGroupMembershipUrlFieldname;
- private FormData fdUserIdFieldname;
- private FormData fdGroupIdFieldname;
- private FormData fdCreatedAtFieldname;
- private FormData fdUpdatedAtFieldname;
- private FormData fdDefaultGroupFieldname;
 
  public ZendeskInputGroupMembershipsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
@@ -131,7 +122,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
    wSubDomain.addModifyListener( lsMod );
-   fdSubDomain = new FormData();
+   FormData fdSubDomain = new FormData();
    fdSubDomain.left = new FormAttachment( 0, -margin );
    fdSubDomain.top = new FormAttachment( wStepname, 2 * margin );
    fdSubDomain.right = new FormAttachment( 100, -margin );
@@ -144,7 +135,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
-   fdUsername = new FormData();
+   FormData fdUsername = new FormData();
    fdUsername.left = new FormAttachment( 0, -margin );
    fdUsername.top = new FormAttachment( wSubDomain, 2 * margin );
    fdUsername.right = new FormAttachment( 100, -margin );
@@ -164,7 +155,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
-   fdPassword = new FormData();
+   FormData fdPassword = new FormData();
    fdPassword.left = new FormAttachment( middle, 0 );
    fdPassword.top = new FormAttachment( wUsername, margin );
    fdPassword.right = new FormAttachment( 100, -margin );
@@ -174,7 +165,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
    wlToken = new Label( shell, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
-   fdlToken = new FormData();
+   FormData fdlToken = new FormData();
    fdlToken.left = new FormAttachment( 0, 0 );
    fdlToken.top = new FormAttachment( wlPassword, 2 * margin );
    fdlToken.right = new FormAttachment( middle, -margin );
@@ -183,7 +174,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
    wToken = new Button( shell, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
-   fdToken = new FormData();
+   FormData fdToken = new FormData();
    fdToken.left = new FormAttachment( middle, 0 );
    fdToken.top = new FormAttachment( wPassword, margin );
    fdToken.right = new FormAttachment( 100, -margin );
@@ -201,7 +192,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputGroupMembershipsDialog.GroupMembershipIdFieldname.Tooltip" ) );
    props.setLook( wGroupMembershipIdFieldname );
    wGroupMembershipIdFieldname.addModifyListener( lsMod );
-   fdGroupMembershipIdFieldname = new FormData();
+   FormData fdGroupMembershipIdFieldname = new FormData();
    fdGroupMembershipIdFieldname.left = new FormAttachment( 0, -margin );
    fdGroupMembershipIdFieldname.top = new FormAttachment( wToken, 2 * margin );
    fdGroupMembershipIdFieldname.right = new FormAttachment( 100, -margin );
@@ -214,7 +205,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputGroupMembershipsDialog.GroupMembershipURLFieldname.Tooltip" ) );
    props.setLook( wGroupMembershipUrlFieldname );
    wGroupMembershipUrlFieldname.addModifyListener( lsMod );
-   fdGroupMembershipUrlFieldname = new FormData();
+   FormData fdGroupMembershipUrlFieldname = new FormData();
    fdGroupMembershipUrlFieldname.left = new FormAttachment( 0, -margin );
    fdGroupMembershipUrlFieldname.top = new FormAttachment( wGroupMembershipIdFieldname, 2 * margin );
    fdGroupMembershipUrlFieldname.right = new FormAttachment( 100, -margin );
@@ -227,7 +218,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputGroupMembershipsDialog.UserIDFieldname.Tooltip" ) );
    props.setLook( wUserIdFieldname );
    wUserIdFieldname.addModifyListener( lsMod );
-   fdUserIdFieldname = new FormData();
+   FormData fdUserIdFieldname = new FormData();
    fdUserIdFieldname.left = new FormAttachment( 0, -margin );
    fdUserIdFieldname.top = new FormAttachment( wGroupMembershipUrlFieldname, 2 * margin );
    fdUserIdFieldname.right = new FormAttachment( 100, -margin );
@@ -240,7 +231,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputGroupMembershipsDialog.GroupIDFieldname.Tooltip" ) );
    props.setLook( wGroupIdFieldname );
    wGroupIdFieldname.addModifyListener( lsMod );
-   fdGroupIdFieldname = new FormData();
+   FormData fdGroupIdFieldname = new FormData();
    fdGroupIdFieldname.left = new FormAttachment( 0, -margin );
    fdGroupIdFieldname.top = new FormAttachment( wUserIdFieldname, 2 * margin );
    fdGroupIdFieldname.right = new FormAttachment( 100, -margin );
@@ -253,7 +244,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputGroupMembershipsDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
-   fdCreatedAtFieldname = new FormData();
+   FormData fdCreatedAtFieldname = new FormData();
    fdCreatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdCreatedAtFieldname.top = new FormAttachment( wGroupIdFieldname, 2 * margin );
    fdCreatedAtFieldname.right = new FormAttachment( 100, -margin );
@@ -266,7 +257,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputGroupMembershipsDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
-   fdUpdatedAtFieldname = new FormData();
+   FormData fdUpdatedAtFieldname = new FormData();
    fdUpdatedAtFieldname.left = new FormAttachment( 0, -margin );
    fdUpdatedAtFieldname.top = new FormAttachment( wCreatedAtFieldname, 2 * margin );
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
@@ -279,7 +270,7 @@ public class ZendeskInputGroupMembershipsDialog extends BaseStepDialog implement
        BaseMessages.getString( PKG, "ZendeskInputGroupMembershipsDialog.DefaultGroupFieldname.Tooltip" ) );
    props.setLook( wGroupIdFieldname );
    wDefaultGroupFieldname.addModifyListener( lsMod );
-   fdDefaultGroupFieldname = new FormData();
+   FormData fdDefaultGroupFieldname = new FormData();
    fdDefaultGroupFieldname.left = new FormAttachment( 0, -margin );
    fdDefaultGroupFieldname.top = new FormAttachment( wUpdatedAtFieldname, 2 * margin );
    fdDefaultGroupFieldname.right = new FormAttachment( 100, -margin );

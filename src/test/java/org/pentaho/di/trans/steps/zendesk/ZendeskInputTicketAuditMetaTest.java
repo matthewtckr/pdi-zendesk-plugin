@@ -47,9 +47,10 @@ public class ZendeskInputTicketAuditMetaTest {
         "auditRownumFieldname", "createdTimeFieldname", "organizationIdFieldname", "requesterIdFieldname",
         "assigneeIdFieldname", "groupIdFieldname", "subjectFieldname", "tagsFieldname", "collaboratorsFieldname",
         "statusFieldname", "priorityFieldname", "channelFieldname", "typeFieldname", "satisfactionFieldname",
+        "localeFieldname", "dueAtFieldname", "satisfactionCommentFieldname", "formIdFieldname", "brandIdFieldname",
         "commentIdFieldname", "authorIdFieldname", "publicCommentFieldname", "commentBodyFieldname",
         "commentHTMLBodyFieldname", "changedToPrivateFieldname", "customFieldFieldname", "customFieldValueFieldname",
-        "ticketOverviewStepName", "ticketCommentsStepName", "ticketCustomFieldsStepName" );
+        "ticketOverviewStepName", "ticketCommentsStepName", "ticketCustomFieldsStepName", "ticketTagsStepName" );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputTicketAuditMeta.class, attributes, new HashMap<String, String>(),

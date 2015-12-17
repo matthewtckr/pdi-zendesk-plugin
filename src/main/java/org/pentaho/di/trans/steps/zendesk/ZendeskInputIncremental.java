@@ -89,21 +89,17 @@ public class ZendeskInputIncremental extends ZendeskInput {
         }
         break;
       case USERS:
-        // TODO: Implement in Zendesk Client library
-        /*for ( User user : data.conn.getUsersIncrementally( startDate ) ) {
+        for ( User user : data.conn.getUsersIncrementally( startDate ) ) {
           putRow( data.rowMeta, processUser( user ) );
           incrementLinesOutput();
-        }*/
+        }
         break;
       case ORGANIZATIONS:
-        // TODO: Implement in Zendesk Client library
-        /*for ( Organization org : data.conn.getOrganizationssIncrementally( startDate ) ) {
+        for ( Organization org : data.conn.getOrganizationsIncrementally( startDate ) ) {
           putRow( data.rowMeta, processOrganization( org ) );
           incrementLinesOutput();
-        }*/
+        }
         break;
-        
-        
     }
     setOutputDone();
     return false;
