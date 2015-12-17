@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.trans.steps.zendesk;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -44,11 +45,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.zendesk.ZendeskInputUsersMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -57,6 +62,7 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
 
  private static Class<?> PKG = ZendeskInputUsersMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskInputUsersMeta input;
+ private boolean isReceivingInput;
 
  private CTabFolder wTabFolder;
  private CTabItem wGeneralTab, wUserTab, wIdentityTab;
@@ -67,6 +73,7 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
  private PasswordTextVar wPassword;
  private Button wToken;
 
+ private CCombo wIncomingFieldname;
  private LabelTextVar wUserIdFieldname;
  private LabelTextVar wUrlFieldname;
  private LabelTextVar wExternalIdFieldname;
@@ -241,6 +248,44 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
      }
    } );
 
+   Label wlIncomingFieldname = new Label( wGeneralComp, SWT.RIGHT );
+   wlIncomingFieldname.setText( BaseMessages.getString( PKG, "ZendeskInputUsersDialog.IncomingFieldname.Label" ) );
+   wlIncomingFieldname.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputUsersDialog.IncomingFieldname.Tooltip" ) );
+   props.setLook( wlIncomingFieldname );
+   FormData fdlIncomingFieldname = new FormData();
+   fdlIncomingFieldname.left = new FormAttachment( 0, 0 );
+   fdlIncomingFieldname.top = new FormAttachment( wlToken, 2 * margin );
+   fdlIncomingFieldname.right = new FormAttachment( middle, -margin );
+   wlIncomingFieldname.setLayoutData( fdlIncomingFieldname );
+
+   wIncomingFieldname = new CCombo( wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+   props.setLook( wIncomingFieldname );
+   wIncomingFieldname.addModifyListener( lsMod );
+   FormData fdIncomingFieldname = new FormData();
+   fdIncomingFieldname.left = new FormAttachment( middle, 0 );
+   fdIncomingFieldname.top = new FormAttachment( wToken, 2 * margin );
+   fdIncomingFieldname.right = new FormAttachment( 100, -margin );
+   wIncomingFieldname.setLayoutData( fdIncomingFieldname );
+
+   wlIncomingFieldname.setVisible( false );
+   wIncomingFieldname.setVisible( false );
+   isReceivingInput = transMeta.findNrPrevSteps( stepMeta ) > 0;
+   if ( isReceivingInput ) {
+     wlIncomingFieldname.setVisible( true );
+     wIncomingFieldname.setVisible( true );
+     RowMetaInterface previousFields;
+     try {
+       previousFields = transMeta.getPrevStepFields( stepMeta );
+     } catch ( KettleStepException e ) {
+       new ErrorDialog( shell,
+         BaseMessages.getString( PKG, "ZendeskInputDialog.Error.UnableToGetInputFields.Title" ),
+         BaseMessages.getString( PKG, "ZendeskInputDialog.Error.UnableToGetInputFields.Message" ), e );
+       previousFields = new RowMeta();
+     }
+
+     wIncomingFieldname.setItems( previousFields.getFieldNames() );
+   }
+
    FormData fdGeneralComp = new FormData();
    fdGeneralComp.left = new FormAttachment( 0, 0 );
    fdGeneralComp.top = new FormAttachment( 0, 0 );
@@ -279,7 +324,7 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
    wUserIdFieldname.addModifyListener( lsMod );
    FormData fdUserIdFieldname = new FormData();
    fdUserIdFieldname.left = new FormAttachment( 0, -margin );
-   fdUserIdFieldname.top = new FormAttachment( wToken, 2 * margin );
+   fdUserIdFieldname.top = new FormAttachment( wUserComp, 2 * margin );
    fdUserIdFieldname.right = new FormAttachment( 100, -margin );
    wUserIdFieldname.setLayoutData( fdUserIdFieldname );
 
@@ -853,6 +898,11 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
    wUsername.setText( Const.NVL( input.getUsername(), "" ) );
    wPassword.setText( Const.NVL( input.getPassword(), "" ) );
    wToken.setSelection( input.isToken() );
+   if ( isReceivingInput ) {
+     wIncomingFieldname.setText( Const.NVL( input.getIncomingFieldname(), "" ) );
+   } else {
+     wIncomingFieldname.setText( "" );
+   }
    wUserIdFieldname.setText( Const.NVL( input.getUserIdFieldname(), "" ) );
    wUrlFieldname.setText( Const.NVL( input.getUrlFieldname(), "" ) );
    wExternalIdFieldname.setText( Const.NVL( input.getExternalIdFieldname(), "" ) );
@@ -917,6 +967,11 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
    inf.setUsername( wUsername.getText() );
    inf.setPassword( wPassword.getText() );
    inf.setToken( wToken.getSelection() );
+   if ( isReceivingInput ) {
+     inf.setIncomingFieldname( wIncomingFieldname.getText() );
+   } else {
+     inf.setIncomingFieldname( "" );
+   }
    inf.setUserIdFieldname( wUserIdFieldname.getText() );
    inf.setUrlFieldname( wUrlFieldname.getText() );
    inf.setExternalIdFieldname( wExternalIdFieldname.getText() );

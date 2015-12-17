@@ -41,15 +41,16 @@ public class ZendeskInputUsersMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "subDomain", "username", "password", "token", "userIdFieldname", "urlFieldname",
-        "externalIdFieldname", "nameFieldname", "emailFieldname", "aliasFieldname", "createdAtFieldname",
-        "updatedAtFieldname", "activeFieldname", "verifiedFieldname", "sharedFieldname", "localeIdFieldname",
-        "timeZoneFieldname", "lastLoginAtFieldname", "phoneFieldname", "signatureFieldname", "detailsFieldname",
-        "notesFieldname", "organizationIdFieldname", "roleFieldname", "customRoleIdFieldname", "moderatorFieldname",
-        "ticketRestrictionFieldname", "onlyPrivateCommentsFieldname", "tagsFieldname", "suspendedFieldname",
-        "remotePhotoUrlFieldname", "userFieldsFieldname", "identityIdFieldname", "identityUrlFieldname",
-        "identityTypeFieldname", "identityValueFieldname", "identityVerifiedFieldname", "identityPrimaryFieldname",
-        "identityCreatedAtFieldname", "identityUpdatedAtFieldname", "userStepName", "userIdentityStepName" );
+      Arrays.asList( "subDomain", "username", "password", "token", "incomingFieldname", "userIdFieldname",
+        "urlFieldname", "externalIdFieldname", "nameFieldname", "emailFieldname", "aliasFieldname",
+        "createdAtFieldname", "updatedAtFieldname", "activeFieldname", "verifiedFieldname", "sharedFieldname",
+        "localeIdFieldname", "timeZoneFieldname", "lastLoginAtFieldname", "phoneFieldname", "signatureFieldname",
+        "detailsFieldname", "notesFieldname", "organizationIdFieldname", "roleFieldname", "customRoleIdFieldname",
+        "moderatorFieldname", "ticketRestrictionFieldname", "onlyPrivateCommentsFieldname", "tagsFieldname",
+        "suspendedFieldname", "remotePhotoUrlFieldname", "userFieldsFieldname", "identityIdFieldname",
+        "identityUrlFieldname", "identityTypeFieldname", "identityValueFieldname", "identityVerifiedFieldname",
+        "identityPrimaryFieldname", "identityCreatedAtFieldname", "identityUpdatedAtFieldname", "userStepName",
+        "userIdentityStepName" );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputUsersMeta.class, attributes, new HashMap<String, String>(),

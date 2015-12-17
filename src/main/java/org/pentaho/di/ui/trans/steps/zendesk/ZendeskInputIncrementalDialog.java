@@ -190,7 +190,8 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
 
    // Download Type Field Name
    wlDownloadType = new Label( shell, SWT.RIGHT );
-   wlDownloadType.setText( BaseMessages.getString( PKG, "ZendeskInputIncremental.TimestampFieldname.Label" ) );
+   wlDownloadType.setText( BaseMessages.getString( PKG, "ZendeskInputIncremental.DownloadTypeFieldname.Label" ) );
+   wlDownloadType.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputIncremental.DownloadTypeFieldname.Tooltip" ) );
    props.setLook( wlDownloadType );
    FormData fdlDownloadType = new FormData();
    fdlDownloadType.left = new FormAttachment( 0, 0 );
@@ -215,6 +216,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wDownloadType.addSelectionListener( new SelectionAdapter() {
      public void widgetSelected( SelectionEvent e ) {
        input.setChanged();
+       setOutputLabel();
      }
    } );
 
@@ -243,7 +245,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wFieldname.addModifyListener( lsMod );
    FormData fdFieldname = new FormData();
    fdFieldname.left = new FormAttachment( middle, 0 );
-   fdFieldname.top = new FormAttachment( wToken, margin );
+   fdFieldname.top = new FormAttachment( wDownloadType, margin );
    fdFieldname.right = new FormAttachment( 100, -margin );
    wFieldname.setLayoutData( fdFieldname );
    wFieldname.setItems( previousFields.getFieldNames() );
@@ -318,6 +320,28 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    return stepname;
  }
 
+ private void setOutputLabel() {
+   String label = wOutputFieldname.getLabelWidget().getText();
+   String toolTip = wOutputFieldname.getLabelWidget().getToolTipText();
+   int newSelection = wDownloadType.getSelectionIndex();
+   switch( IncrementalType.values()[newSelection] ) {
+     case ORGANIZATIONS:
+       label = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Organization.Label" );
+       toolTip = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Organization.Tooltip" );
+       break;
+     case USERS:
+       label = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.User.Label" );
+       toolTip = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.User.Tooltip" );
+       break;
+     case TICKETS:
+       label = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Ticket.Label" );
+       toolTip = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Ticket.Tooltip" );
+       break;
+   }
+   wOutputFieldname.getLabelWidget().setText( label );
+   wOutputFieldname.getLabelWidget().setToolTipText( toolTip );
+ }
+
  /**
   * Copy information from the meta-data input to the dialog fields.
   */
@@ -335,6 +359,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wFieldname.setText( Const.NVL( input.getTimestampFieldName(), "" ) );
    wOutputFieldname.setText( Const.NVL( input.getOutputFieldName(), "" ) );
 
+   setOutputLabel();
    wStepname.selectAll();
    wStepname.setFocus();
  }

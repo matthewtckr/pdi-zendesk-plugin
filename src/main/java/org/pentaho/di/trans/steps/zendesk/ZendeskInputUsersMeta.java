@@ -62,6 +62,8 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
 
   private static final Class<?> PKG = ZendeskInputUsersMeta.class;
 
+  private String incomingFieldname;
+
   private String userIdFieldname;
   private String urlFieldname;
   private String externalIdFieldname;
@@ -215,6 +217,7 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
   public String getXML() throws KettleException {
     StringBuilder xml = new StringBuilder();
     xml.append( super.getXML() );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "incomingFieldname", getIncomingFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "userIdFieldname", getUserIdFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "urlFieldname", getUrlFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "externalIdFieldname", getExternalIdFieldname() ) );
@@ -261,6 +264,7 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
+    setIncomingFieldname( XMLHandler.getTagValue( stepnode, "incomingFieldname" ) );
     setUserIdFieldname( XMLHandler.getTagValue( stepnode, "userIdFieldname" ) );
     setUrlFieldname( XMLHandler.getTagValue( stepnode, "urlFieldname" ) );
     setExternalIdFieldname( XMLHandler.getTagValue( stepnode, "externalIdFieldname" ) );
@@ -305,6 +309,7 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
+    setIncomingFieldname( rep.getStepAttributeString( id_step, "incomingFieldname" ) );
     setUserIdFieldname( rep.getStepAttributeString( id_step, "userIdFieldname" ) );
     setUrlFieldname( rep.getStepAttributeString( id_step, "urlFieldname" ) );
     setExternalIdFieldname( rep.getStepAttributeString( id_step, "externalIdFieldname" ) );
@@ -349,6 +354,7 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
+    rep.saveStepAttribute( id_transformation, id_step, "incomingFieldname", getIncomingFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "userIdFieldname", getUserIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "urlFieldname", getUrlFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "externalIdFieldname", getExternalIdFieldname() );
@@ -394,6 +400,7 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
   @Override
   public void setDefault() {
     super.setDefault();
+    setIncomingFieldname( "" );
     setUserIdFieldname( "User_ID" );
     setUrlFieldname( "User_URL" );
     setExternalIdFieldname( "User_External_ID" );
@@ -430,6 +437,14 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
     setIdentityPrimaryFieldname( "Identity_Primary" );
     setIdentityCreatedAtFieldname( "Identity_Created_Time" );
     setIdentityUpdatedAtFieldname( "Identity_Updated_Time" );
+  }
+
+  public String getIncomingFieldname() {
+    return incomingFieldname;
+  }
+
+  public void setIncomingFieldname( String incomingFieldname ) {
+    this.incomingFieldname = incomingFieldname;
   }
 
   public String getUserIdFieldname() {

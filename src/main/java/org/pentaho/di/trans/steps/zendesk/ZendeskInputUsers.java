@@ -56,12 +56,15 @@ public class ZendeskInputUsers extends ZendeskInput {
 
   @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    Object[] row = getRow();
+
     if ( first ) {
       first = false;
       if ( meta.getUserStepMeta() != null ) {
         data.userRowMeta = new RowMeta();
         meta.getFields( data.userRowMeta, getStepname(), null, meta.getUserStepMeta(), this, repository, metaStore );
         data.userOutputRowSet = findOutputRowSet( meta.getUserStepMeta().getName() );
+        data.incomingIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getIncomingFieldname() ) );
         data.userIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUserIdFieldname() ) );
         data.urlIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUrlFieldname() ) );
         data.externalIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getExternalIdFieldname() ) );
@@ -108,21 +111,53 @@ public class ZendeskInputUsers extends ZendeskInput {
       }
     }
 
-    Iterable<User> users = null;
-    try {
-      users = data.conn.getUsers();
-    } catch ( ZendeskResponseException zre ) {
-      logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-      setErrors( 1L );
+    if ( data.incomingIndex < 0 ) {
+      Iterable<User> users = null;
+      try {
+        users = data.conn.getUsers();
+      } catch ( ZendeskResponseException zre ) {
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+        setErrors( 1L );
+        setOutputDone();
+        return false;
+      }
+
+      int i = 0;
+      for ( User user : users ) {
+        i++;
+        List<Identity> identities = new ArrayList<Identity>();
+        try {
+          if ( meta.getUserIdentityStepMeta() != null ) {
+            identities.addAll( data.conn.getUserIdentities( user ) );
+          }
+        } catch ( ZendeskResponseException zre ) {
+          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+          setErrors( 1L );
+          setOutputDone();
+          return false;
+        }
+        outputUserRow( user );
+        outputUserIdentityRow( identities );
+        incrementLinesOutput();
+      }
+      logBasic("Total Users: " + i );
       setOutputDone();
       return false;
-    }
-
-    int i = 0;
-    for ( User user : users ) {
-      i++;
-      List<Identity> identities = null;
-      identities = new ArrayList<Identity>();
+    } else if ( row == null ) {
+      setOutputDone();
+      return false;
+    } else {
+      Long userId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
+      User user = null;
+      try {
+        user = data.conn.getUser( userId );
+      } catch ( ZendeskResponseException zre ) {
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+        setErrors( 1L );
+        setOutputDone();
+        return false;
+      }
+      List<Identity> identities = new ArrayList<Identity>();
       try {
         if ( meta.getUserIdentityStepMeta() != null ) {
           identities.addAll( data.conn.getUserIdentities( user ) );
@@ -136,10 +171,8 @@ public class ZendeskInputUsers extends ZendeskInput {
       outputUserRow( user );
       outputUserIdentityRow( identities );
       incrementLinesOutput();
+      return true;
     }
-    logBasic("Total Users: " + i );
-    setOutputDone();
-    return false;
   }
 
   public ZendeskInputUsers( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
