@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.hc.Article;
 
 
 public class ZendeskInputIncremental extends ZendeskInput {
@@ -105,6 +106,11 @@ public class ZendeskInputIncremental extends ZendeskInput {
           incrementLinesOutput();
         }
         break;
+      case HELPCENTER_ARTICLES:
+        for ( Article article : data.conn.getArticlesIncrementally( startDate ) ) {
+          putRow( data.rowMeta, processArticle( article ) );
+        }
+        break;
     }
     setOutputDone();
     return false;
@@ -149,7 +155,9 @@ public class ZendeskInputIncremental extends ZendeskInput {
     }
 
     if ( firstRow ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+      if ( log.isBasic() ) {
+        logBasic( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+      }
     }
 
     return result;
@@ -165,5 +173,9 @@ public class ZendeskInputIncremental extends ZendeskInput {
 
   Object[] processOrganization( Organization org ) {
     return new Object[]{ org.getId() };
+  }
+
+  Object[] processArticle( Article article ) {
+    return new Object[]{ article.getId() };
   }
 }
