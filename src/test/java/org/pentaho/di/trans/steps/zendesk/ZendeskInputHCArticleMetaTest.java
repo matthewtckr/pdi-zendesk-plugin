@@ -45,7 +45,12 @@ public class ZendeskInputHCArticleMetaTest {
         "articleTitleFieldname", "articleBodyFieldname", "localeFieldname", "sourceLocaleFieldname",
         "authorIdFieldname", "commentsDisabledFieldname", "outdatedFieldname", "labelsFieldname", "draftFieldname",
         "promotedFieldname", "positionFieldname", "voteSumFieldname", "voteCountFieldname", "sectionIdFieldname",
-        "createdAtFieldname", "updatedAtFieldname" );
+        "createdAtFieldname", "updatedAtFieldname", "translationIdFieldname", "translationUrlFieldname",
+        "translationHtmlUrlFieldname", "translationSourceIdFieldname", "translationSourceTypeFieldname",
+        "translationLocaleFieldname", "translationTitleFieldname", "translationBodyFieldname",
+        "translationOutdatedFieldname", "translationDraftFieldname", "translationCreatedAtFieldname",
+        "translationUpdatedAtFieldname", "translationUpdatedByIdFieldname", "translationCreatedByIdFieldname",
+        "articleStepName", "translationStepName", "incomingFieldname" );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputHCArticleMeta.class, attributes, new HashMap<String, String>(),

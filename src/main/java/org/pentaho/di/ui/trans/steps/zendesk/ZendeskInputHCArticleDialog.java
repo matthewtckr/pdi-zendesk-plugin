@@ -23,6 +23,9 @@
 package org.pentaho.di.ui.trans.steps.zendesk;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,6 +36,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -40,11 +44,16 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.zendesk.ZendeskInputHCArticleMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -53,12 +62,18 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
 
  private static Class<?> PKG = ZendeskInputHCArticleMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskInputHCArticleMeta input;
+ private boolean isReceivingInput;
+
+ private CTabFolder wTabFolder;
+ private CTabItem wGeneralTab, wArticleTab, wTranslationTab;
+ private Composite wGeneralComp, wArticleComp, wTranslationComp;
 
  private LabelTextVar wSubDomain, wUsername;
  private Label wlPassword, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
 
+ private CCombo wIncomingFieldname;
  private LabelTextVar wArticleIdFieldname;
  private LabelTextVar wArticleUrlFieldname;
  private LabelTextVar wArticleTitleFieldname;
@@ -77,6 +92,22 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
  private LabelTextVar wSectionIdFieldname;
  private LabelTextVar wCreatedAtFieldname;
  private LabelTextVar wUpdatedAtFieldname;
+
+ private LabelTextVar wTranslationIdFieldname;
+ private LabelTextVar wTranslationUrlFieldname;
+ private LabelTextVar wTranslationHtmlUrlFieldname;
+ private LabelTextVar wTranslationSourceIdFieldname;
+ private LabelTextVar wTranslationSourceTypeFieldname;
+ private LabelTextVar wTranslationLocaleFieldname;
+ private LabelTextVar wTranslationTitleFieldname;
+ private LabelTextVar wTranslationBodyFieldname;
+ private LabelTextVar wTranslationOutdatedFieldname;
+ private LabelTextVar wTranslationDraftFieldname;
+ private LabelTextVar wTranslationCreatedAtFieldname;
+ private LabelTextVar wTranslationUpdatedAtFieldname;
+ private LabelTextVar wTranslationUpdatedByIdFieldname;
+ private LabelTextVar wTranslationCreatedByIdFieldname;
+
  public ZendeskInputHCArticleDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
    input = (ZendeskInputHCArticleMeta) in;
@@ -126,8 +157,27 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    fdStepname.right = new FormAttachment( 100, 0 );
    wStepname.setLayoutData( fdStepname );
 
+   // The Tab Folders
+   wTabFolder = new CTabFolder( shell, SWT.BORDER );
+   props.setLook(  wTabFolder, Props.WIDGET_STYLE_TAB );
+
+   // ///////////////////////
+   // START OF GENERAL TAB //
+   // ///////////////////////
+
+   wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+   wGeneralTab.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.GeneralTab.TabItem" ) );
+
+   wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wGeneralComp );
+
+   FormLayout generalLayout = new FormLayout();
+   generalLayout.marginWidth = margin;
+   generalLayout.marginHeight = margin;
+   wGeneralComp.setLayout( generalLayout );
+   
    // Subdomain
-   wSubDomain = new LabelTextVar( transMeta, shell,
+   wSubDomain = new LabelTextVar( transMeta, wGeneralComp,
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Label" ),
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
@@ -141,7 +191,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // Username
    wUsername =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
+       transMeta, wGeneralComp, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
@@ -152,7 +202,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    wUsername.setLayoutData( fdUsername );
 
    // Password
-   wlPassword = new Label( shell, SWT.RIGHT );
+   wlPassword = new Label( wGeneralComp, SWT.RIGHT );
    wlPassword.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Label" ) );
    props.setLook( wlPassword );
    FormData fdlPassword = new FormData();
@@ -161,7 +211,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    fdlPassword.right = new FormAttachment( middle, -margin );
    wlPassword.setLayoutData( fdlPassword );
    
-   wPassword = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+   wPassword = new PasswordTextVar( transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
@@ -172,7 +222,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    wPassword.setLayoutData( fdPassword );
 
    // Token
-   wlToken = new Label( shell, SWT.RIGHT );
+   wlToken = new Label( wGeneralComp, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
    FormData fdlToken = new FormData();
@@ -181,7 +231,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    fdlToken.right = new FormAttachment( middle, -margin );
    wlToken.setLayoutData( fdlToken );
 
-   wToken = new Button( shell, SWT.CHECK );
+   wToken = new Button( wGeneralComp, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
    FormData fdToken = new FormData();
@@ -195,23 +245,90 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
      }
    } );
 
+   Label wlIncomingFieldname = new Label( wGeneralComp, SWT.RIGHT );
+   wlIncomingFieldname.setText( BaseMessages.getString( PKG, "ZendeskInputOrganizationsDialog.IncomingFieldname.Label" ) );
+   wlIncomingFieldname.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputOrganizationsDialog.IncomingFieldname.Tooltip" ) );
+   props.setLook( wlIncomingFieldname );
+   FormData fdlIncomingFieldname = new FormData();
+   fdlIncomingFieldname.left = new FormAttachment( 0, 0 );
+   fdlIncomingFieldname.top = new FormAttachment( wlToken, 2 * margin );
+   fdlIncomingFieldname.right = new FormAttachment( middle, -margin );
+   wlIncomingFieldname.setLayoutData( fdlIncomingFieldname );
+
+   wIncomingFieldname = new CCombo( wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+   props.setLook( wIncomingFieldname );
+   wIncomingFieldname.addModifyListener( lsMod );
+   FormData fdIncomingFieldname = new FormData();
+   fdIncomingFieldname.left = new FormAttachment( middle, 0 );
+   fdIncomingFieldname.top = new FormAttachment( wToken, 2 * margin );
+   fdIncomingFieldname.right = new FormAttachment( 100, -margin );
+   wIncomingFieldname.setLayoutData( fdIncomingFieldname );
+
+   wlIncomingFieldname.setVisible( false );
+   wIncomingFieldname.setVisible( false );
+   isReceivingInput = transMeta.findNrPrevSteps( stepMeta ) > 0;
+   if ( isReceivingInput ) {
+     wlIncomingFieldname.setVisible( true );
+     wIncomingFieldname.setVisible( true );
+     RowMetaInterface previousFields;
+     try {
+       previousFields = transMeta.getPrevStepFields( stepMeta );
+     } catch ( KettleStepException e ) {
+       new ErrorDialog( shell,
+         BaseMessages.getString( PKG, "ZendeskInputDialog.Error.UnableToGetInputFields.Title" ),
+         BaseMessages.getString( PKG, "ZendeskInputDialog.Error.UnableToGetInputFields.Message" ), e );
+       previousFields = new RowMeta();
+     }
+
+     wIncomingFieldname.setItems( previousFields.getFieldNames() );
+   }
+
+   FormData fdGeneralComp = new FormData();
+   fdGeneralComp.left = new FormAttachment( 0, 0 );
+   fdGeneralComp.top = new FormAttachment( 0, 0 );
+   fdGeneralComp.right = new FormAttachment( 100, 0 );
+   fdGeneralComp.bottom = new FormAttachment( 100, 0 );
+   wGeneralComp.setLayoutData( fdGeneralComp );
+
+   wGeneralComp.layout();
+   wGeneralTab.setControl( wGeneralComp );
+
+   // /////////////////////
+   // END OF GENERAL TAB //
+   // /////////////////////
+
+   // ///////////////////////
+   // START OF ARTICLE TAB //
+   // ///////////////////////
+
+   wArticleTab = new CTabItem( wTabFolder, SWT.NONE );
+   wArticleTab.setText( BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleTab.TabItem" ) );
+
+   wArticleComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wArticleComp );
+
+   FormLayout articleLayout = new FormLayout();
+   articleLayout.marginWidth = margin;
+   articleLayout.marginHeight = margin;
+   wArticleComp.setLayout( articleLayout );
+
    // articleIdFieldname
    wArticleIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleIdFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleIdFieldname.Tooltip" ) );
    props.setLook( wArticleIdFieldname );
    wArticleIdFieldname.addModifyListener( lsMod );
    FormData fdArticleIdFieldname = new FormData();
    fdArticleIdFieldname.left = new FormAttachment( 0, -margin );
-   fdArticleIdFieldname.top = new FormAttachment( wToken, 2 * margin );
+   fdArticleIdFieldname.top = new FormAttachment( wArticleComp, 2 * margin );
    fdArticleIdFieldname.right = new FormAttachment( 100, -margin );
    wArticleIdFieldname.setLayoutData( fdArticleIdFieldname );
 
    // articleUrlFieldname
    wArticleUrlFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleURLFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleURLFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleURLFieldname.Tooltip" ) );
    props.setLook( wArticleUrlFieldname );
    wArticleUrlFieldname.addModifyListener( lsMod );
@@ -224,7 +341,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // articleTitleFieldname
    wArticleTitleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleTitleFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleTitleFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleTitleFieldname.Tooltip" ) );
    props.setLook( wArticleTitleFieldname );
    wArticleTitleFieldname.addModifyListener( lsMod );
@@ -237,7 +354,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // articleBodyFieldname
    wArticleBodyFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleBodyFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleBodyFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.ArticleBodyFieldname.Tooltip" ) );
    props.setLook( wArticleBodyFieldname );
    wArticleBodyFieldname.addModifyListener( lsMod );
@@ -250,7 +367,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // localeFieldname
    wLocaleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LocaleFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LocaleFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LocaleFieldname.Tooltip" ) );
    props.setLook( wLocaleFieldname );
    wLocaleFieldname.addModifyListener( lsMod );
@@ -263,7 +380,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // sourceLocaleFieldname
    wSourceLocaleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SourceLocaleFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SourceLocaleFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SourceLocaleFieldname.Tooltip" ) );
    props.setLook( wSourceLocaleFieldname );
    wSourceLocaleFieldname.addModifyListener( lsMod );
@@ -276,7 +393,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // authorIdFieldname
    wAuthorIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.AuthorIDFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.AuthorIDFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.AuthorIDFieldname.Tooltip" ) );
    props.setLook( wAuthorIdFieldname );
    wAuthorIdFieldname.addModifyListener( lsMod );
@@ -289,7 +406,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // commentsDisabledFieldname
    wCommentsDisabledFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CommentsDisabledFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CommentsDisabledFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CommentsDisabledFieldname.Tooltip" ) );
    props.setLook( wCommentsDisabledFieldname );
    wCommentsDisabledFieldname.addModifyListener( lsMod );
@@ -302,7 +419,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // outdatedFieldname
    wOutdatedFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.OutdatedFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.OutdatedFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.OutdatedFieldname.Tooltip" ) );
    props.setLook( wOutdatedFieldname );
    wOutdatedFieldname.addModifyListener( lsMod );
@@ -315,7 +432,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // labelsFieldname
    wLabelsFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LabelsFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LabelsFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.LabelsFieldname.Tooltip" ) );
    props.setLook( wLabelsFieldname );
    wLabelsFieldname.addModifyListener( lsMod );
@@ -328,7 +445,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // draftFieldname
    wDraftFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.DraftFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.DraftFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.DraftFieldname.Tooltip" ) );
    props.setLook( wDraftFieldname );
    wDraftFieldname.addModifyListener( lsMod );
@@ -341,7 +458,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // promotedFieldname
    wPromotedFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PromotedFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PromotedFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PromotedFieldname.Tooltip" ) );
    props.setLook( wPromotedFieldname );
    wPromotedFieldname.addModifyListener( lsMod );
@@ -354,7 +471,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // positionFieldname
    wPositionFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PositionFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PositionFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.PositionFieldname.Tooltip" ) );
    props.setLook( wPositionFieldname );
    wPositionFieldname.addModifyListener( lsMod );
@@ -367,7 +484,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // voteSumFieldname
    wVoteSumFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteSumFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteSumFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteSumFieldname.Tooltip" ) );
    props.setLook( wVoteSumFieldname );
    wVoteSumFieldname.addModifyListener( lsMod );
@@ -380,7 +497,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // voteCountFieldname
    wVoteCountFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteCountFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteCountFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.VoteCountFieldname.Tooltip" ) );
    props.setLook( wVoteCountFieldname );
    wVoteCountFieldname.addModifyListener( lsMod );
@@ -393,7 +510,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // sectionIdFieldname
    wSectionIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SectionIDFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SectionIDFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.SectionIDFieldname.Tooltip" ) );
    props.setLook( wSectionIdFieldname );
    wSectionIdFieldname.addModifyListener( lsMod );
@@ -406,7 +523,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // createdAtFieldname
    wCreatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CreatedAtFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CreatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
@@ -419,7 +536,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    // updatedAtFieldname
    wUpdatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.UpdatedAtFieldname.Label" ),
+       transMeta, wArticleComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.UpdatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
@@ -429,13 +546,253 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
    wUpdatedAtFieldname.setLayoutData( fdUpdatedAtFieldname );
 
+   FormData fdArticleComp = new FormData();
+   fdArticleComp.left = new FormAttachment( 0, 0 );
+   fdArticleComp.top = new FormAttachment( 0, 0 );
+   fdArticleComp.right = new FormAttachment( 100, 0 );
+   fdArticleComp.bottom = new FormAttachment( 100, 0 );
+   wArticleComp.setLayoutData( fdArticleComp );
+
+   wArticleComp.layout();
+   wArticleTab.setControl( wArticleComp );
+
+   // /////////////////////
+   // END OF ARTICLE TAB //
+   // /////////////////////
+
+   // ///////////////////////////
+   // START OF TRANSLATION TAB //
+   // ///////////////////////////
+
+   wTranslationTab = new CTabItem( wTabFolder, SWT.NONE );
+   wTranslationTab.setText( BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationTab.TabItem" ) );
+
+   wTranslationComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wTranslationComp );
+
+   FormLayout translationLayout = new FormLayout();
+   translationLayout.marginWidth = margin;
+   translationLayout.marginHeight = margin;
+   wTranslationComp.setLayout( translationLayout );
+
+   // translationIdFieldname
+   wTranslationIdFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationIdFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationIdFieldname.Tooltip" ) );
+   props.setLook( wTranslationIdFieldname );
+   wTranslationIdFieldname.addModifyListener( lsMod );
+   FormData fdTranslationIdFieldname = new FormData();
+   fdTranslationIdFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationIdFieldname.top = new FormAttachment( wCreatedAtFieldname, 2 * margin );
+   fdTranslationIdFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationIdFieldname.setLayoutData( fdTranslationIdFieldname );
+
+   // translationUrlFieldname
+   wTranslationUrlFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationUrlFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationUrlFieldname.Tooltip" ) );
+   props.setLook( wTranslationUrlFieldname );
+   wTranslationUrlFieldname.addModifyListener( lsMod );
+   FormData fdTranslationUrlFieldname = new FormData();
+   fdTranslationUrlFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationUrlFieldname.top = new FormAttachment( wTranslationIdFieldname, 2 * margin );
+   fdTranslationUrlFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationUrlFieldname.setLayoutData( fdTranslationUrlFieldname );
+
+   // translationHtmlUrlFieldname
+   wTranslationHtmlUrlFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationHtmlUrlFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationHtmlUrlFieldname.Tooltip" ) );
+   props.setLook( wTranslationHtmlUrlFieldname );
+   wTranslationHtmlUrlFieldname.addModifyListener( lsMod );
+   FormData fdTranslationHtmlUrlFieldname = new FormData();
+   fdTranslationHtmlUrlFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationHtmlUrlFieldname.top = new FormAttachment( wTranslationUrlFieldname, 2 * margin );
+   fdTranslationHtmlUrlFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationHtmlUrlFieldname.setLayoutData( fdTranslationHtmlUrlFieldname );
+
+   // translationSourceIdFieldname
+   wTranslationSourceIdFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationSourceIdFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationSourceIdFieldname.Tooltip" ) );
+   props.setLook( wTranslationSourceIdFieldname );
+   wTranslationSourceIdFieldname.addModifyListener( lsMod );
+   FormData fdTranslationSourceIdFieldname = new FormData();
+   fdTranslationSourceIdFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationSourceIdFieldname.top = new FormAttachment( wTranslationHtmlUrlFieldname, 2 * margin );
+   fdTranslationSourceIdFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationSourceIdFieldname.setLayoutData( fdTranslationSourceIdFieldname );
+
+   // translationSourceTypeFieldname
+   wTranslationSourceTypeFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationSourceTypeFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationSourceTypeFieldname.Tooltip" ) );
+   props.setLook( wTranslationSourceTypeFieldname );
+   wTranslationSourceTypeFieldname.addModifyListener( lsMod );
+   FormData fdTranslationSourceTypeFieldname = new FormData();
+   fdTranslationSourceTypeFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationSourceTypeFieldname.top = new FormAttachment( wTranslationSourceIdFieldname, 2 * margin );
+   fdTranslationSourceTypeFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationSourceTypeFieldname.setLayoutData( fdTranslationSourceTypeFieldname );
+
+   // translationLocaleFieldname
+   wTranslationLocaleFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationLocaleFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationLocaleFieldname.Tooltip" ) );
+   props.setLook( wTranslationLocaleFieldname );
+   wTranslationLocaleFieldname.addModifyListener( lsMod );
+   FormData fdTranslationLocaleFieldname = new FormData();
+   fdTranslationLocaleFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationLocaleFieldname.top = new FormAttachment( wTranslationSourceTypeFieldname, 2 * margin );
+   fdTranslationLocaleFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationLocaleFieldname.setLayoutData( fdTranslationLocaleFieldname );
+
+   // translationTitleFieldname
+   wTranslationTitleFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationTitleFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationTitleFieldname.Tooltip" ) );
+   props.setLook( wTranslationTitleFieldname );
+   wTranslationTitleFieldname.addModifyListener( lsMod );
+   FormData fdTranslationTitleFieldname = new FormData();
+   fdTranslationTitleFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationTitleFieldname.top = new FormAttachment( wTranslationLocaleFieldname, 2 * margin );
+   fdTranslationTitleFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationTitleFieldname.setLayoutData( fdTranslationTitleFieldname );
+
+   // translationBodyFieldname
+   wTranslationBodyFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationBodyFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationBodyFieldname.Tooltip" ) );
+   props.setLook( wTranslationBodyFieldname );
+   wTranslationBodyFieldname.addModifyListener( lsMod );
+   FormData fdTranslationBodyFieldname = new FormData();
+   fdTranslationBodyFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationBodyFieldname.top = new FormAttachment( wTranslationTitleFieldname, 2 * margin );
+   fdTranslationBodyFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationBodyFieldname.setLayoutData( fdTranslationBodyFieldname );
+
+   // translationOutdatedFieldname
+   wTranslationOutdatedFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationOutdatedFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationOutdatedFieldname.Tooltip" ) );
+   props.setLook( wTranslationOutdatedFieldname );
+   wTranslationOutdatedFieldname.addModifyListener( lsMod );
+   FormData fdTranslationOutdatedFieldname = new FormData();
+   fdTranslationOutdatedFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationOutdatedFieldname.top = new FormAttachment( wTranslationBodyFieldname, 2 * margin );
+   fdTranslationOutdatedFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationOutdatedFieldname.setLayoutData( fdTranslationOutdatedFieldname );
+
+   // translationDraftFieldname
+   wTranslationDraftFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationDraftFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationDraftFieldname.Tooltip" ) );
+   props.setLook( wTranslationDraftFieldname );
+   wTranslationDraftFieldname.addModifyListener( lsMod );
+   FormData fdTranslationDraftFieldname = new FormData();
+   fdTranslationDraftFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationDraftFieldname.top = new FormAttachment( wTranslationOutdatedFieldname, 2 * margin );
+   fdTranslationDraftFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationDraftFieldname.setLayoutData( fdTranslationDraftFieldname );
+
+   // wTranslationCreatedAtFieldname
+   wTranslationCreatedAtFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationCreatedAtFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationCreatedAtFieldname.Tooltip" ) );
+   props.setLook( wTranslationCreatedAtFieldname );
+   wTranslationCreatedAtFieldname.addModifyListener( lsMod );
+   FormData fdTranslationCreatedAtFieldname = new FormData();
+   fdTranslationCreatedAtFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationCreatedAtFieldname.top = new FormAttachment( wTranslationDraftFieldname, 2 * margin );
+   fdTranslationCreatedAtFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationCreatedAtFieldname.setLayoutData( fdTranslationCreatedAtFieldname );
+
+   // translationUpdatedAtFieldname
+   wTranslationUpdatedAtFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationUpdatedAtFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationUpdatedAtFieldname.Tooltip" ) );
+   props.setLook( wTranslationUpdatedAtFieldname );
+   wTranslationUpdatedAtFieldname.addModifyListener( lsMod );
+   FormData fdTranslationUpdatedAtFieldname = new FormData();
+   fdTranslationUpdatedAtFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationUpdatedAtFieldname.top = new FormAttachment( wTranslationCreatedAtFieldname, 2 * margin );
+   fdTranslationUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationUpdatedAtFieldname.setLayoutData( fdTranslationUpdatedAtFieldname );
+
+   // translationUpdatedByIdFieldname
+   wTranslationUpdatedByIdFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationUpdatedByIdFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationUpdatedByIdFieldname.Tooltip" ) );
+   props.setLook( wTranslationUpdatedByIdFieldname );
+   wTranslationUpdatedByIdFieldname.addModifyListener( lsMod );
+   FormData fdTranslationUpdatedByIdFieldname = new FormData();
+   fdTranslationUpdatedByIdFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationUpdatedByIdFieldname.top = new FormAttachment( wTranslationUpdatedAtFieldname, 2 * margin );
+   fdTranslationUpdatedByIdFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationUpdatedByIdFieldname.setLayoutData( fdTranslationUpdatedByIdFieldname );
+
+   // translationCreatedByIdFieldname
+   wTranslationCreatedByIdFieldname =
+     new LabelTextVar(
+       transMeta, wTranslationComp, BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationCreatedByIdFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputHCArticlesDialog.TranslationCreatedByIdFieldname.Tooltip" ) );
+   props.setLook( wTranslationCreatedByIdFieldname );
+   wTranslationCreatedByIdFieldname.addModifyListener( lsMod );
+   FormData fdTranslationCreatedByIdFieldname = new FormData();
+   fdTranslationCreatedByIdFieldname.left = new FormAttachment( 0, -margin );
+   fdTranslationCreatedByIdFieldname.top = new FormAttachment( wTranslationUpdatedByIdFieldname, 2 * margin );
+   fdTranslationCreatedByIdFieldname.right = new FormAttachment( 100, -margin );
+   wTranslationCreatedByIdFieldname.setLayoutData( fdTranslationCreatedByIdFieldname );
+
+
+
+   FormData fdTranslationComp = new FormData();
+   fdTranslationComp.left = new FormAttachment( 0, 0 );
+   fdTranslationComp.top = new FormAttachment( 0, 0 );
+   fdTranslationComp.right = new FormAttachment( 100, 0 );
+   fdTranslationComp.bottom = new FormAttachment( 100, 0 );
+   wTranslationComp.setLayoutData( fdTranslationComp );
+
+   wTranslationComp.layout();
+   wTranslationTab.setControl( wTranslationComp );
+
+   // /////////////////////////
+   // END OF TRANSLATION TAB //
+   // /////////////////////////
+
+   FormData fdTabFolder = new FormData();
+   fdTabFolder.left = new FormAttachment( 0, 0 );
+   fdTabFolder.top = new FormAttachment( wStepname, margin );
+   fdTabFolder.right = new FormAttachment( 100, 0 );
+   fdTabFolder.bottom = new FormAttachment( 100, -50 );
+   wTabFolder.setLayoutData( fdTabFolder );
+
+   wTabFolder.setSelection( 0 );
+
+   // ////////////////////
+   // END OF TAB FOLDER //
+   // ////////////////////
+
    // Some buttons
    wOK = new Button( shell, SWT.PUSH );
    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
    wCancel = new Button( shell, SWT.PUSH );
    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-   setButtonPositions( new Button[] { wOK, wCancel }, margin, wUpdatedAtFieldname );
+   setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
    // Add listeners
    lsCancel = new Listener() {
@@ -490,6 +847,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    wUsername.setText( Const.NVL( input.getUsername(), "" ) );
    wPassword.setText( Const.NVL( input.getPassword(), "" ) );
    wToken.setSelection( input.isToken() );
+   wIncomingFieldname.setText( Const.NVL( input.getIncomingFieldname(), "" ) );
    wArticleIdFieldname.setText( Const.NVL( input.getArticleIdFieldname(), "" ) );
    wArticleUrlFieldname.setText( Const.NVL( input.getArticleUrlFieldname(), "" ) );
    wArticleTitleFieldname.setText( Const.NVL( input.getArticleTitleFieldname(), "" ) );
@@ -508,6 +866,20 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    wSectionIdFieldname.setText( Const.NVL( input.getSectionIdFieldname(), "" ) );
    wCreatedAtFieldname.setText( Const.NVL( input.getCreatedAtFieldname(), "" ) );
    wUpdatedAtFieldname.setText( Const.NVL( input.getUpdatedAtFieldname(), "" ) );
+   wTranslationIdFieldname.setText( Const.NVL( input.getTranslationIdFieldname(), "" ) );
+   wTranslationUrlFieldname.setText( Const.NVL( input.getTranslationUrlFieldname(), "" ) );
+   wTranslationHtmlUrlFieldname.setText( Const.NVL( input.getTranslationHtmlUrlFieldname(), "" ) );
+   wTranslationSourceIdFieldname.setText( Const.NVL( input.getTranslationSourceIdFieldname(), "" ) );
+   wTranslationSourceTypeFieldname.setText( Const.NVL( input.getTranslationSourceTypeFieldname(), "" ) );
+   wTranslationLocaleFieldname.setText( Const.NVL( input.getTranslationLocaleFieldname(), "" ) );
+   wTranslationTitleFieldname.setText( Const.NVL( input.getTranslationTitleFieldname(), "" ) );
+   wTranslationBodyFieldname.setText( Const.NVL( input.getTranslationBodyFieldname(), "" ) );
+   wTranslationOutdatedFieldname.setText( Const.NVL( input.getTranslationOutdatedFieldname(), "" ) );
+   wTranslationDraftFieldname.setText( Const.NVL( input.getTranslationDraftFieldname(), "" ) );
+   wTranslationCreatedAtFieldname.setText( Const.NVL( input.getTranslationCreatedAtFieldname(), "" ) );
+   wTranslationUpdatedAtFieldname.setText( Const.NVL( input.getTranslationUpdatedAtFieldname(), "" ) );
+   wTranslationUpdatedByIdFieldname.setText( Const.NVL( input.getTranslationUpdatedByIdFieldname(), "" ) );
+   wTranslationCreatedByIdFieldname.setText( Const.NVL( input.getTranslationCreatedByIdFieldname(), "" ) );
 
    wStepname.selectAll();
    wStepname.setFocus();
@@ -536,6 +908,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    inf.setUsername( wUsername.getText() );
    inf.setPassword( wPassword.getText() );
    inf.setToken( wToken.getSelection() );
+   inf.setIncomingFieldname( wIncomingFieldname.getText() );
    inf.setArticleIdFieldname( wArticleIdFieldname.getText() );
    inf.setArticleUrlFieldname( wArticleUrlFieldname.getText() );
    inf.setArticleTitleFieldname( wArticleTitleFieldname.getText() );
@@ -554,7 +927,20 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    inf.setSectionIdFieldname( wSectionIdFieldname.getText() );
    inf.setCreatedAtFieldname( wCreatedAtFieldname.getText() );
    inf.setUpdatedAtFieldname( wUpdatedAtFieldname.getText() );
-
+   inf.setTranslationIdFieldname( wTranslationIdFieldname.getText() );
+   inf.setTranslationUrlFieldname( wTranslationUrlFieldname.getText() );
+   inf.setTranslationHtmlUrlFieldname( wTranslationHtmlUrlFieldname.getText() );
+   inf.setTranslationSourceIdFieldname( wTranslationSourceIdFieldname.getText() );
+   inf.setTranslationSourceTypeFieldname( wTranslationSourceTypeFieldname.getText() );
+   inf.setTranslationLocaleFieldname( wTranslationLocaleFieldname.getText() );
+   inf.setTranslationTitleFieldname( wTranslationTitleFieldname.getText() );
+   inf.setTranslationBodyFieldname( wTranslationBodyFieldname.getText() );
+   inf.setTranslationOutdatedFieldname( wTranslationOutdatedFieldname.getText() );
+   inf.setTranslationDraftFieldname( wTranslationDraftFieldname.getText() );
+   inf.setTranslationCreatedAtFieldname( wTranslationCreatedAtFieldname.getText() );
+   inf.setTranslationUpdatedAtFieldname( wTranslationUpdatedAtFieldname.getText() );
+   inf.setTranslationUpdatedByIdFieldname( wTranslationUpdatedByIdFieldname.getText() );
+   inf.setTranslationCreatedByIdFieldname( wTranslationCreatedByIdFieldname.getText() );
    stepname = wStepname.getText(); // return value
  }
 }

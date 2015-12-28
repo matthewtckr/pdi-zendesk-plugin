@@ -33,13 +33,20 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.Stream;
+import org.pentaho.di.trans.step.errorhandling.StreamIcon;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -52,6 +59,10 @@ import org.w3c.dom.Node;
     categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
 )
 public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
+
+  private static final Class<?> PKG = ZendeskInputHCArticleMeta.class;
+
+  private String incomingFieldname;
 
   private String articleIdFieldname;
   private String articleUrlFieldname;
@@ -72,6 +83,28 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
   private String createdAtFieldname;
   private String updatedAtFieldname;
 
+  private String translationIdFieldname;
+  private String translationUrlFieldname;
+  private String translationHtmlUrlFieldname;
+  private String translationSourceIdFieldname;
+  private String translationSourceTypeFieldname;
+  private String translationLocaleFieldname;
+  private String translationTitleFieldname;
+  private String translationBodyFieldname;
+  private String translationOutdatedFieldname;
+  private String translationDraftFieldname;
+  private String translationCreatedAtFieldname;
+  private String translationUpdatedAtFieldname;
+  private String translationUpdatedByIdFieldname;
+  private String translationCreatedByIdFieldname;
+
+  private StepIOMetaInterface ioMeta;
+  private String articleStepName;
+  private String translationStepName;
+
+  private StepMeta articleStepMeta;
+  private StepMeta translationStepMeta;
+
   public String getCreatedAtFieldname() {
     return createdAtFieldname;
   }
@@ -80,6 +113,17 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     super.getFields( inputRowMeta, name, info, nextStep, space, repository, metaStore );
+    if ( nextStep != null ) {
+      if ( nextStep.equals( articleStepMeta ) ) {
+        prepareExecutionResultsArticle( inputRowMeta, space );
+      } else if ( nextStep.equals( translationStepMeta ) ) {
+        prepareExecutionResultsTranslation( inputRowMeta, space );
+      }
+    }
+  }
+
+  private void prepareExecutionResultsArticle( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
+    inputRowMeta.clear();
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getArticleIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getArticleUrlFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getArticleTitleFieldname() ), ValueMetaInterface.TYPE_STRING );
@@ -100,10 +144,65 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getUpdatedAtFieldname() ), ValueMetaInterface.TYPE_DATE );
   }
 
+  private void prepareExecutionResultsTranslation( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
+    inputRowMeta.clear();
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getArticleIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationUrlFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationHtmlUrlFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationSourceIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationSourceTypeFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationLocaleFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationTitleFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationBodyFieldname() ), ValueMetaInterface.TYPE_STRING );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationOutdatedFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationDraftFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationCreatedAtFieldname() ), ValueMetaInterface.TYPE_DATE );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationUpdatedAtFieldname() ), ValueMetaInterface.TYPE_DATE );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationUpdatedByIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTranslationCreatedByIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+  }
+
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {
     return new ZendeskInputHCArticle( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  @Override
+  public StepIOMetaInterface getStepIOMeta() {
+    if ( ioMeta == null ) {
+      ioMeta = new StepIOMeta( true, true, false, false, true, false );
+
+      ioMeta.addStream( new Stream( StreamType.TARGET, articleStepMeta, BaseMessages.getString(
+        PKG, "ZendeskInputHCArticlesMeta.ArticleStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, translationStepMeta, BaseMessages.getString(
+        PKG, "ZendeskInputHCArticlesMeta.TranslationStream.Description" ), StreamIcon.TARGET, null ) );
+    }
+    return ioMeta;
+  }
+
+  @Override
+  public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
+    articleStepMeta = StepMeta.findStep( steps, articleStepName );
+    translationStepMeta = StepMeta.findStep( steps, translationStepName );
+  }
+
+  @Override
+  public void handleStreamSelection( StreamInterface stream ) {
+    List<StreamInterface> targets = getStepIOMeta().getTargetStreams();
+    int index = targets.indexOf( stream );
+    StepMeta step = targets.get( index ).getStepMeta();
+    switch ( index ) {
+      case 0:
+        setArticleStepMeta( step );
+        break;
+      case 1:
+        setTranslationStepMeta( step );
+        break;
+      default:
+        break;
+    }
   }
 
   @Override
@@ -119,6 +218,7 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
   public String getXML() throws KettleException {
     StringBuilder xml = new StringBuilder();
     xml.append( super.getXML() );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "incomingFieldname", getIncomingFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "articleIdFieldname", getArticleIdFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "articleUrlFieldname", getArticleUrlFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "articleTitleFieldname", getArticleTitleFieldname() ) );
@@ -137,62 +237,113 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
     xml.append( "    " ).append( XMLHandler.addTagValue( "sectionIdFieldname", getSectionIdFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "createdAtFieldname", getCreatedAtFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "updatedAtFieldname", getUpdatedAtFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationIdFieldname", getTranslationIdFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationUrlFieldname", getTranslationUrlFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationHtmlUrlFieldname", getTranslationHtmlUrlFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationSourceIdFieldname", getTranslationSourceIdFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationSourceTypeFieldname", getTranslationSourceTypeFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationLocaleFieldname", getTranslationLocaleFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationTitleFieldname", getTranslationTitleFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationBodyFieldname", getTranslationBodyFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationOutdatedFieldname", getTranslationOutdatedFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationDraftFieldname", getTranslationDraftFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationCreatedAtFieldname", getTranslationCreatedAtFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationUpdatedAtFieldname", getTranslationUpdatedAtFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationUpdatedByIdFieldname", getTranslationUpdatedByIdFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationCreatedByIdFieldname", getTranslationCreatedByIdFieldname() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "articleStepName",
+      getArticleStepMeta() != null ? getArticleStepMeta().getName() : getArticleStepName() ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "translationStepName",
+      getTranslationStepMeta() != null ? getTranslationStepMeta().getName() : getTranslationStepName() ) );
     return xml.toString();
   }
 
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
-    setArticleIdFieldname( XMLHandler.getTagValue( stepnode, "articleIdFieldname") );
-    setArticleUrlFieldname( XMLHandler.getTagValue( stepnode, "articleUrlFieldname") );
-    setArticleTitleFieldname( XMLHandler.getTagValue( stepnode, "articleTitleFieldname") );
-    setArticleBodyFieldname( XMLHandler.getTagValue( stepnode, "articleBodyFieldname") );
-    setLocaleFieldname( XMLHandler.getTagValue( stepnode, "localeFieldname") );
-    setSourceLocaleFieldname( XMLHandler.getTagValue( stepnode, "sourceLocaleFieldname") );
-    setAuthorIdFieldname( XMLHandler.getTagValue( stepnode, "authorIdFieldname") );
-    setCommentsDisabledFieldname( XMLHandler.getTagValue( stepnode, "commentsDisabledFieldname") );
-    setOutdatedFieldname( XMLHandler.getTagValue( stepnode, "outdatedFieldname") );
-    setLabelsFieldname( XMLHandler.getTagValue( stepnode, "labelsFieldname") );
-    setDraftFieldname( XMLHandler.getTagValue( stepnode, "draftFieldname") );
-    setPromotedFieldname( XMLHandler.getTagValue( stepnode, "promotedFieldname") );
-    setPositionFieldname( XMLHandler.getTagValue( stepnode, "positionFieldname") );
-    setVoteSumFieldname( XMLHandler.getTagValue( stepnode, "voteSumFieldname") );
-    setVoteCountFieldname( XMLHandler.getTagValue( stepnode, "voteCountFieldname") );
-    setSectionIdFieldname( XMLHandler.getTagValue( stepnode, "sectionIdFieldname") );
-    setCreatedAtFieldname( XMLHandler.getTagValue( stepnode, "createdAtFieldname") );
-    setUpdatedAtFieldname( XMLHandler.getTagValue( stepnode, "updatedAtFieldname") );
-
+    setIncomingFieldname( XMLHandler.getTagValue( stepnode, "incomingFieldname" ) );
+    setArticleIdFieldname( XMLHandler.getTagValue( stepnode, "articleIdFieldname" ) );
+    setArticleUrlFieldname( XMLHandler.getTagValue( stepnode, "articleUrlFieldname" ) );
+    setArticleTitleFieldname( XMLHandler.getTagValue( stepnode, "articleTitleFieldname" ) );
+    setArticleBodyFieldname( XMLHandler.getTagValue( stepnode, "articleBodyFieldname" ) );
+    setLocaleFieldname( XMLHandler.getTagValue( stepnode, "localeFieldname" ) );
+    setSourceLocaleFieldname( XMLHandler.getTagValue( stepnode, "sourceLocaleFieldname" ) );
+    setAuthorIdFieldname( XMLHandler.getTagValue( stepnode, "authorIdFieldname" ) );
+    setCommentsDisabledFieldname( XMLHandler.getTagValue( stepnode, "commentsDisabledFieldname" ) );
+    setOutdatedFieldname( XMLHandler.getTagValue( stepnode, "outdatedFieldname" ) );
+    setLabelsFieldname( XMLHandler.getTagValue( stepnode, "labelsFieldname" ) );
+    setDraftFieldname( XMLHandler.getTagValue( stepnode, "draftFieldname" ) );
+    setPromotedFieldname( XMLHandler.getTagValue( stepnode, "promotedFieldname" ) );
+    setPositionFieldname( XMLHandler.getTagValue( stepnode, "positionFieldname" ) );
+    setVoteSumFieldname( XMLHandler.getTagValue( stepnode, "voteSumFieldname" ) );
+    setVoteCountFieldname( XMLHandler.getTagValue( stepnode, "voteCountFieldname" ) );
+    setSectionIdFieldname( XMLHandler.getTagValue( stepnode, "sectionIdFieldname" ) );
+    setCreatedAtFieldname( XMLHandler.getTagValue( stepnode, "createdAtFieldname" ) );
+    setUpdatedAtFieldname( XMLHandler.getTagValue( stepnode, "updatedAtFieldname" ) );
+    setTranslationIdFieldname( XMLHandler.getTagValue( stepnode, "translationIdFieldname" ) );
+    setTranslationUrlFieldname( XMLHandler.getTagValue( stepnode, "translationUrlFieldname" ) );
+    setTranslationHtmlUrlFieldname( XMLHandler.getTagValue( stepnode, "translationHtmlUrlFieldname" ) );
+    setTranslationSourceIdFieldname( XMLHandler.getTagValue( stepnode, "translationSourceIdFieldname" ) );
+    setTranslationSourceTypeFieldname( XMLHandler.getTagValue( stepnode, "translationSourceTypeFieldname" ) );
+    setTranslationLocaleFieldname( XMLHandler.getTagValue( stepnode, "translationLocaleFieldname" ) );
+    setTranslationTitleFieldname( XMLHandler.getTagValue( stepnode, "translationTitleFieldname" ) );
+    setTranslationBodyFieldname( XMLHandler.getTagValue( stepnode, "translationBodyFieldname" ) );
+    setTranslationOutdatedFieldname( XMLHandler.getTagValue( stepnode, "translationOutdatedFieldname" ) );
+    setTranslationDraftFieldname( XMLHandler.getTagValue( stepnode, "translationDraftFieldname" ) );
+    setTranslationCreatedAtFieldname( XMLHandler.getTagValue( stepnode, "translationCreatedAtFieldname" ) );
+    setTranslationUpdatedAtFieldname( XMLHandler.getTagValue( stepnode, "translationUpdatedAtFieldname" ) );
+    setTranslationUpdatedByIdFieldname( XMLHandler.getTagValue( stepnode, "translationUpdatedByIdFieldname" ) );
+    setTranslationCreatedByIdFieldname( XMLHandler.getTagValue( stepnode, "translationCreatedByIdFieldname" ) );
+    setArticleStepName( XMLHandler.getTagValue( stepnode, "articleStepName" ) );
+    setTranslationStepName( XMLHandler.getTagValue( stepnode, "translationStepName" ) );
   }
 
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
-    setArticleIdFieldname( rep.getStepAttributeString( id_step, "articleIdFieldname") );
-    setArticleUrlFieldname( rep.getStepAttributeString( id_step, "articleUrlFieldname") );
-    setArticleTitleFieldname( rep.getStepAttributeString( id_step, "articleTitleFieldname") );
-    setArticleBodyFieldname( rep.getStepAttributeString( id_step, "articleBodyFieldname") );
-    setLocaleFieldname( rep.getStepAttributeString( id_step, "localeFieldname") );
-    setSourceLocaleFieldname( rep.getStepAttributeString( id_step, "sourceLocaleFieldname") );
-    setAuthorIdFieldname( rep.getStepAttributeString( id_step, "authorIdFieldname") );
-    setCommentsDisabledFieldname( rep.getStepAttributeString( id_step, "commentsDisabledFieldname") );
-    setOutdatedFieldname( rep.getStepAttributeString( id_step, "outdatedFieldname") );
-    setLabelsFieldname( rep.getStepAttributeString( id_step, "labelsFieldname") );
-    setDraftFieldname( rep.getStepAttributeString( id_step, "draftFieldname") );
-    setPromotedFieldname( rep.getStepAttributeString( id_step, "promotedFieldname") );
-    setPositionFieldname( rep.getStepAttributeString( id_step, "positionFieldname") );
-    setVoteSumFieldname( rep.getStepAttributeString( id_step, "voteSumFieldname") );
-    setVoteCountFieldname( rep.getStepAttributeString( id_step, "voteCountFieldname") );
-    setSectionIdFieldname( rep.getStepAttributeString( id_step, "sectionIdFieldname") );
-    setCreatedAtFieldname( rep.getStepAttributeString( id_step, "createdAtFieldname") );
-    setUpdatedAtFieldname( rep.getStepAttributeString( id_step, "updatedAtFieldname") );
-
+    setIncomingFieldname( rep.getStepAttributeString( id_step, "incomingFieldname" ) );
+    setArticleIdFieldname( rep.getStepAttributeString( id_step, "articleIdFieldname" ) );
+    setArticleUrlFieldname( rep.getStepAttributeString( id_step, "articleUrlFieldname" ) );
+    setArticleTitleFieldname( rep.getStepAttributeString( id_step, "articleTitleFieldname" ) );
+    setArticleBodyFieldname( rep.getStepAttributeString( id_step, "articleBodyFieldname" ) );
+    setLocaleFieldname( rep.getStepAttributeString( id_step, "localeFieldname" ) );
+    setSourceLocaleFieldname( rep.getStepAttributeString( id_step, "sourceLocaleFieldname" ) );
+    setAuthorIdFieldname( rep.getStepAttributeString( id_step, "authorIdFieldname" ) );
+    setCommentsDisabledFieldname( rep.getStepAttributeString( id_step, "commentsDisabledFieldname" ) );
+    setOutdatedFieldname( rep.getStepAttributeString( id_step, "outdatedFieldname" ) );
+    setLabelsFieldname( rep.getStepAttributeString( id_step, "labelsFieldname" ) );
+    setDraftFieldname( rep.getStepAttributeString( id_step, "draftFieldname" ) );
+    setPromotedFieldname( rep.getStepAttributeString( id_step, "promotedFieldname" ) );
+    setPositionFieldname( rep.getStepAttributeString( id_step, "positionFieldname" ) );
+    setVoteSumFieldname( rep.getStepAttributeString( id_step, "voteSumFieldname" ) );
+    setVoteCountFieldname( rep.getStepAttributeString( id_step, "voteCountFieldname" ) );
+    setSectionIdFieldname( rep.getStepAttributeString( id_step, "sectionIdFieldname" ) );
+    setCreatedAtFieldname( rep.getStepAttributeString( id_step, "createdAtFieldname" ) );
+    setUpdatedAtFieldname( rep.getStepAttributeString( id_step, "updatedAtFieldname" ) );
+    setTranslationIdFieldname( rep.getStepAttributeString( id_step, "translationIdFieldname" ) );
+    setTranslationUrlFieldname( rep.getStepAttributeString( id_step, "translationUrlFieldname" ) );
+    setTranslationHtmlUrlFieldname( rep.getStepAttributeString( id_step, "translationHtmlUrlFieldname" ) );
+    setTranslationSourceIdFieldname( rep.getStepAttributeString( id_step, "translationSourceIdFieldname" ) );
+    setTranslationSourceTypeFieldname( rep.getStepAttributeString( id_step, "translationSourceTypeFieldname" ) );
+    setTranslationLocaleFieldname( rep.getStepAttributeString( id_step, "translationLocaleFieldname" ) );
+    setTranslationTitleFieldname( rep.getStepAttributeString( id_step, "translationTitleFieldname" ) );
+    setTranslationBodyFieldname( rep.getStepAttributeString( id_step, "translationBodyFieldname" ) );
+    setTranslationOutdatedFieldname( rep.getStepAttributeString( id_step, "translationOutdatedFieldname" ) );
+    setTranslationDraftFieldname( rep.getStepAttributeString( id_step, "translationDraftFieldname" ) );
+    setTranslationCreatedAtFieldname( rep.getStepAttributeString( id_step, "translationCreatedAtFieldname" ) );
+    setTranslationUpdatedAtFieldname( rep.getStepAttributeString( id_step, "translationUpdatedAtFieldname" ) );
+    setTranslationUpdatedByIdFieldname( rep.getStepAttributeString( id_step, "translationUpdatedByIdFieldname" ) );
+    setTranslationCreatedByIdFieldname( rep.getStepAttributeString( id_step, "translationCreatedByIdFieldname" ) );
+    setArticleStepName( rep.getStepAttributeString( id_step, "articleStepName" ) );
+    setTranslationStepName( rep.getStepAttributeString( id_step, "translationStepName" ) );
   }
 
   @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
     throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
+    rep.saveStepAttribute( id_transformation, id_step, "incomingFieldname", getIncomingFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "articleIdFieldname", getArticleIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "articleUrlFieldname", getArticleUrlFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "articleTitleFieldname", getArticleTitleFieldname() );
@@ -211,7 +362,24 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
     rep.saveStepAttribute( id_transformation, id_step, "sectionIdFieldname", getSectionIdFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "createdAtFieldname", getCreatedAtFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "updatedAtFieldname", getUpdatedAtFieldname() );
-    
+    rep.saveStepAttribute( id_transformation, id_step, "translationIdFieldname", getTranslationIdFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationUrlFieldname", getTranslationUrlFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationHtmlUrlFieldname", getTranslationHtmlUrlFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationSourceIdFieldname", getTranslationSourceIdFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationSourceTypeFieldname", getTranslationSourceTypeFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationLocaleFieldname", getTranslationLocaleFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationTitleFieldname", getTranslationTitleFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationBodyFieldname", getTranslationBodyFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationOutdatedFieldname", getTranslationOutdatedFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationDraftFieldname", getTranslationDraftFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationCreatedAtFieldname", getTranslationCreatedAtFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationUpdatedAtFieldname", getTranslationUpdatedAtFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationUpdatedByIdFieldname", getTranslationUpdatedByIdFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationCreatedByIdFieldname", getTranslationCreatedByIdFieldname() );
+    rep.saveStepAttribute( id_transformation, id_step, "articleStepName",
+      getArticleStepMeta() != null ? getArticleStepMeta().getName() : getArticleStepName() );
+    rep.saveStepAttribute( id_transformation, id_step, "translationStepName",
+      getTranslationStepMeta() != null ? getTranslationStepMeta().getName() : getTranslationStepName() );
   }
 
   public void setCreatedAtFieldname( String createdAtFieldname ) {
@@ -221,6 +389,7 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
   @Override
   public void setDefault() {
     super.setDefault();
+    setIncomingFieldname( "" );
     setArticleIdFieldname( "Article_ID" );
     setArticleUrlFieldname( "Article_URL" );
     setArticleTitleFieldname( "Article_Title" );
@@ -239,10 +408,32 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
     setSectionIdFieldname( "Section_ID" );
     setCreatedAtFieldname( "Created_Time" );
     setUpdatedAtFieldname( "Updated_Time");
+    setTranslationIdFieldname( "Translation_ID" );
+    setTranslationUrlFieldname( "Translation_URL" );
+    setTranslationHtmlUrlFieldname( "Translation_HTML_URL" );
+    setTranslationSourceIdFieldname( "Translation_Source_ID" );
+    setTranslationSourceTypeFieldname( "Translation_Source_Type" );
+    setTranslationLocaleFieldname( "Translation_Locale" );
+    setTranslationTitleFieldname( "Translation_Title" );
+    setTranslationBodyFieldname( "Translation_Body" );
+    setTranslationOutdatedFieldname( "Translation_Outdated" );
+    setTranslationDraftFieldname( "Translation_Draft" );
+    setTranslationCreatedAtFieldname( "Translation_Created_At" );
+    setTranslationUpdatedAtFieldname( "Translation_Updated_At" );
+    setTranslationUpdatedByIdFieldname( "Translation_Updated_By" );
+    setTranslationCreatedByIdFieldname( "Translation_Created_By" );
   }
 
   public void setUpdatedAtFieldname( String updatedAtFieldname ) {
     this.updatedAtFieldname = updatedAtFieldname;
+  }
+
+  public String getIncomingFieldname() {
+    return incomingFieldname;
+  }
+
+  public void setIncomingFieldname( String incomingFieldname ) {
+    this.incomingFieldname = incomingFieldname;
   }
 
   public String getArticleIdFieldname() {
@@ -371,5 +562,149 @@ public class ZendeskInputHCArticleMeta extends ZendeskInputMeta {
 
   public void setSectionIdFieldname( String sectionIdFieldname ) {
     this.sectionIdFieldname = sectionIdFieldname;
+  }
+
+  public String getTranslationIdFieldname() {
+    return translationIdFieldname;
+  }
+
+  public void setTranslationIdFieldname( String translationIdFieldname ) {
+    this.translationIdFieldname = translationIdFieldname;
+  }
+
+  public String getTranslationUrlFieldname() {
+    return translationUrlFieldname;
+  }
+
+  public void setTranslationUrlFieldname( String translationUrlFieldname ) {
+    this.translationUrlFieldname = translationUrlFieldname;
+  }
+
+  public String getTranslationHtmlUrlFieldname() {
+    return translationHtmlUrlFieldname;
+  }
+
+  public void setTranslationHtmlUrlFieldname( String translationHtmlUrlFieldname ) {
+    this.translationHtmlUrlFieldname = translationHtmlUrlFieldname;
+  }
+
+  public String getTranslationSourceIdFieldname() {
+    return translationSourceIdFieldname;
+  }
+
+  public void setTranslationSourceIdFieldname( String translationSourceIdFieldname ) {
+    this.translationSourceIdFieldname = translationSourceIdFieldname;
+  }
+
+  public String getTranslationSourceTypeFieldname() {
+    return translationSourceTypeFieldname;
+  }
+
+  public void setTranslationSourceTypeFieldname( String translationSourceTypeFieldname ) {
+    this.translationSourceTypeFieldname = translationSourceTypeFieldname;
+  }
+
+  public String getTranslationLocaleFieldname() {
+    return translationLocaleFieldname;
+  }
+
+  public void setTranslationLocaleFieldname( String translationLocaleFieldname ) {
+    this.translationLocaleFieldname = translationLocaleFieldname;
+  }
+
+  public String getTranslationTitleFieldname() {
+    return translationTitleFieldname;
+  }
+
+  public void setTranslationTitleFieldname( String translationTitleFieldname ) {
+    this.translationTitleFieldname = translationTitleFieldname;
+  }
+
+  public String getTranslationBodyFieldname() {
+    return translationBodyFieldname;
+  }
+
+  public void setTranslationBodyFieldname( String translationBodyFieldname ) {
+    this.translationBodyFieldname = translationBodyFieldname;
+  }
+
+  public String getTranslationOutdatedFieldname() {
+    return translationOutdatedFieldname;
+  }
+
+  public void setTranslationOutdatedFieldname( String translationOutdatedFieldname ) {
+    this.translationOutdatedFieldname = translationOutdatedFieldname;
+  }
+
+  public String getTranslationDraftFieldname() {
+    return translationDraftFieldname;
+  }
+
+  public void setTranslationDraftFieldname( String translationDraftFieldname ) {
+    this.translationDraftFieldname = translationDraftFieldname;
+  }
+
+  public String getTranslationCreatedAtFieldname() {
+    return translationCreatedAtFieldname;
+  }
+
+  public void setTranslationCreatedAtFieldname( String translationCreatedAtFieldname ) {
+    this.translationCreatedAtFieldname = translationCreatedAtFieldname;
+  }
+
+  public String getTranslationUpdatedAtFieldname() {
+    return translationUpdatedAtFieldname;
+  }
+
+  public void setTranslationUpdatedAtFieldname( String translationUpdatedAtFieldname ) {
+    this.translationUpdatedAtFieldname = translationUpdatedAtFieldname;
+  }
+
+  public String getTranslationUpdatedByIdFieldname() {
+    return translationUpdatedByIdFieldname;
+  }
+
+  public void setTranslationUpdatedByIdFieldname( String translationUpdatedByIdFieldname ) {
+    this.translationUpdatedByIdFieldname = translationUpdatedByIdFieldname;
+  }
+
+  public String getTranslationCreatedByIdFieldname() {
+    return translationCreatedByIdFieldname;
+  }
+
+  public void setTranslationCreatedByIdFieldname( String translationCreatedByIdFieldname ) {
+    this.translationCreatedByIdFieldname = translationCreatedByIdFieldname;
+  }
+
+  public String getArticleStepName() {
+    return articleStepName;
+  }
+
+  public void setArticleStepName( String articleStepName ) {
+    this.articleStepName = articleStepName;
+  }
+
+  public String getTranslationStepName() {
+    return translationStepName;
+  }
+
+  public void setTranslationStepName( String translationStepName ) {
+    this.translationStepName = translationStepName;
+  }
+
+  public StepMeta getArticleStepMeta() {
+    return articleStepMeta;
+  }
+
+  public void setArticleStepMeta( StepMeta articleStepMeta ) {
+    this.articleStepMeta = articleStepMeta;
+  }
+
+  public StepMeta getTranslationStepMeta() {
+    return translationStepMeta;
+  }
+
+  public void setTranslationStepMeta( StepMeta translationStepMeta ) {
+    this.translationStepMeta = translationStepMeta;
   }
 }
