@@ -360,6 +360,7 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
        transMeta, wUserComp, BaseMessages.getString( PKG, "ZendeskInputUsersDialog.NameFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputUsersDialog.NameFieldname.Tooltip" ) );
    props.setLook( wNameFieldname );
+   wNameFieldname.addModifyListener( lsMod );
    FormData fdNameFieldname = new FormData();
    fdNameFieldname.left = new FormAttachment( 0, -margin );
    fdNameFieldname.top = new FormAttachment( wExternalIdFieldname, 2 * margin );
@@ -372,6 +373,7 @@ public class ZendeskInputUsersDialog extends BaseStepDialog implements StepDialo
        transMeta, wUserComp, BaseMessages.getString( PKG, "ZendeskInputUsersDialog.NameFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputUsersDialog.NameFieldname.Tooltip" ) );
    props.setLook( wEmailFieldname );
+   wEmailFieldname.addModifyListener( lsMod );
    FormData fdEmailFieldname = new FormData();
    fdEmailFieldname.left = new FormAttachment( 0, -margin );
    fdEmailFieldname.top = new FormAttachment( wNameFieldname, 2 * margin );
