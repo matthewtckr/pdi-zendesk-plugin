@@ -60,11 +60,16 @@ public class ZendeskInputUsers extends ZendeskInput {
 
     if ( first ) {
       first = false;
+
+      if ( getInputRowMeta() != null ) {
+        data.incomingIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getIncomingFieldname() ) );
+      } else {
+        data.incomingIndex = -1;
+      }
       if ( meta.getUserStepMeta() != null ) {
         data.userRowMeta = new RowMeta();
         meta.getFields( data.userRowMeta, getStepname(), null, meta.getUserStepMeta(), this, repository, metaStore );
         data.userOutputRowSet = findOutputRowSet( meta.getUserStepMeta().getName() );
-        data.incomingIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getIncomingFieldname() ) );
         data.userIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUserIdFieldname() ) );
         data.urlIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUrlFieldname() ) );
         data.externalIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getExternalIdFieldname() ) );

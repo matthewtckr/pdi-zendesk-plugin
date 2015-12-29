@@ -31,7 +31,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
-public class ZendeskInputHCTranslationMetaTest {
+public class ZendeskInputOrganizationsMetaTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
@@ -41,12 +41,14 @@ public class ZendeskInputHCTranslationMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "translationIdFieldname", "translationUrlFieldname", "translationTitleFieldname",
-        "translationBodyFieldname", "localeFieldname", "sourceIdFieldname", "sourceTypeFieldname", "outdatedFieldname",
-        "draftFieldname", "createdAtFieldname", "createdByFieldname", "updatedAtFieldname", "updatedByFieldname" );
+      Arrays.asList( "subDomain", "username", "password", "token", "incomingFieldname", "organizationIdFieldname",
+        "urlFieldname", "externalIdFieldname", "nameFieldname", "createdAtFieldname", "updatedAtFieldname",
+        "detailsFieldname", "notesFieldname", "groupIdFieldname", "sharedTicketsFieldname", "sharedCommentsFieldname",
+        "tagFieldname", "domainNameFieldname", "orgFieldNameFieldname", "orgFieldValueFieldname",
+        "organizationStepName", "organizationTagStepName", "organizationFieldStepName", "organizationDomainStepName" );
 
     LoadSaveTester loadSaveTester =
-      new LoadSaveTester( ZendeskInputHCTranslationMeta.class, attributes, new HashMap<String, String>(),
+      new LoadSaveTester( ZendeskInputOrganizationsMeta.class, attributes, new HashMap<String, String>(),
         new HashMap<String, String>() );
 
     loadSaveTester.testRepoRoundTrip();

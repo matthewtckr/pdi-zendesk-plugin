@@ -22,11 +22,20 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 
 public class ZendeskInputHCArticleData extends ZendeskInputData {
 
-  RowMetaInterface rowMeta;
+  RowMetaInterface articleRowMeta;
+  RowMetaInterface translationRowMeta;
+
+  RowSet articleOutputRowSet;
+  RowSet translationOutputRowSet;
+
+  boolean isReceivingInput;
+
+  int incomingIndex;
 
   int articleIdIndex;
   int articleUrlIndex;
@@ -46,4 +55,20 @@ public class ZendeskInputHCArticleData extends ZendeskInputData {
   int sectionIdIndex;
   int createdAtIndex;
   int updatedAtIndex;
+
+  int translationArticleIdIndex;
+  int translationIdIndex;
+  int translationUrlIndex;
+  int translationHtmlUrlIndex;
+  int translationSourceIdIndex;
+  int translationSourceTypeIndex;
+  int translationLocaleIndex;
+  int translationTitleIndex;
+  int translationBodyIndex;
+  int translationOutdatedIndex;
+  int translationDraftIndex;
+  int translationCreatedAtIndex;
+  int translationUpdatedAtIndex;
+  int translationUpdatedByIdIndex;
+  int translationCreatedByIdIndex;
 }

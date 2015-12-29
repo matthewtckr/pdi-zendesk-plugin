@@ -6,7 +6,7 @@
  *
  *******************************************************************************
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")Index;
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
@@ -22,23 +22,42 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 
-public class ZendeskInputHCTranslationData extends ZendeskInputData {
+public class ZendeskInputOrganizationsData extends ZendeskInputData {
 
-  RowMetaInterface rowMeta;
+  RowMetaInterface organizationRowMeta;
+  RowMetaInterface organizationTagRowMeta;
+  RowMetaInterface organizationFieldRowMeta;
+  RowMetaInterface organizationDomainRowMeta;
 
-  int translationIdIndex;
-  int translationUrlIndex;
-  int translationTitleIndex;
-  int translationBodyIndex;
-  int localeIndex;
-  int sourceIdIndex;
-  int sourceTypeIndex;
-  int outdatedIndex;
-  int draftIndex;
+  RowSet organizationOutputRowSet;
+  RowSet organizationTagOutputRowSet;
+  RowSet organizationFieldOutputRowSet;
+  RowSet organizationDomainOutputRowSet;
+
+  int incomingIndex;
+  int organizationIdIndex;
+  int urlIndex;
+  int externalIdIndex;
+  int nameIndex;
   int createdAtIndex;
-  int createdByIndex;
   int updatedAtIndex;
-  int updatedByIndex;
+  int detailsIndex;
+  int notesIndex;
+  int groupIdIndex;
+  int sharedTicketsIndex;
+  int sharedCommentsIndex;
+
+  int tagOrganizationIdIndex;
+  int tagValueIndex;
+
+  int domainOrganizationIdIndex;
+  int domainNameIndex;
+
+  int fieldOrganizationIdIndex;
+  int fieldNameIndex;
+  int fieldValueIndex;
+  
 }

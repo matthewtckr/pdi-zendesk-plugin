@@ -71,6 +71,11 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
       public String toString() {
         return "Organizations";
       }
+    }, HELPCENTER_ARTICLES {
+      @Override
+      public String toString() {
+        return "HelpCenter Articles";
+      }
     };
   }
 

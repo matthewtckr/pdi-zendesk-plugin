@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
@@ -40,6 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
+import org.zendesk.client.v2.model.hc.Article;
 
 
 public class ZendeskInputIncremental extends ZendeskInput {
@@ -69,6 +71,10 @@ public class ZendeskInputIncremental extends ZendeskInput {
       first = false;
       try {
         startDate = getIncrementalFieldValue();
+        if ( startDate == null ) {
+          setOutputDone();
+          return false;
+        }
       } catch ( KettleStepException e ) {
         setErrors( 1L );
         logError( e.getMessage() );
@@ -100,12 +106,17 @@ public class ZendeskInputIncremental extends ZendeskInput {
           incrementLinesOutput();
         }
         break;
+      case HELPCENTER_ARTICLES:
+        for ( Article article : data.conn.getArticlesIncrementally( startDate ) ) {
+          putRow( data.rowMeta, processArticle( article ) );
+        }
+        break;
     }
     setOutputDone();
     return false;
   }
 
-  private Date getIncrementalFieldValue( ) throws KettleException {
+  private Date getIncrementalFieldValue() throws KettleException {
     Date result = null;
     boolean firstRow = true;
     Object[] row;
@@ -117,7 +128,10 @@ public class ZendeskInputIncremental extends ZendeskInput {
         inputRowMeta = getInputRowMeta();
 
         if ( inputRowMeta == null || inputRowMeta.size() <= 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+          if ( log.isBasic() ) {
+            logBasic( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+          }
+          return null;
         }
 
         String filenameField = environmentSubstitute( meta.getTimestampFieldName() );
@@ -127,7 +141,7 @@ public class ZendeskInputIncremental extends ZendeskInput {
             PKG, "ZendeskInputIncremental.Exception.StartDateFieldNotFound", filenameField ) );
         }
         ValueMetaInterface fieldValueMeta = inputRowMeta.getValueMeta( fieldIndex );
-        if ( fieldValueMeta.getType() != ValueMetaInterface.TYPE_DATE ) {
+        if ( !( fieldValueMeta instanceof ValueMetaDate ) ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "ZendeskInput.Error.WrongFieldType",
             ValueMetaFactory.getValueMetaName( fieldValueMeta.getType() ) ) );
         } else {
@@ -141,7 +155,9 @@ public class ZendeskInputIncremental extends ZendeskInput {
     }
 
     if ( firstRow ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+      if ( log.isBasic() ) {
+        logBasic( BaseMessages.getString( PKG, "ZendeskInput.Error.NoIncomingRows" ) );
+      }
     }
 
     return result;
@@ -157,5 +173,9 @@ public class ZendeskInputIncremental extends ZendeskInput {
 
   Object[] processOrganization( Organization org ) {
     return new Object[]{ org.getId() };
+  }
+
+  Object[] processArticle( Article article ) {
+    return new Object[]{ article.getId() };
   }
 }
