@@ -33,6 +33,8 @@ public class ZendeskInputUsersData extends ZendeskInputData {
   RowSet userOutputRowSet;
   RowSet userIdentityOutputRowSet;
 
+  boolean isReceivingInput;
+
   int incomingIndex;
   int userIdIndex;
   int urlIndex;
