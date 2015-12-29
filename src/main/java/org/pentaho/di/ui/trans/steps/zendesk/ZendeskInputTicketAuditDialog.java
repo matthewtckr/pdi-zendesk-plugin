@@ -90,6 +90,11 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
  private LabelTextVar wChannelFieldname;
  private LabelTextVar wTypeFieldname;
  private LabelTextVar wSatisfactionFieldname;
+ private LabelTextVar wLocaleFieldname;
+ private LabelTextVar wDueAtFieldname;
+ private LabelTextVar wSatisfactionCommentFieldname;
+ private LabelTextVar wFormIdFieldname;
+ private LabelTextVar wBrandIdFieldname;
 
  private LabelTextVar wCommentIdFieldname;
  private LabelTextVar wAuthorIdFieldname;
@@ -512,6 +517,76 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    fdSatisfactionFieldname.right = new FormAttachment( 100, -margin );
    wSatisfactionFieldname.setLayoutData( fdSatisfactionFieldname );
 
+   // localeFieldname
+   wLocaleFieldname =
+     new LabelTextVar(
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.LocaleFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.LocaleFieldname.Tooltip" ) );
+   props.setLook( wLocaleFieldname );
+   wLocaleFieldname.addModifyListener( lsMod );
+   FormData fdLocaleFieldname = new FormData();
+   fdLocaleFieldname.left = new FormAttachment( 0, -margin );
+   fdLocaleFieldname.top = new FormAttachment( wSatisfactionFieldname, 2 * margin );
+   fdLocaleFieldname.right = new FormAttachment( 100, -margin );
+   wLocaleFieldname.setLayoutData( fdLocaleFieldname );
+
+   // dueAtFieldname
+   wDueAtFieldname =
+     new LabelTextVar(
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.DueAtFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.DueAtFieldname.Tooltip" ) );
+   props.setLook( wDueAtFieldname );
+   wDueAtFieldname.addModifyListener( lsMod );
+   FormData fdDueAtFieldname = new FormData();
+   fdDueAtFieldname.left = new FormAttachment( 0, -margin );
+   fdDueAtFieldname.top = new FormAttachment( wLocaleFieldname, 2 * margin );
+   fdDueAtFieldname.right = new FormAttachment( 100, -margin );
+   wDueAtFieldname.setLayoutData( fdDueAtFieldname );
+
+   // satisfactionCommentFieldname
+   wSatisfactionCommentFieldname =
+     new LabelTextVar(
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SatisfactionCommentFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.SatisfactionCommentFieldname.Tooltip" ) );
+   props.setLook( wSatisfactionCommentFieldname );
+   wSatisfactionCommentFieldname.addModifyListener( lsMod );
+   FormData fdSatisfactionCommentFieldname = new FormData();
+   fdSatisfactionCommentFieldname.left = new FormAttachment( 0, -margin );
+   fdSatisfactionCommentFieldname.top = new FormAttachment( wDueAtFieldname, 2 * margin );
+   fdSatisfactionCommentFieldname.right = new FormAttachment( 100, -margin );
+   wSatisfactionCommentFieldname.setLayoutData( fdSatisfactionCommentFieldname );
+
+   // formIdFieldname
+   wFormIdFieldname =
+     new LabelTextVar(
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.FormIdFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.FormIdFieldname.Tooltip" ) );
+   props.setLook( wFormIdFieldname );
+   wFormIdFieldname.addModifyListener( lsMod );
+   FormData fdFormIdFieldname = new FormData();
+   fdFormIdFieldname.left = new FormAttachment( 0, -margin );
+   fdFormIdFieldname.top = new FormAttachment( wSatisfactionCommentFieldname, 2 * margin );
+   fdFormIdFieldname.right = new FormAttachment( 100, -margin );
+   wFormIdFieldname.setLayoutData( fdFormIdFieldname );
+
+   // wBrandIdFieldname
+   wBrandIdFieldname =
+     new LabelTextVar(
+       transMeta, wTicketSummaryComp,
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.BrandIdFieldname.Label" ),
+       BaseMessages.getString( PKG, "ZendeskInputTicketAuditDialog.BrandIdFieldname.Tooltip" ) );
+   props.setLook( wBrandIdFieldname );
+   wBrandIdFieldname.addModifyListener( lsMod );
+   FormData fdBrandIdFieldname = new FormData();
+   fdBrandIdFieldname.left = new FormAttachment( 0, -margin );
+   fdBrandIdFieldname.top = new FormAttachment( wFormIdFieldname, 2 * margin );
+   fdBrandIdFieldname.right = new FormAttachment( 100, -margin );
+   wBrandIdFieldname.setLayoutData( fdBrandIdFieldname );
+
    FormData fdSummaryComp = new FormData();
    fdSummaryComp.left = new FormAttachment( 0, 0 );
    fdSummaryComp.top = new FormAttachment( 0, 0 );
@@ -765,6 +840,11 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    wChangedToPrivateFieldname.setText( Const.NVL( input.getChangedToPrivateFieldname(), "" ) );
    wCustomFieldFieldname.setText( Const.NVL( input.getCustomFieldFieldname(), "" ) );
    wCustomFieldValueFieldname.setText( Const.NVL( input.getCustomFieldValueFieldname(), "" ) );
+   wLocaleFieldname.setText( Const.NVL( input.getLocaleFieldname(), "" ) );
+   wDueAtFieldname.setText( Const.NVL( input.getDueAtFieldname(), "" ) );
+   wSatisfactionCommentFieldname.setText( Const.NVL( input.getSatisfactionCommentFieldname(), "" ) );
+   wFormIdFieldname.setText( Const.NVL( input.getFormIdFieldname(), "" ) );
+   wBrandIdFieldname.setText( Const.NVL( input.getBrandIdFieldname(), "" ) );
 
    wStepname.selectAll();
    wStepname.setFocus();
@@ -817,6 +897,11 @@ public class ZendeskInputTicketAuditDialog extends BaseStepDialog implements Ste
    inf.setChangedToPrivateFieldname( wChangedToPrivateFieldname.getText() );
    inf.setCustomFieldFieldname( wCustomFieldFieldname.getText() );
    inf.setCustomFieldValueFieldname( wCustomFieldValueFieldname.getText() );
+   inf.setLocaleFieldname( wLocaleFieldname.getText() );
+   inf.setDueAtFieldname( wDueAtFieldname.getText() );
+   inf.setSatisfactionCommentFieldname( wSatisfactionCommentFieldname.getText() );
+   inf.setFormIdFieldname( wFormIdFieldname.getText() );
+   inf.setBrandIdFieldname( wBrandIdFieldname.getText() );
 
    stepname = wStepname.getText(); // return value
  }

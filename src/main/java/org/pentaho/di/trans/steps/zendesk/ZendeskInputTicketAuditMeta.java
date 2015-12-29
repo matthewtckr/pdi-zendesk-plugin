@@ -101,11 +101,13 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   private String ticketCommentsStepName;
   private String ticketCustomFieldsStepName;
   private String ticketTagsStepName;
+  private String ticketCollaboratorsStepName;
 
   private StepMeta ticketOverviewStepMeta;
   private StepMeta ticketCustomFieldsStepMeta;
   private StepMeta ticketCommentsStepMeta;
   private StepMeta ticketTagsStepMeta;
+  private StepMeta ticketCollaboratorsStepMeta;
   
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
@@ -194,6 +196,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
       getTicketCommentsStepMeta() != null ? getTicketCommentsStepMeta().getName() : getTicketCommentsStepName() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "ticketTagsStepName",
       getTicketTagsStepMeta() != null ? getTicketTagsStepMeta().getName() : getTicketTagsStepName() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "ticketCollaboratorsStepName",
+      getTicketCollaboratorsStepMeta() != null ? getTicketCollaboratorsStepMeta().getName() : getTicketCollaboratorsStepName() ) );
     return builder.toString();
   }
 
@@ -233,6 +237,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setTicketCustomFieldsStepName( XMLHandler.getTagValue( stepnode, "ticketCustomFieldsStepName" ) );
     setTicketCommentsStepName( XMLHandler.getTagValue( stepnode, "ticketCommentsStepName" ) );
     setTicketTagsStepName( XMLHandler.getTagValue( stepnode, "ticketTagsStepName" ) );
+    setTicketCollaboratorsStepName( XMLHandler.getTagValue( stepnode, "ticketCollaboratorsStepName" ) );
   }
 
   @Override
@@ -272,6 +277,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     setTicketCustomFieldsStepName( rep.getStepAttributeString( id_step, "ticketCustomFieldsStepName" ) );
     setTicketCommentsStepName( rep.getStepAttributeString( id_step, "ticketCommentsStepName" ) );
     setTicketTagsStepName( rep.getStepAttributeString( id_step, "ticketTagsStepName" ) );
+    setTicketCollaboratorsStepName( rep.getStepAttributeString( id_step, "ticketCollaboratorsStepName" ) );
   }
 
   @Override
@@ -315,6 +321,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
       getTicketCommentsStepMeta() != null ? getTicketCommentsStepMeta().getName() : getTicketCommentsStepName() );
     rep.saveStepAttribute( id_transformation, id_step, "ticketTagsStepName",
       getTicketTagsStepMeta() != null ? getTicketTagsStepMeta().getName() : getTicketTagsStepName() );
+    rep.saveStepAttribute( id_transformation, id_step, "ticketCollaboratorsStepName",
+      getTicketCollaboratorsStepMeta() != null ? getTicketCollaboratorsStepMeta().getName() : getTicketCollaboratorsStepName() );
   }
 
   @Override
@@ -329,6 +337,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
         prepareExecutionResultsTicketCustomFields( inputRowMeta, space );
       } else if ( nextStep.equals( ticketTagsStepMeta ) ) {
         prepareExecutionResultsTicketTags( inputRowMeta, space );
+      } else if ( nextStep.equals( ticketCollaboratorsStepMeta ) ) {
+        prepareExecutionResultsTicketCollaborators( inputRowMeta, space );
       }
     }
   }
@@ -344,8 +354,6 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getAssigneeIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getGroupIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getSubjectFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTagsFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getCollaboratorsFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getStatusFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getPriorityFieldname() ), ValueMetaInterface.TYPE_STRING );
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getChannelFieldname() ), ValueMetaInterface.TYPE_STRING );
@@ -385,6 +393,13 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     addFieldToRow( inputRowMeta, space.environmentSubstitute( getTagsFieldname() ), ValueMetaInterface.TYPE_STRING );
   }
 
+  private void prepareExecutionResultsTicketCollaborators( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
+    inputRowMeta.clear();
+    addFieldToRow( inputRowMeta, getTicketIdFieldname(), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getAuditIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getCollaboratorsFieldname() ), ValueMetaInterface.TYPE_INTEGER );
+  }
+
   @Override
   public StepIOMetaInterface getStepIOMeta() {
     if ( ioMeta == null ) {
@@ -398,6 +413,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
         PKG, "ZendeskInputTicketAuditMeta.TicketCustomFieldsStream.Description" ), StreamIcon.TARGET, null ) );
       ioMeta.addStream( new Stream( StreamType.TARGET, ticketTagsStepMeta, BaseMessages.getString(
         PKG, "ZendeskInputTicketAuditMeta.TicketTagsStream.Description" ), StreamIcon.TARGET, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, ticketCollaboratorsStepMeta, BaseMessages.getString(
+        PKG, "ZendeskInputTicketAuditMeta.TicketCollaboratorsStream.Description" ), StreamIcon.TARGET, null ) );
     }
     return ioMeta;
   }
@@ -408,6 +425,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
     ticketCommentsStepMeta = StepMeta.findStep( steps, ticketCommentsStepName );
     ticketCustomFieldsStepMeta = StepMeta.findStep( steps, ticketCustomFieldsStepName );
     ticketTagsStepMeta = StepMeta.findStep( steps, ticketTagsStepName );
+    ticketCollaboratorsStepMeta = StepMeta.findStep( steps, ticketCollaboratorsStepName );
   }
 
   @Override
@@ -427,6 +445,8 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
         break;
       case 3:
         setTicketTagsStepMeta( step );
+      case 4:
+        setTicketCollaboratorsStepMeta( step );
       default:
         break;
     }
@@ -730,6 +750,22 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
 
   public void setTicketTagsStepMeta( StepMeta ticketTagsStepMeta ) {
     this.ticketTagsStepMeta = ticketTagsStepMeta;
+  }
+
+  public String getTicketCollaboratorsStepName() {
+    return ticketCollaboratorsStepName;
+  }
+
+  public void setTicketCollaboratorsStepName( String ticketCollaboratorsStepName ) {
+    this.ticketCollaboratorsStepName = ticketCollaboratorsStepName;
+  }
+
+  public StepMeta getTicketCollaboratorsStepMeta() {
+    return ticketCollaboratorsStepMeta;
+  }
+
+  public void setTicketCollaboratorsStepMeta( StepMeta ticketCollaboratorsStepMeta ) {
+    this.ticketCollaboratorsStepMeta = ticketCollaboratorsStepMeta;
   }
 
 }

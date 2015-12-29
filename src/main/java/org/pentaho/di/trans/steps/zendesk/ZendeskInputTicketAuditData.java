@@ -37,11 +37,13 @@ public class ZendeskInputTicketAuditData extends ZendeskInputData {
   RowMetaInterface ticketCommentsOutputRowMeta;
   RowMetaInterface ticketCustomFieldsOutputRowMeta;
   RowMetaInterface ticketTagsOutputRowMeta;
+  RowMetaInterface ticketCollaboratorsOutputRowMeta;
 
   RowSet ticketOverviewOutputRowSet;
   RowSet ticketCommentsOutputRowSet;
   RowSet ticketCustomFieldsOutputRowSet;
   RowSet ticketTagsOutputRowSet;
+  RowSet ticketCollaboratorsOutputRowSet;
 
   void newTicket() {
     auditSummaries = null;
