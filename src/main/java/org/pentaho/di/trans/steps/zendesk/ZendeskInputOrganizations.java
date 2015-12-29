@@ -61,8 +61,10 @@ public class ZendeskInputOrganizations extends ZendeskInput {
       first = false;
 
       if ( getInputRowMeta() != null ) {
+        data.isReceivingInput = true;
         data.incomingIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getIncomingFieldname() ) );
       } else {
+        data.isReceivingInput = !Const.isEmpty( environmentSubstitute( meta.getIncomingFieldname() ) );
         data.incomingIndex = -1;
       }
 
@@ -109,7 +111,7 @@ public class ZendeskInputOrganizations extends ZendeskInput {
       }
     }
 
-    if ( data.incomingIndex < 0 ) {
+    if ( !data.isReceivingInput ) {
       Iterable<Organization> organizations = null;
       try {
         organizations = data.conn.getOrganizations();
@@ -136,6 +138,13 @@ public class ZendeskInputOrganizations extends ZendeskInput {
       setOutputDone();
       return false;
     } else {
+      if ( data.incomingIndex < 0 ) {
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.MissingField" ) );
+        setErrors( 1L );
+        setOutputDone();
+        return false;
+      }
+
       Long orgId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       Organization organization = null;
       try {

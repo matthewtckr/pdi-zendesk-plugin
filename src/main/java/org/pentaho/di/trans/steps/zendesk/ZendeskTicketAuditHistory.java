@@ -103,6 +103,8 @@ public class ZendeskTicketAuditHistory implements Cloneable {
     cloned.satisfaction = this.satisfaction;
     cloned.customFields = this.customFields == null ? new LinkedHashMap<String, String>() : new LinkedHashMap<String, String>( this.customFields );
     cloned.comment = null;
+    cloned.formId = this.formId;
+    cloned.brandId = this.brandId;
     return cloned;
   }
   public ZendeskTicketAuditHistory createNextAudit( Audit audit, AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries ) throws CloneNotSupportedException, KettleValueException {

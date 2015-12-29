@@ -37,6 +37,8 @@ public class ZendeskInputOrganizationsData extends ZendeskInputData {
   RowSet organizationFieldOutputRowSet;
   RowSet organizationDomainOutputRowSet;
 
+  boolean isReceivingInput;
+
   int incomingIndex;
   int organizationIdIndex;
   int urlIndex;

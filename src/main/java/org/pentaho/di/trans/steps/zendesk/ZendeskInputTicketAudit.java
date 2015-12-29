@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -99,6 +98,13 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
           meta.getTicketTagsStepMeta(), this, repository, metaStore );
         data.ticketTagsOutputRowSet = findOutputRowSet( meta.getTicketTagsStepMeta().getName() );
       }
+
+      if ( meta.getTicketCollaboratorsStepMeta() != null ) {
+        data.ticketCollaboratorsOutputRowMeta = new RowMeta();
+        meta.getFields( data.ticketCollaboratorsOutputRowMeta, getStepname(), null,
+          meta.getTicketCollaboratorsStepMeta(), this, repository, metaStore );
+        data.ticketCollaboratorsOutputRowSet = findOutputRowSet( meta.getTicketCollaboratorsStepMeta().getName() );
+      }
     }
 
     // Process ticket audit
@@ -130,10 +136,12 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
     }
 
     long i = 0;
+    int lastEntryIndex = data.auditSummaries.size() - 1;
     for ( ZendeskTicketAuditHistory audit : data.auditSummaries.values() ) {
       if ( audit == null ) {
         continue;
       }
+
       if ( data.ticketOverviewOutputRowMeta != null && data.ticketOverviewOutputRowSet != null ) {
         Object[] ticketOverviewRow = RowDataUtil.allocateRowData( data.ticketOverviewOutputRowMeta.size() );
         ticketOverviewRow[0] = audit.ticketId;
@@ -145,13 +153,16 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         ticketOverviewRow[6] = audit.assigneeId;
         ticketOverviewRow[7] = audit.groupId;
         ticketOverviewRow[8] = audit.subject;
-        ticketOverviewRow[9] = StringUtils.join( audit.tags, "," );
-        ticketOverviewRow[10] = StringUtils.join( audit.collaborators, "," );
-        ticketOverviewRow[11] = audit.status;
-        ticketOverviewRow[12] = audit.priority;
-        ticketOverviewRow[13] = audit.channel;
-        ticketOverviewRow[14] = audit.type;
-        ticketOverviewRow[15] = audit.satisfaction;
+        ticketOverviewRow[9] = audit.status;
+        ticketOverviewRow[10] = audit.priority;
+        ticketOverviewRow[11] = audit.channel;
+        ticketOverviewRow[12] = audit.type;
+        ticketOverviewRow[13] = audit.satisfaction;
+        ticketOverviewRow[14] = audit.locale;
+        ticketOverviewRow[15] = audit.dueAt;
+        ticketOverviewRow[16] = audit.satisfactionComment;
+        ticketOverviewRow[17] = audit.formId;
+        ticketOverviewRow[18] = audit.brandId;
         putRowTo( data.ticketOverviewOutputRowMeta, ticketOverviewRow, data.ticketOverviewOutputRowSet );
       }
 
@@ -180,6 +191,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
           putRowTo( data.ticketCustomFieldsOutputRowMeta, customFieldRow, data.ticketCustomFieldsOutputRowSet );
         }
       }
+
       if ( audit.tags != null && audit.tags.size() > 0 &&
           data.ticketTagsOutputRowMeta != null && data.ticketTagsOutputRowSet != null ) {
         for ( String tag : audit.tags ) {
@@ -188,6 +200,16 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
           tagRow[1] = audit.auditId;
           tagRow[2] = tag;
           putRowTo( data.ticketTagsOutputRowMeta, tagRow, data.ticketTagsOutputRowSet );
+        }
+      }
+
+      if ( audit.collaborators != null && audit.collaborators.size() > 0 && true && true ) {
+        for ( Long collaborator : audit.collaborators ) {
+          Object[] collaboratorRow = RowDataUtil.allocateRowData( data.ticketCollaboratorsOutputRowMeta.size() );
+          collaboratorRow[0] = audit.ticketId;
+          collaboratorRow[1] = audit.auditId;
+          collaboratorRow[2] = collaborator;
+          putRowTo( data.ticketCollaboratorsOutputRowMeta, collaboratorRow, data.ticketCollaboratorsOutputRowSet );
         }
       }
     }

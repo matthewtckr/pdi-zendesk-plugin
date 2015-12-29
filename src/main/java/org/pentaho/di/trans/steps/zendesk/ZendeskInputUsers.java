@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.zendesk;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -62,8 +63,10 @@ public class ZendeskInputUsers extends ZendeskInput {
       first = false;
 
       if ( getInputRowMeta() != null ) {
+        data.isReceivingInput = true;
         data.incomingIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getIncomingFieldname() ) );
       } else {
+        data.isReceivingInput = !Const.isEmpty( environmentSubstitute( meta.getIncomingFieldname() ) );
         data.incomingIndex = -1;
       }
       if ( meta.getUserStepMeta() != null ) {
@@ -116,7 +119,7 @@ public class ZendeskInputUsers extends ZendeskInput {
       }
     }
 
-    if ( data.incomingIndex < 0 ) {
+    if ( !data.isReceivingInput ) {
       Iterable<User> users = null;
       try {
         users = data.conn.getUsers();
@@ -152,6 +155,13 @@ public class ZendeskInputUsers extends ZendeskInput {
       setOutputDone();
       return false;
     } else {
+      if ( data.incomingIndex < 0 ) {
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.MissingField" ) );
+        setErrors( 1L );
+        setOutputDone();
+        return false;
+      }
+
       Long userId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       User user = null;
       try {
