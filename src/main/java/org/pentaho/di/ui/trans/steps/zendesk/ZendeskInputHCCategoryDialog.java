@@ -23,6 +23,8 @@
 package org.pentaho.di.ui.trans.steps.zendesk;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,6 +35,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -40,6 +43,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -53,6 +57,10 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
 
  private static Class<?> PKG = ZendeskInputHCCategoryMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskInputHCCategoryMeta input;
+
+ private CTabFolder wTabFolder;
+ private CTabItem wGeneralTab, wCategoryTab;
+ private Composite wGeneralComp, wCategoryComp;
 
  private LabelTextVar wSubDomain, wUsername;
  private Label wlPassword, wlToken;
@@ -120,8 +128,27 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    fdStepname.right = new FormAttachment( 100, 0 );
    wStepname.setLayoutData( fdStepname );
 
+   // The Tab Folders
+   wTabFolder = new CTabFolder( shell, SWT.BORDER );
+   props.setLook(  wTabFolder, Props.WIDGET_STYLE_TAB );
+
+   // ///////////////////////
+   // START OF GENERAL TAB //
+   // ///////////////////////
+
+   wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+   wGeneralTab.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.GeneralTab.TabItem" ) );
+
+   wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wGeneralComp );
+
+   FormLayout generalLayout = new FormLayout();
+   generalLayout.marginWidth = margin;
+   generalLayout.marginHeight = margin;
+   wGeneralComp.setLayout( generalLayout );
+
    // Subdomain
-   wSubDomain = new LabelTextVar( transMeta, shell,
+   wSubDomain = new LabelTextVar( transMeta, wGeneralComp,
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Label" ),
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
@@ -135,7 +162,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // Username
    wUsername =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
+       transMeta, wGeneralComp, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
@@ -146,7 +173,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    wUsername.setLayoutData( fdUsername );
 
    // Password
-   wlPassword = new Label( shell, SWT.RIGHT );
+   wlPassword = new Label( wGeneralComp, SWT.RIGHT );
    wlPassword.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Label" ) );
    props.setLook( wlPassword );
    FormData fdlPassword = new FormData();
@@ -155,7 +182,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    fdlPassword.right = new FormAttachment( middle, -margin );
    wlPassword.setLayoutData( fdlPassword );
    
-   wPassword = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+   wPassword = new PasswordTextVar( transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
@@ -166,7 +193,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    wPassword.setLayoutData( fdPassword );
 
    // Token
-   wlToken = new Label( shell, SWT.RIGHT );
+   wlToken = new Label( wGeneralComp, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
    FormData fdlToken = new FormData();
@@ -175,7 +202,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    fdlToken.right = new FormAttachment( middle, -margin );
    wlToken.setLayoutData( fdlToken );
 
-   wToken = new Button( shell, SWT.CHECK );
+   wToken = new Button( wGeneralComp, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
    FormData fdToken = new FormData();
@@ -189,10 +216,39 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
      }
    } );
 
+   FormData fdGeneralComp = new FormData();
+   fdGeneralComp.left = new FormAttachment( 0, 0 );
+   fdGeneralComp.top = new FormAttachment( 0, 0 );
+   fdGeneralComp.right = new FormAttachment( 100, 0 );
+   fdGeneralComp.bottom = new FormAttachment( 100, 0 );
+   wGeneralComp.setLayoutData( fdGeneralComp );
+
+   wGeneralComp.layout();
+   wGeneralTab.setControl( wGeneralComp );
+
+   // /////////////////////
+   // END OF GENERAL TAB //
+   // /////////////////////
+
+   // //////////////////////
+   // START OF SECTIONS TAB //
+   // //////////////////////
+
+   wCategoryTab = new CTabItem( wTabFolder, SWT.NONE );
+   wCategoryTab.setText( BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryTab.TabItem" ) );
+
+   wCategoryComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wCategoryComp );
+
+   FormLayout categoryLayout = new FormLayout();
+   categoryLayout.marginWidth = margin;
+   categoryLayout.marginHeight = margin;
+   wCategoryComp.setLayout( categoryLayout );
+
    // categoryIdFieldname
    wCategoryIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryIdFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryIdFieldname.Tooltip" ) );
    props.setLook( wCategoryIdFieldname );
    wCategoryIdFieldname.addModifyListener( lsMod );
@@ -205,7 +261,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // categoryUrlFieldname
    wCategoryUrlFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryURLFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryURLFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryURLFieldname.Tooltip" ) );
    props.setLook( wCategoryUrlFieldname );
    wCategoryUrlFieldname.addModifyListener( lsMod );
@@ -218,7 +274,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // categoryNameFieldname
    wCategoryNameFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryNameFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryNameFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryNameFieldname.Tooltip" ) );
    props.setLook( wCategoryNameFieldname );
    wCategoryNameFieldname.addModifyListener( lsMod );
@@ -231,7 +287,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // descriptionFieldname
    wDescriptionFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.DescriptionFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.DescriptionFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.DescriptionFieldname.Tooltip" ) );
    props.setLook( wDescriptionFieldname );
    wDescriptionFieldname.addModifyListener( lsMod );
@@ -244,7 +300,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // localeFieldname
    wLocaleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.LocaleFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.LocaleFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.LocaleFieldname.Tooltip" ) );
    props.setLook( wLocaleFieldname );
    wLocaleFieldname.addModifyListener( lsMod );
@@ -257,7 +313,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // sourceLocaleFieldname
    wSourceLocaleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.SourceLocaleFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.SourceLocaleFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.SourceLocaleFieldname.Tooltip" ) );
    props.setLook( wSourceLocaleFieldname );
    wSourceLocaleFieldname.addModifyListener( lsMod );
@@ -270,7 +326,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // categoryHtmlUrlFieldname
    wCategoryHtmlUrlFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryHTMLURLFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryHTMLURLFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CategoryHTMLURLFieldname.Tooltip" ) );
    props.setLook( wCategoryHtmlUrlFieldname );
    wCategoryHtmlUrlFieldname.addModifyListener( lsMod );
@@ -283,7 +339,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // outdatedFieldname
    wOutdatedFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.OutdatedFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.OutdatedFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.OutdatedFieldname.Tooltip" ) );
    props.setLook( wOutdatedFieldname );
    wOutdatedFieldname.addModifyListener( lsMod );
@@ -296,7 +352,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // positionFieldname
    wPositionFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.PositionFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.PositionFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.PositionFieldname.Tooltip" ) );
    props.setLook( wPositionFieldname );
    wPositionFieldname.addModifyListener( lsMod );
@@ -309,7 +365,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // createdAtFieldname
    wCreatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CreatedAtFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CreatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
@@ -322,7 +378,7 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    // updatedAtFieldname
    wUpdatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.UpdatedAtFieldname.Label" ),
+       transMeta, wCategoryComp, BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.UpdatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCCategoryDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
@@ -332,13 +388,40 @@ public class ZendeskInputHCCategoryDialog extends BaseStepDialog implements Step
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
    wUpdatedAtFieldname.setLayoutData( fdUpdatedAtFieldname );
 
+   FormData fdSectionComp = new FormData();
+   fdSectionComp.left = new FormAttachment( 0, 0 );
+   fdSectionComp.top = new FormAttachment( 0, 0 );
+   fdSectionComp.right = new FormAttachment( 100, 0 );
+   fdSectionComp.bottom = new FormAttachment( 100, 0 );
+   wCategoryComp.setLayoutData( fdSectionComp );
+
+   wCategoryComp.layout();
+   wCategoryTab.setControl( wCategoryComp );
+
+   // ////////////////////
+   // END OF GROUPS TAB //
+   // ////////////////////
+
+   FormData fdTabFolder = new FormData();
+   fdTabFolder.left = new FormAttachment( 0, 0 );
+   fdTabFolder.top = new FormAttachment( wStepname, margin );
+   fdTabFolder.right = new FormAttachment( 100, 0 );
+   fdTabFolder.bottom = new FormAttachment( 100, -50 );
+   wTabFolder.setLayoutData( fdTabFolder );
+
+   wTabFolder.setSelection( 0 );
+
+   // ////////////////////
+   // END OF TAB FOLDER //
+   // ////////////////////
+
    // Some buttons
    wOK = new Button( shell, SWT.PUSH );
    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
    wCancel = new Button( shell, SWT.PUSH );
    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-   setButtonPositions( new Button[] { wOK, wCancel }, margin, wUpdatedAtFieldname );
+   setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
    // Add listeners
    lsCancel = new Listener() {

@@ -23,6 +23,8 @@
 package org.pentaho.di.ui.trans.steps.zendesk;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,6 +35,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -40,6 +43,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -53,6 +57,10 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
 
  private static Class<?> PKG = ZendeskInputHCSectionMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskInputHCSectionMeta input;
+
+ private CTabFolder wTabFolder;
+ private CTabItem wGeneralTab, wSectionTab;
+ private Composite wGeneralComp, wSectionComp;
 
  private LabelTextVar wSubDomain, wUsername;
  private Label wlPassword, wlToken;
@@ -120,8 +128,27 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    fdStepname.right = new FormAttachment( 100, 0 );
    wStepname.setLayoutData( fdStepname );
 
+   // The Tab Folders
+   wTabFolder = new CTabFolder( shell, SWT.BORDER );
+   props.setLook(  wTabFolder, Props.WIDGET_STYLE_TAB );
+
+   // ///////////////////////
+   // START OF GENERAL TAB //
+   // ///////////////////////
+
+   wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+   wGeneralTab.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.GeneralTab.TabItem" ) );
+
+   wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wGeneralComp );
+
+   FormLayout generalLayout = new FormLayout();
+   generalLayout.marginWidth = margin;
+   generalLayout.marginHeight = margin;
+   wGeneralComp.setLayout( generalLayout );
+
    // Subdomain
-   wSubDomain = new LabelTextVar( transMeta, shell,
+   wSubDomain = new LabelTextVar( transMeta, wGeneralComp,
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Label" ),
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
@@ -135,7 +162,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // Username
    wUsername =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
+       transMeta, wGeneralComp, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
@@ -146,7 +173,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    wUsername.setLayoutData( fdUsername );
 
    // Password
-   wlPassword = new Label( shell, SWT.RIGHT );
+   wlPassword = new Label( wGeneralComp, SWT.RIGHT );
    wlPassword.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Label" ) );
    props.setLook( wlPassword );
    FormData fdlPassword = new FormData();
@@ -155,7 +182,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    fdlPassword.right = new FormAttachment( middle, -margin );
    wlPassword.setLayoutData( fdlPassword );
    
-   wPassword = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+   wPassword = new PasswordTextVar( transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
@@ -166,7 +193,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    wPassword.setLayoutData( fdPassword );
 
    // Token
-   wlToken = new Label( shell, SWT.RIGHT );
+   wlToken = new Label( wGeneralComp, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
    FormData fdlToken = new FormData();
@@ -175,7 +202,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    fdlToken.right = new FormAttachment( middle, -margin );
    wlToken.setLayoutData( fdlToken );
 
-   wToken = new Button( shell, SWT.CHECK );
+   wToken = new Button( wGeneralComp, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
    FormData fdToken = new FormData();
@@ -189,10 +216,39 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
      }
    } );
 
+   FormData fdGeneralComp = new FormData();
+   fdGeneralComp.left = new FormAttachment( 0, 0 );
+   fdGeneralComp.top = new FormAttachment( 0, 0 );
+   fdGeneralComp.right = new FormAttachment( 100, 0 );
+   fdGeneralComp.bottom = new FormAttachment( 100, 0 );
+   wGeneralComp.setLayoutData( fdGeneralComp );
+
+   wGeneralComp.layout();
+   wGeneralTab.setControl( wGeneralComp );
+
+   // /////////////////////
+   // END OF GENERAL TAB //
+   // /////////////////////
+
+   // //////////////////////
+   // START OF SECTIONS TAB //
+   // //////////////////////
+
+   wSectionTab = new CTabItem( wTabFolder, SWT.NONE );
+   wSectionTab.setText( BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionTab.TabItem" ) );
+
+   wSectionComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wSectionComp );
+
+   FormLayout sectionLayout = new FormLayout();
+   sectionLayout.marginWidth = margin;
+   sectionLayout.marginHeight = margin;
+   wSectionComp.setLayout( sectionLayout );
+
    // sectionIdFieldname
    wSectionIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionIdFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionIdFieldname.Tooltip" ) );
    props.setLook( wSectionIdFieldname );
    wSectionIdFieldname.addModifyListener( lsMod );
@@ -205,7 +261,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // sectionUrlFieldname
    wSectionUrlFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionURLFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionURLFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionURLFieldname.Tooltip" ) );
    props.setLook( wSectionUrlFieldname );
    wSectionUrlFieldname.addModifyListener( lsMod );
@@ -218,7 +274,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // sectionNameFieldname
    wSectionNameFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionNameFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionNameFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionNameFieldname.Tooltip" ) );
    props.setLook( wSectionNameFieldname );
    wSectionNameFieldname.addModifyListener( lsMod );
@@ -231,7 +287,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // categoryIdFieldname
    wCategoryIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CategoryIdFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CategoryIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CategoryIdFieldname.Tooltip" ) );
    props.setLook( wCategoryIdFieldname );
    wCategoryIdFieldname.addModifyListener( lsMod );
@@ -244,7 +300,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // localeFieldname
    wLocaleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.LocaleFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.LocaleFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.LocaleFieldname.Tooltip" ) );
    props.setLook( wLocaleFieldname );
    wLocaleFieldname.addModifyListener( lsMod );
@@ -257,7 +313,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // sourceLocaleFieldname
    wSourceLocaleFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SourceLocaleFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SourceLocaleFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SourceLocaleFieldname.Tooltip" ) );
    props.setLook( wSourceLocaleFieldname );
    wSourceLocaleFieldname.addModifyListener( lsMod );
@@ -270,7 +326,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // sectionHtmlUrlFieldname
    wSectionHtmlUrlFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionHTMLURLFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionHTMLURLFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.SectionHTMLURLFieldname.Tooltip" ) );
    props.setLook( wSectionHtmlUrlFieldname );
    wSectionHtmlUrlFieldname.addModifyListener( lsMod );
@@ -283,7 +339,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // outdatedFieldname
    wOutdatedFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.OutdatedFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.OutdatedFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.OutdatedFieldname.Tooltip" ) );
    props.setLook( wOutdatedFieldname );
    wOutdatedFieldname.addModifyListener( lsMod );
@@ -296,7 +352,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // positionFieldname
    wPositionFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.PositionFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.PositionFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.PositionFieldname.Tooltip" ) );
    props.setLook( wPositionFieldname );
    wPositionFieldname.addModifyListener( lsMod );
@@ -309,7 +365,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // createdAtFieldname
    wCreatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CreatedAtFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CreatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
@@ -322,7 +378,7 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    // updatedAtFieldname
    wUpdatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.UpdatedAtFieldname.Label" ),
+       transMeta, wSectionComp, BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.UpdatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputHCSectionDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
@@ -332,13 +388,40 @@ public class ZendeskInputHCSectionDialog extends BaseStepDialog implements StepD
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
    wUpdatedAtFieldname.setLayoutData( fdUpdatedAtFieldname );
 
+   FormData fdSectionComp = new FormData();
+   fdSectionComp.left = new FormAttachment( 0, 0 );
+   fdSectionComp.top = new FormAttachment( 0, 0 );
+   fdSectionComp.right = new FormAttachment( 100, 0 );
+   fdSectionComp.bottom = new FormAttachment( 100, 0 );
+   wSectionComp.setLayoutData( fdSectionComp );
+
+   wSectionComp.layout();
+   wSectionTab.setControl( wSectionComp );
+
+   // ////////////////////
+   // END OF GROUPS TAB //
+   // ////////////////////
+
+   FormData fdTabFolder = new FormData();
+   fdTabFolder.left = new FormAttachment( 0, 0 );
+   fdTabFolder.top = new FormAttachment( wStepname, margin );
+   fdTabFolder.right = new FormAttachment( 100, 0 );
+   fdTabFolder.bottom = new FormAttachment( 100, -50 );
+   wTabFolder.setLayoutData( fdTabFolder );
+
+   wTabFolder.setSelection( 0 );
+
+   // ////////////////////
+   // END OF TAB FOLDER //
+   // ////////////////////
+
    // Some buttons
    wOK = new Button( shell, SWT.PUSH );
    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
    wCancel = new Button( shell, SWT.PUSH );
    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-   setButtonPositions( new Button[] { wOK, wCancel }, margin, wUpdatedAtFieldname );
+   setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
    // Add listeners
    lsCancel = new Listener() {

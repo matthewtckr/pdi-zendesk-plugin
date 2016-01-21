@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.trans.steps.zendesk;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -175,7 +177,7 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
    generalLayout.marginWidth = margin;
    generalLayout.marginHeight = margin;
    wGeneralComp.setLayout( generalLayout );
-   
+
    // Subdomain
    wSubDomain = new LabelTextVar( transMeta, wGeneralComp,
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Label" ),
@@ -280,7 +282,10 @@ public class ZendeskInputHCArticleDialog extends BaseStepDialog implements StepD
        previousFields = new RowMeta();
      }
 
-     wIncomingFieldname.setItems( previousFields.getFieldNames() );
+     String[] fieldnames = previousFields.getFieldNames();
+     if ( fieldnames.length > 0 && !Arrays.asList( fieldnames ).contains( null )) {
+       wIncomingFieldname.setItems( previousFields.getFieldNames() );
+     }
    }
 
    FormData fdGeneralComp = new FormData();
