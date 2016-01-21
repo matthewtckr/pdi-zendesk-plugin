@@ -344,6 +344,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    }
    wOutputFieldname.getLabelWidget().setText( label );
    wOutputFieldname.getLabelWidget().setToolTipText( toolTip );
+   wOutputFieldname.getTextWidget().setToolTipText( toolTip );
  }
 
  /**
