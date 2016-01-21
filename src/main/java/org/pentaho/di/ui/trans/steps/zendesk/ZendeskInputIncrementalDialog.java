@@ -337,6 +337,10 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
        label = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Ticket.Label" );
        toolTip = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Ticket.Tooltip" );
        break;
+     case HELPCENTER_ARTICLES:
+       label = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.HCArticle.Label" );
+       toolTip = BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.HCArticle.Tooltip" );
+      break;
    }
    wOutputFieldname.getLabelWidget().setText( label );
    wOutputFieldname.getLabelWidget().setToolTipText( toolTip );

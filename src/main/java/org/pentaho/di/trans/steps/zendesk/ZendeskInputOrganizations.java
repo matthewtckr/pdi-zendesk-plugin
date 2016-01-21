@@ -139,7 +139,8 @@ public class ZendeskInputOrganizations extends ZendeskInput {
       return false;
     } else {
       if ( data.incomingIndex < 0 ) {
-        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.MissingField" ) );
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.MissingField",
+          environmentSubstitute( meta.getIncomingFieldname() ) ) );
         setErrors( 1L );
         setOutputDone();
         return false;
