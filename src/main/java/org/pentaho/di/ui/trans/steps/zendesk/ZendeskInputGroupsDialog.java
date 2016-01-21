@@ -23,6 +23,8 @@
 package org.pentaho.di.ui.trans.steps.zendesk;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,6 +35,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -40,6 +43,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -53,6 +57,10 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
 
  private static Class<?> PKG = ZendeskInputGroupsMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskInputGroupsMeta input;
+
+ private CTabFolder wTabFolder;
+ private CTabItem wGeneralTab, wGroupTab;
+ private Composite wGeneralComp, wGroupComp;
 
  private LabelTextVar wSubDomain, wUsername;
  private Label wlPassword, wlToken;
@@ -115,8 +123,27 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    fdStepname.right = new FormAttachment( 100, 0 );
    wStepname.setLayoutData( fdStepname );
 
+   // The Tab Folders
+   wTabFolder = new CTabFolder( shell, SWT.BORDER );
+   props.setLook(  wTabFolder, Props.WIDGET_STYLE_TAB );
+
+   // ///////////////////////
+   // START OF GENERAL TAB //
+   // ///////////////////////
+
+   wGeneralTab = new CTabItem( wTabFolder, SWT.NONE );
+   wGeneralTab.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.GeneralTab.TabItem" ) );
+
+   wGeneralComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wGeneralComp );
+
+   FormLayout generalLayout = new FormLayout();
+   generalLayout.marginWidth = margin;
+   generalLayout.marginHeight = margin;
+   wGeneralComp.setLayout( generalLayout );
+
    // Subdomain
-   wSubDomain = new LabelTextVar( transMeta, shell,
+   wSubDomain = new LabelTextVar( transMeta, wGeneralComp,
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Label" ),
      BaseMessages.getString( PKG, "ZendeskInputDialog.SubDomain.Tooltip" ) );
    props.setLook( wSubDomain );
@@ -130,7 +157,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    // Username
    wUsername =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
+       transMeta, wGeneralComp, BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputDialog.Username.Tooltip" ) );
    props.setLook( wUsername );
    wUsername.addModifyListener( lsMod );
@@ -141,7 +168,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    wUsername.setLayoutData( fdUsername );
 
    // Password
-   wlPassword = new Label( shell, SWT.RIGHT );
+   wlPassword = new Label( wGeneralComp, SWT.RIGHT );
    wlPassword.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Label" ) );
    props.setLook( wlPassword );
    FormData fdlPassword = new FormData();
@@ -150,7 +177,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    fdlPassword.right = new FormAttachment( middle, -margin );
    wlPassword.setLayoutData( fdlPassword );
    
-   wPassword = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
+   wPassword = new PasswordTextVar( transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER,
      BaseMessages.getString( PKG, "ZendeskInputDialog.Password.Tooltip" ) );
    props.setLook( wPassword );
    wPassword.addModifyListener( lsMod );
@@ -161,7 +188,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    wPassword.setLayoutData( fdPassword );
 
    // Token
-   wlToken = new Label( shell, SWT.RIGHT );
+   wlToken = new Label( wGeneralComp, SWT.RIGHT );
    wlToken.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Label" ) );
    props.setLook( wlToken );
    FormData fdlToken = new FormData();
@@ -170,7 +197,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    fdlToken.right = new FormAttachment( middle, -margin );
    wlToken.setLayoutData( fdlToken );
 
-   wToken = new Button( shell, SWT.CHECK );
+   wToken = new Button( wGeneralComp, SWT.CHECK );
    props.setLook( wToken );
    wToken.setToolTipText( BaseMessages.getString( PKG, "ZendeskInputDialog.Token.Tooltip" ) );
    FormData fdToken = new FormData();
@@ -184,10 +211,39 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
      }
    } );
 
+   FormData fdGeneralComp = new FormData();
+   fdGeneralComp.left = new FormAttachment( 0, 0 );
+   fdGeneralComp.top = new FormAttachment( 0, 0 );
+   fdGeneralComp.right = new FormAttachment( 100, 0 );
+   fdGeneralComp.bottom = new FormAttachment( 100, 0 );
+   wGeneralComp.setLayoutData( fdGeneralComp );
+
+   wGeneralComp.layout();
+   wGeneralTab.setControl( wGeneralComp );
+
+   // /////////////////////
+   // END OF GENERAL TAB //
+   // /////////////////////
+
+   // //////////////////////
+   // START OF GROUPS TAB //
+   // //////////////////////
+
+   wGroupTab = new CTabItem( wTabFolder, SWT.NONE );
+   wGroupTab.setText( BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupTab.TabItem" ) );
+
+   wGroupComp = new Composite( wTabFolder, SWT.NONE );
+   props.setLook( wGroupComp );
+
+   FormLayout groupLayout = new FormLayout();
+   groupLayout.marginWidth = margin;
+   groupLayout.marginHeight = margin;
+   wGroupComp.setLayout( groupLayout );
+
    // groupIdFieldname
    wGroupIdFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupIdFieldname.Label" ),
+       transMeta, wGroupComp, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupIdFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupIdFieldname.Tooltip" ) );
    props.setLook( wGroupIdFieldname );
    wGroupIdFieldname.addModifyListener( lsMod );
@@ -200,7 +256,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    // groupUrlFieldname
    wGroupUrlFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupURLFieldname.Label" ),
+       transMeta, wGroupComp, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupURLFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupURLFieldname.Tooltip" ) );
    props.setLook( wGroupUrlFieldname );
    wGroupUrlFieldname.addModifyListener( lsMod );
@@ -213,7 +269,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    // groupNameFieldname
    wGroupNameFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupNameFieldname.Label" ),
+       transMeta, wGroupComp, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupNameFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.GroupNameFieldname.Tooltip" ) );
    props.setLook( wGroupNameFieldname );
    wGroupNameFieldname.addModifyListener( lsMod );
@@ -226,7 +282,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    // deletedFieldname
    wDeletedFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.DeletedFieldname.Label" ),
+       transMeta, wGroupComp, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.DeletedFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.DeletedFieldname.Tooltip" ) );
    props.setLook( wDeletedFieldname );
    wGroupIdFieldname.addModifyListener( lsMod );
@@ -239,7 +295,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    // createdAtFieldname
    wCreatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.CreatedAtFieldname.Label" ),
+       transMeta, wGroupComp, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.CreatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.CreatedAtFieldname.Tooltip" ) );
    props.setLook( wCreatedAtFieldname );
    wCreatedAtFieldname.addModifyListener( lsMod );
@@ -252,7 +308,7 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    // updatedAtFieldname
    wUpdatedAtFieldname =
      new LabelTextVar(
-       transMeta, shell, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.UpdatedAtFieldname.Label" ),
+       transMeta, wGroupComp, BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.UpdatedAtFieldname.Label" ),
        BaseMessages.getString( PKG, "ZendeskInputGroupsDialog.UpdatedAtFieldname.Tooltip" ) );
    props.setLook( wUpdatedAtFieldname );
    wUpdatedAtFieldname.addModifyListener( lsMod );
@@ -262,13 +318,40 @@ public class ZendeskInputGroupsDialog extends BaseStepDialog implements StepDial
    fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
    wUpdatedAtFieldname.setLayoutData( fdUpdatedAtFieldname );
 
+   FormData fdGroupComp = new FormData();
+   fdGroupComp.left = new FormAttachment( 0, 0 );
+   fdGroupComp.top = new FormAttachment( 0, 0 );
+   fdGroupComp.right = new FormAttachment( 100, 0 );
+   fdGroupComp.bottom = new FormAttachment( 100, 0 );
+   wGroupComp.setLayoutData( fdGroupComp );
+
+   wGroupComp.layout();
+   wGroupTab.setControl( wGroupComp );
+
+   // ////////////////////
+   // END OF GROUPS TAB //
+   // ////////////////////
+
+   FormData fdTabFolder = new FormData();
+   fdTabFolder.left = new FormAttachment( 0, 0 );
+   fdTabFolder.top = new FormAttachment( wStepname, margin );
+   fdTabFolder.right = new FormAttachment( 100, 0 );
+   fdTabFolder.bottom = new FormAttachment( 100, -50 );
+   wTabFolder.setLayoutData( fdTabFolder );
+
+   wTabFolder.setSelection( 0 );
+
+   // ////////////////////
+   // END OF TAB FOLDER //
+   // ////////////////////
+
    // Some buttons
    wOK = new Button( shell, SWT.PUSH );
    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
    wCancel = new Button( shell, SWT.PUSH );
    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-   setButtonPositions( new Button[] { wOK, wCancel }, margin, wUpdatedAtFieldname );
+   setButtonPositions( new Button[] { wOK, wCancel }, margin, wTabFolder );
 
    // Add listeners
    lsCancel = new Listener() {
