@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -50,5 +53,17 @@ public class ZendeskInputGroupsMetaTest {
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputGroupsMeta meta = new ZendeskInputGroupsMeta();
+    meta.setDefault();
+    assertNotNull( meta.getGroupIdFieldname() );
+    assertNotNull( meta.getGroupUrlFieldname() );
+    assertNotNull( meta.getGroupNameFieldname() );
+    assertNotNull( meta.getDeletedFieldname() );
+    assertNotNull( meta.getCreatedAtFieldname() );
+    assertNotNull( meta.getUpdatedAtFieldname() );
   }
 }

@@ -136,7 +136,6 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
     }
 
     long i = 0;
-    int lastEntryIndex = data.auditSummaries.size() - 1;
     for ( ZendeskTicketAuditHistory audit : data.auditSummaries.values() ) {
       if ( audit == null ) {
         continue;

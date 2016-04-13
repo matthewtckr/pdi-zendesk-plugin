@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,16 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -58,5 +63,48 @@ public class ZendeskInputUsersMetaTest {
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputUsersMeta meta = new ZendeskInputUsersMeta();
+    meta.setDefault();
+    assertTrue( Const.isEmpty( meta.getIncomingFieldname() ) );
+    assertNotNull( meta.getUserIdFieldname() );
+    assertNotNull( meta.getUrlFieldname() );
+    assertNotNull( meta.getExternalIdFieldname() );
+    assertNotNull( meta.getNameFieldname() );
+    assertNotNull( meta.getEmailFieldname() );
+    assertNotNull( meta.getAliasFieldname() );
+    assertNotNull( meta.getCreatedAtFieldname() );
+    assertNotNull( meta.getUpdatedAtFieldname() );
+    assertNotNull( meta.getActiveFieldname() );
+    assertNotNull( meta.getVerifiedFieldname() );
+    assertNotNull( meta.getSharedFieldname() );
+    assertNotNull( meta.getLocaleIdFieldname() );
+    assertNotNull( meta.getTimeZoneFieldname() );
+    assertNotNull( meta.getLastLoginAtFieldname() );
+    assertNotNull( meta.getPhoneFieldname() );
+    assertNotNull( meta.getSignatureFieldname() );
+    assertNotNull( meta.getDetailsFieldname() );
+    assertNotNull( meta.getNotesFieldname() );
+    assertNotNull( meta.getOrganizationIdFieldname() );
+    assertNotNull( meta.getRoleFieldname() );
+    assertNotNull( meta.getCustomRoleIdFieldname() );
+    assertNotNull( meta.getModeratorFieldname() );
+    assertNotNull( meta.getTicketRestrictionFieldname() );
+    assertNotNull( meta.getOnlyPrivateCommentsFieldname() );
+    assertNotNull( meta.getTagsFieldname() );
+    assertNotNull( meta.getSuspendedFieldname() );
+    assertNotNull( meta.getRemotePhotoUrlFieldname() );
+    assertNotNull( meta.getUserFieldsFieldname() );
+    assertNotNull( meta.getIdentityIdFieldname() );
+    assertNotNull( meta.getIdentityUrlFieldname() );
+    assertNotNull( meta.getIdentityTypeFieldname() );
+    assertNotNull( meta.getIdentityValueFieldname() );
+    assertNotNull( meta.getIdentityVerifiedFieldname() );
+    assertNotNull( meta.getIdentityPrimaryFieldname() );
+    assertNotNull( meta.getIdentityCreatedAtFieldname() );
+    assertNotNull( meta.getIdentityUpdatedAtFieldname() );
   }
 }
