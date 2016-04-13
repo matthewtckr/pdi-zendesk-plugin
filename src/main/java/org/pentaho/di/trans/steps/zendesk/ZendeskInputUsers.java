@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -132,21 +132,23 @@ public class ZendeskInputUsers extends ZendeskInput {
 
       int i = 0;
       for ( User user : users ) {
-        i++;
-        List<Identity> identities = new ArrayList<Identity>();
-        try {
-          if ( meta.getUserIdentityStepMeta() != null ) {
-            identities.addAll( data.conn.getUserIdentities( user ) );
+        if ( user != null ) {
+          i++;
+          List<Identity> identities = new ArrayList<Identity>();
+          try {
+            if ( meta.getUserIdentityStepMeta() != null ) {
+              identities.addAll( data.conn.getUserIdentities( user ) );
+            }
+          } catch ( ZendeskResponseException zre ) {
+            logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+            setErrors( 1L );
+            setOutputDone();
+            return false;
           }
-        } catch ( ZendeskResponseException zre ) {
-          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-          setErrors( 1L );
-          setOutputDone();
-          return false;
+          outputUserRow( user );
+          outputUserIdentityRow( identities );
+          incrementLinesOutput();
         }
-        outputUserRow( user );
-        outputUserIdentityRow( identities );
-        incrementLinesOutput();
       }
       logBasic("Total Users: " + i );
       setOutputDone();
@@ -173,20 +175,22 @@ public class ZendeskInputUsers extends ZendeskInput {
         setOutputDone();
         return false;
       }
-      List<Identity> identities = new ArrayList<Identity>();
-      try {
-        if ( meta.getUserIdentityStepMeta() != null ) {
-          identities.addAll( data.conn.getUserIdentities( user ) );
+      if ( user != null ) {
+        List<Identity> identities = new ArrayList<Identity>();
+        try {
+          if ( meta.getUserIdentityStepMeta() != null ) {
+            identities.addAll( data.conn.getUserIdentities( user ) );
+          }
+        } catch ( ZendeskResponseException zre ) {
+          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+          setErrors( 1L );
+          setOutputDone();
+          return false;
         }
-      } catch ( ZendeskResponseException zre ) {
-        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-        setErrors( 1L );
-        setOutputDone();
-        return false;
+        outputUserRow( user );
+        outputUserIdentityRow( identities );
+        incrementLinesOutput();
       }
-      outputUserRow( user );
-      outputUserIdentityRow( identities );
-      incrementLinesOutput();
       return true;
     }
   }
