@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -124,12 +124,14 @@ public class ZendeskInputOrganizations extends ZendeskInput {
 
       int i = 0;
       for ( Organization organization : organizations ) {
-        i++;
-        outputOrganizationRow( organization );
-        outputOrganizationTagRow( organization );
-        outputOrganizationFieldRow( organization );
-        outputOrganizationDomainRow( organization );
-        incrementLinesOutput();
+        if ( organization != null ) {
+          i++;
+          outputOrganizationRow( organization );
+          outputOrganizationTagRow( organization );
+          outputOrganizationFieldRow( organization );
+          outputOrganizationDomainRow( organization );
+          incrementLinesOutput();
+        }
       }
       logBasic("Total Organizations: " + i );
       setOutputDone();
@@ -156,11 +158,13 @@ public class ZendeskInputOrganizations extends ZendeskInput {
         setOutputDone();
         return false;
       }
-      outputOrganizationRow( organization );
-      outputOrganizationTagRow( organization );
-      outputOrganizationFieldRow( organization );
-      outputOrganizationDomainRow( organization );
-      incrementLinesOutput();
+      if ( organization != null ) {
+        outputOrganizationRow( organization );
+        outputOrganizationTagRow( organization );
+        outputOrganizationFieldRow( organization );
+        outputOrganizationDomainRow( organization );
+        incrementLinesOutput();
+      }
       return true;
     }
   }
