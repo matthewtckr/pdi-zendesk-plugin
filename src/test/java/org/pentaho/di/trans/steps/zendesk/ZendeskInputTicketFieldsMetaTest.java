@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -52,5 +55,20 @@ public class ZendeskInputTicketFieldsMetaTest {
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputTicketFieldsMeta meta = new ZendeskInputTicketFieldsMeta();
+    meta.setDefault();
+    assertNotNull( meta.getTicketFieldIdFieldname() );
+    assertNotNull( meta.getTicketFieldUrlFieldname() );
+    assertNotNull( meta.getTicketFieldTypeFieldname() );
+    assertNotNull( meta.getTicketFieldTitleFieldname() );
+    assertNotNull( meta.getTicketFieldActiveFieldname() );
+    assertNotNull( meta.getTicketFieldRequiredFieldname() );
+    assertNotNull( meta.getTicketFieldVisibleEndUsersFieldname() );
+    assertNotNull( meta.getCreatedAtFieldname() );
+    assertNotNull( meta.getUpdatedAtFieldname() );
   }
 }

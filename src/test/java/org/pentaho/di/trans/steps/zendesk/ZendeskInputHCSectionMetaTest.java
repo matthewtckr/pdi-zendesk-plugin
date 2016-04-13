@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -52,5 +55,22 @@ public class ZendeskInputHCSectionMetaTest {
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputHCSectionMeta meta = new ZendeskInputHCSectionMeta();
+    meta.setDefault();
+    assertNotNull( meta.getSectionIdFieldname() );
+    assertNotNull( meta.getSectionUrlFieldname() );
+    assertNotNull( meta.getSectionNameFieldname() );
+    assertNotNull( meta.getCategoryIdFieldname() );
+    assertNotNull( meta.getLocaleFieldname() );
+    assertNotNull( meta.getSourceLocaleFieldname() );
+    assertNotNull( meta.getSectionHtmlUrlFieldname() );
+    assertNotNull( meta.getOutdatedFieldname() );
+    assertNotNull( meta.getPositionFieldname() );
+    assertNotNull( meta.getCreatedAtFieldname() );
+    assertNotNull( meta.getUpdatedAtFieldname() );
   }
 }

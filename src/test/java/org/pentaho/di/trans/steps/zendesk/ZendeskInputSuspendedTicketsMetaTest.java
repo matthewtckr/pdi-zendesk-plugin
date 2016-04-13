@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -52,5 +55,24 @@ public class ZendeskInputSuspendedTicketsMetaTest {
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputSuspendedTicketsMeta meta = new ZendeskInputSuspendedTicketsMeta();
+    meta.setDefault();
+    assertNotNull( meta.getSuspendedTicketIdFieldname() );
+    assertNotNull( meta.getSuspendedTicketUrlFieldname() );
+    assertNotNull( meta.getAuthorFieldname() );
+    assertNotNull( meta.getSubjectFieldname() );
+    assertNotNull( meta.getContentFieldname() );
+    assertNotNull( meta.getCauseFieldname() );
+    assertNotNull( meta.getMessageIdFieldname() );
+    assertNotNull( meta.getTicketIdFieldname() );
+    assertNotNull( meta.getRecipientFieldname() );
+    assertNotNull( meta.getCreatedAtFieldname() );
+    assertNotNull( meta.getUpdatedAtFieldname() );
+    assertNotNull( meta.getViaFieldname() );
+    assertNotNull( meta.getBrandIdFieldname() );
   }
 }

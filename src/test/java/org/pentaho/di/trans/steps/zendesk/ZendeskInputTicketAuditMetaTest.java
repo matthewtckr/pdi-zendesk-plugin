@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,9 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.zendesk;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,5 +61,39 @@ public class ZendeskInputTicketAuditMetaTest {
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputTicketAuditMeta meta = new ZendeskInputTicketAuditMeta();
+    meta.setDefault();
+    assertNull( meta.getTicketIdFieldname() );
+    assertNotNull( meta.getAuditIdFieldname() );
+    assertNotNull( meta.getAuditRownumFieldname() );
+    assertNotNull( meta.getCreatedTimeFieldname() );
+    assertNotNull( meta.getOrganizationIdFieldname() );
+    assertNotNull( meta.getRequesterIdFieldname() );
+    assertNotNull( meta.getAssigneeIdFieldname() );
+    assertNotNull( meta.getGroupIdFieldname() );
+    assertNotNull( meta.getSubjectFieldname() );
+    assertNotNull( meta.getTagsFieldname() );
+    assertNotNull( meta.getCollaboratorsFieldname() );
+    assertNotNull( meta.getStatusFieldname() );
+    assertNotNull( meta.getPriorityFieldname() );
+    assertNotNull( meta.getChannelFieldname() );
+    assertNotNull( meta.getTypeFieldname() );
+    assertNotNull( meta.getSatisfactionFieldname() );
+    assertNotNull( meta.getLocaleFieldname() );
+    assertNotNull( meta.getDueAtFieldname() );
+    assertNotNull( meta.getSatisfactionCommentFieldname() );
+    assertNotNull( meta.getFormIdFieldname() );
+    assertNotNull( meta.getCommentIdFieldname() );
+    assertNotNull( meta.getAuthorIdFieldname() );
+    assertNotNull( meta.getPublicCommentFieldname() );
+    assertNotNull( meta.getCommentBodyFieldname() );
+    assertNotNull( meta.getCommentHTMLBodyFieldname() );
+    assertNotNull( meta.getChangedToPrivateFieldname() );
+    assertNotNull( meta.getCustomFieldFieldname() );
+    assertNotNull( meta.getCustomFieldValueFieldname() );
   }
 }
