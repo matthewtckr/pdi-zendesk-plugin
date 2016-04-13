@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,9 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.zendesk;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -82,6 +85,13 @@ public class ZendeskInputIncrementalMetaTest {
       }
       return false;
     }
-    
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputIncrementalMeta meta = new ZendeskInputIncrementalMeta();
+    meta.setDefault();
+    assertNotNull( meta.getDownloadType() );
+    assertEquals( IncrementalType.TICKETS, meta.getDownloadType() );
   }
 }

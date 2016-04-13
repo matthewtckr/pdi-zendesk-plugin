@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -53,5 +56,27 @@ public class ZendeskInputOrganizationsMetaTest {
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+  }
+
+  @Test
+  public void testDefault() {
+    ZendeskInputOrganizationsMeta meta = new ZendeskInputOrganizationsMeta();
+    meta.setDefault();
+    assertNotNull( meta.getIncomingFieldname() );
+    assertNotNull( meta.getOrganizationIdFieldname() );
+    assertNotNull( meta.getUrlFieldname() );
+    assertNotNull( meta.getExternalIdFieldname() );
+    assertNotNull( meta.getNameFieldname() );
+    assertNotNull( meta.getCreatedAtFieldname() );
+    assertNotNull( meta.getUpdatedAtFieldname() );
+    assertNotNull( meta.getDetailsFieldname() );
+    assertNotNull( meta.getNotesFieldname() );
+    assertNotNull( meta.getGroupIdFieldname() );
+    assertNotNull( meta.getSharedTicketsFieldname() );
+    assertNotNull( meta.getSharedCommentsFieldname() );
+    assertNotNull( meta.getTagFieldname() );
+    assertNotNull( meta.getDomainNameFieldname() );
+    assertNotNull( meta.getOrgFieldNameFieldname() );
+    assertNotNull( meta.getOrgFieldValueFieldname() );
   }
 }

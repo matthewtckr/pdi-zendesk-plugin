@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -122,37 +122,37 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
 
   @Override
   public void setDefault() {
-    ticketIdFieldname = null;
+    setTicketIdFieldname( null );
 
-    auditIdFieldname = "Audit_ID";
-    auditRownumFieldname = "Audit_Rownum";
-    createdTimeFieldname = "Created_Time";
-    organizationIdFieldname = "Organization_ID";
-    requesterIdFieldname = "Requester_ID";
-    assigneeIdFieldname = "Assignee_ID";
-    groupIdFieldname = "Group_ID";
-    subjectFieldname = "Subject";
-    tagsFieldname = "Tags";
-    collaboratorsFieldname = "Collaborators";
-    statusFieldname = "Status";
-    priorityFieldname = "Priority";
-    channelFieldname = "Channel";
-    typeFieldname = "Type";
-    satisfactionFieldname = "Satisfaction";
-    localeFieldname = "Locale";
-    dueAtFieldname = "Due At";
-    satisfactionCommentFieldname = "Satisfaction_Comment";
-    formIdFieldname = "Form ID";
+    setAuditIdFieldname( "Audit_ID" );
+    setAuditRownumFieldname( "Audit_Rownum" );
+    setCreatedTimeFieldname( "Created_Time" );
+    setOrganizationIdFieldname( "Organization_ID" );
+    setRequesterIdFieldname( "Requester_ID" );
+    setAssigneeIdFieldname( "Assignee_ID" );
+    setGroupIdFieldname( "Group_ID" );
+    setSubjectFieldname( "Subject" );
+    setTagsFieldname( "Tags" );
+    setCollaboratorsFieldname( "Collaborators" );
+    setStatusFieldname( "Status" );
+    setPriorityFieldname( "Priority" );
+    setChannelFieldname( "Channel" );
+    setTypeFieldname( "Type" );
+    setSatisfactionFieldname( "Satisfaction" );
+    setLocaleFieldname( "Locale" );
+    setDueAtFieldname( "Due At" );
+    setSatisfactionCommentFieldname( "Satisfaction_Comment" );
+    setFormIdFieldname( "Form ID" );
 
-    commentIdFieldname = "Comment_ID";
-    authorIdFieldname = "Author_ID";
-    publicCommentFieldname = "Is_Public";
-    commentBodyFieldname = "Comment_Body";
-    commentHTMLBodyFieldname = "Comment_Body_HTML";
-    changedToPrivateFieldname = "Was_Changed_to_Private";
+    setCommentIdFieldname( "Comment_ID" );
+    setAuthorIdFieldname( "Author_ID" );
+    setPublicCommentFieldname( "Is_Public" );
+    setCommentBodyFieldname( "Comment_Body" );
+    setCommentHTMLBodyFieldname( "Comment_Body_HTML" );
+    setChangedToPrivateFieldname( "Was_Changed_to_Private" );
 
-    customFieldFieldname = "Custom_Field_Name";
-    customFieldValueFieldname = "Custom_Field_Value";
+    setCustomFieldFieldname( "Custom_Field_Name" );
+    setCustomFieldValueFieldname( "Custom_Field_Value" );
   }
 
   @Override
