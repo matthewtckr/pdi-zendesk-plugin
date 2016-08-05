@@ -8,11 +8,11 @@
 	</parent>
 	<groupId>org.pentaho.pdi</groupId>
 	<artifactId>pdi-zendesk-plugin</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<name>PDI Zendesk Plugin</name>
 
 	<properties>
-		<zendesk.client.version>0.4.0</zendesk.client.version>
+		<zendesk.client.version>0.5.1-SNAPSHOT</zendesk.client.version>
 		<kettle.version>5.4.0.1-130</kettle.version>
 		<dependency.mockito.version>1.10.19</dependency.mockito.version>
 	</properties>
