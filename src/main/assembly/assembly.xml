@@ -6,6 +6,7 @@
 	<formats>
 		<format>zip</format>
 	</formats>
+	<baseDirectory>${project.artifactId}</baseDirectory>
 	<fileSets>
 		<fileSet>
 			<directory>${project.build.directory}</directory>
