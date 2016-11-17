@@ -1,21 +1,35 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
     <version>1.1.8</version>
   </parent>
+
   <groupId>org.pentaho.pdi</groupId>
   <artifactId>pdi-zendesk-plugin</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.4-SNAPSHOT</version>
   <name>PDI Zendesk Plugin</name>
 
   <properties>
-    <zendesk.client.version>0.5.1-SNAPSHOT</zendesk.client.version>
+    <zendesk.client.version>0.5.2</zendesk.client.version>
     <kettle.version>5.4.0.1-130</kettle.version>
     <dependency.mockito.version>1.10.19</dependency.mockito.version>
   </properties>
+
+  <scm>
+    <connection>scm:git:git://github.com/matthewtckr/pdi-zendesk-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:matthewtckr/pdi-zendesk-plugin.git</developerConnection>
+    <url>http://github.com/matthewtckr/pdi-zendesk-plugin/tree/master</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Matt Tucker</name>
+    </developer>
+  </developers>
 
   <build>
     <pluginManagement>
@@ -43,7 +57,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore></ignore>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -130,6 +144,7 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>com.cloudbees.thirdparty</groupId>
@@ -178,7 +193,9 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <packaging>jar</packaging>
+
   <repositories>
     <repository>
       <id>Pentaho Artifactory</id>
