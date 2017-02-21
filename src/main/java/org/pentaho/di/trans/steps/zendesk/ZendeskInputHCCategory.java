@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,7 +76,7 @@ public class ZendeskInputHCCategory extends ZendeskInput {
       return false;
     }
 
-    for (Category cat : categories ) {
+    for ( Category cat : categories ) {
       Object[] outputRow = RowDataUtil.allocateRowData( data.rowMeta.size() );
       if ( data.categoryIdIndex >= 0 ) {
         outputRow[data.categoryIdIndex] = cat.getId();

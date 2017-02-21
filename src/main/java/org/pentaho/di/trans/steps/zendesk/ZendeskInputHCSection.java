@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,7 +76,7 @@ public class ZendeskInputHCSection extends ZendeskInput {
       return false;
     }
 
-    for (Section section : sections ) {
+    for ( Section section : sections ) {
       Object[] outputRow = RowDataUtil.allocateRowData( data.rowMeta.size() );
       if ( data.sectionIdIndex >= 0 ) {
         outputRow[data.sectionIdIndex] = section.getId();

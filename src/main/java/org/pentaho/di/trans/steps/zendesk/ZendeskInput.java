@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,7 +72,7 @@ public abstract class ZendeskInput extends BaseStep implements StepInterface {
 
   Zendesk createConnection( String subDomain, String username, String password, boolean token ) {
     Zendesk.Builder builder = new Zendesk.Builder( String.format( "https://%s.zendesk.com", subDomain ) );
-      
+
     if ( username.contains( "/token" ) ) {
       token = true;
       username = username.replaceAll( "/token", "" );

@@ -61,5 +61,5 @@ public class ZendeskInputOrganizationsData extends ZendeskInputData {
   int fieldOrganizationIdIndex;
   int fieldNameIndex;
   int fieldValueIndex;
-  
+
 }

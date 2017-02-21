@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -150,7 +150,7 @@ public class ZendeskInputUsers extends ZendeskInput {
           incrementLinesOutput();
         }
       }
-      logBasic("Total Users: " + i );
+      logBasic( "Total Users: " + i );
       setOutputDone();
       return false;
     } else if ( row == null ) {
@@ -294,8 +294,8 @@ public class ZendeskInputUsers extends ZendeskInput {
   }
 
   private void outputUserIdentityRow( List<Identity> identities ) throws KettleStepException {
-    if ( data.userIdentityRowMeta == null || data.userIdentityRowMeta.isEmpty() ||
-        identities == null || identities.isEmpty() ) {
+    if ( data.userIdentityRowMeta == null || data.userIdentityRowMeta.isEmpty()
+        || identities == null || identities.isEmpty() ) {
       return;
     }
 
@@ -303,7 +303,7 @@ public class ZendeskInputUsers extends ZendeskInput {
       Object[] outputRow = RowDataUtil.allocateRowData( data.userIdentityRowMeta.size() );
 
       if ( data.identityUserIdIndex >= 0 ) {
-      outputRow[data.identityUserIdIndex] = Long.valueOf( ident.getUserId() );
+        outputRow[data.identityUserIdIndex] = Long.valueOf( ident.getUserId() );
       }
       if ( data.identityIdIndex >= 0 ) {
         outputRow[data.identityIdIndex] = ident.getId();

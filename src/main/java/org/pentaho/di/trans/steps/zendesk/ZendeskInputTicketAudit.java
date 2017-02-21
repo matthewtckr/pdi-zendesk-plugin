@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,7 +41,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
   ZendeskInputTicketAuditData data;
 
   private int ticketIdFieldIndex;
-  
+
   public ZendeskInputTicketAudit( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -116,7 +116,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         data.addAudit( ticketAudit );
       }
       outputRows();
-    } catch( ZendeskResponseException zre ) {
+    } catch ( ZendeskResponseException zre ) {
       if ( 404 == zre.getStatusCode() ) {
         putError( getInputRowMeta(), row, 1L, zre.toString(),
           getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getName(), zre.getStatusText() );
@@ -145,7 +145,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         Object[] ticketOverviewRow = RowDataUtil.allocateRowData( data.ticketOverviewOutputRowMeta.size() );
         ticketOverviewRow[0] = audit.ticketId;
         ticketOverviewRow[1] = audit.auditId;
-        ticketOverviewRow[2] = new Long(++i);
+        ticketOverviewRow[2] = new Long( ++i );
         ticketOverviewRow[3] = audit.createdTime;
         ticketOverviewRow[4] = audit.organizationId;
         ticketOverviewRow[5] = audit.requesterId;
@@ -165,8 +165,8 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         putRowTo( data.ticketOverviewOutputRowMeta, ticketOverviewRow, data.ticketOverviewOutputRowSet );
       }
 
-      if ( audit.comment != null && data.ticketCommentsOutputRowMeta != null &&
-          data.ticketCommentsOutputRowSet != null ) {
+      if ( audit.comment != null && data.ticketCommentsOutputRowMeta != null
+          && data.ticketCommentsOutputRowSet != null ) {
         Object[] ticketCommentRow = RowDataUtil.allocateRowData( data.ticketCommentsOutputRowMeta.size() );
         ticketCommentRow[0] = audit.ticketId;
         ticketCommentRow[1] = audit.auditId;
@@ -179,8 +179,8 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         putRowTo( data.ticketCommentsOutputRowMeta, ticketCommentRow, data.ticketCommentsOutputRowSet );
       }
 
-      if ( audit.customFields != null && audit.customFields.size() > 0 &&
-          data.ticketCustomFieldsOutputRowMeta != null && data.ticketCustomFieldsOutputRowSet != null ) {
+      if ( audit.customFields != null && audit.customFields.size() > 0
+          && data.ticketCustomFieldsOutputRowMeta != null && data.ticketCustomFieldsOutputRowSet != null ) {
         for ( String fieldName : audit.customFields.keySet() ) {
           Object[] customFieldRow = RowDataUtil.allocateRowData( data.ticketCustomFieldsOutputRowMeta.size() );
           customFieldRow[0] = audit.ticketId;
@@ -191,8 +191,8 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         }
       }
 
-      if ( audit.tags != null && audit.tags.size() > 0 &&
-          data.ticketTagsOutputRowMeta != null && data.ticketTagsOutputRowSet != null ) {
+      if ( audit.tags != null && audit.tags.size() > 0
+          && data.ticketTagsOutputRowMeta != null && data.ticketTagsOutputRowSet != null ) {
         for ( String tag : audit.tags ) {
           Object[] tagRow = RowDataUtil.allocateRowData( data.ticketTagsOutputRowMeta.size() );
           tagRow[0] = audit.ticketId;

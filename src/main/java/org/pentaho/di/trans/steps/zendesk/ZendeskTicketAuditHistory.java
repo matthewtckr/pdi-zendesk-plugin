@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,15 +34,18 @@ import org.apache.commons.collections4.map.AbstractLinkedMap;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.zendesk.client.v2.model.Audit;
+import org.zendesk.client.v2.model.events.AttachmentRedactionEvent;
 import org.zendesk.client.v2.model.events.CcEvent;
 import org.zendesk.client.v2.model.events.ChangeEvent;
 import org.zendesk.client.v2.model.events.CommentEvent;
 import org.zendesk.client.v2.model.events.CommentPrivacyChangeEvent;
+import org.zendesk.client.v2.model.events.CommentRedactionEvent;
 import org.zendesk.client.v2.model.events.CreateEvent;
 import org.zendesk.client.v2.model.events.ErrorEvent;
 import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.events.ExternalEvent;
 import org.zendesk.client.v2.model.events.NotificationEvent;
+import org.zendesk.client.v2.model.events.OrganizationActivityEvent;
 import org.zendesk.client.v2.model.events.VoiceCommentEvent;
 
 public class ZendeskTicketAuditHistory implements Cloneable {
@@ -123,11 +126,13 @@ public class ZendeskTicketAuditHistory implements Cloneable {
       Object fieldValueObject = new Object();
       String fieldValue = "";
 
-      if ( fieldType.equals( ExternalEvent.class.getName() ) ||
-          fieldType.equals( NotificationEvent.class.getName() ) || fieldType.equals( ErrorEvent.class.getName() ) ||
-          fieldType.equals( "OrganizationActivity" ) || fieldType.equals( "AttachmentRedactionEvent" ) ||
-          fieldType.equals( "CommentRedactionEvent" ) ) {
-        //TODO: Replace OrgActivity and RedactionEvents with class references, pending upstream project commit
+      if ( fieldType.equals( ExternalEvent.class.getName() )
+          || fieldType.equals( NotificationEvent.class.getName() )
+          || fieldType.equals( ErrorEvent.class.getName() )
+          || fieldType.equals( OrganizationActivityEvent.class.getName() )
+          || fieldType.equals( AttachmentRedactionEvent.class.getName() )
+          || fieldType.equals( CommentRedactionEvent.class.getName() ) ) {
+        // TODO: Replace OrgActivity and RedactionEvents with class references, pending upstream project commit
         // Do nothing
       } else if ( fieldType.equals( CommentPrivacyChangeEvent.class.getName() ) ) {
         if ( auditSummaries != null ) {
@@ -159,7 +164,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
       }
 
       if ( !Const.isEmpty( fieldName ) ) {
-        switch( fieldName ) {
+        switch ( fieldName ) {
           case "organization_id":
             this.organizationId = Const.isEmpty( fieldValue ) ? null : Long.valueOf( fieldValue );
             break;
@@ -176,7 +181,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
             this.subject = fieldValue;
             break;
           case "tags":
-            this.tags = (fieldValueObject instanceof List ) ? (List<String>) fieldValueObject : null;
+            this.tags = ( fieldValueObject instanceof List ) ? (List<String>) fieldValueObject : null;
             break;
           case "status":
             this.status = fieldValue;

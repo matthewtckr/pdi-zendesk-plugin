@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -123,9 +123,9 @@ public class ZendeskInputHCArticle extends ZendeskInput {
         return false;
       }
 
-      for (Article article : articles ) {
+      for ( Article article : articles ) {
         outputArticleRow( article );
-        Iterable<Translation> translations = null;      
+        Iterable<Translation> translations = null;
         if ( meta.getTranslationStepMeta() != null ) {
           try {
             translations = data.conn.getArticleTranslations( article.getId() );
@@ -167,7 +167,7 @@ public class ZendeskInputHCArticle extends ZendeskInput {
       }
       if ( article != null ) {
         outputArticleRow( article );
-        Iterable<Translation> translations = null;      
+        Iterable<Translation> translations = null;
         if ( meta.getTranslationStepMeta() != null ) {
           try {
             translations = data.conn.getArticleTranslations( article.getId() );
@@ -260,7 +260,6 @@ public class ZendeskInputHCArticle extends ZendeskInput {
     }
     if ( data.translationUrlIndex >= 0 ) {
       outputRow[data.translationUrlIndex] = translation.getUrl();
-      
     }
     if ( data.translationHtmlUrlIndex >= 0 ) {
       outputRow[data.translationHtmlUrlIndex] = translation.getHtmlUrl();

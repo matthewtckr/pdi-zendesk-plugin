@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,14 +43,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(  
+@Step(
     id = "ZendeskInputGroupMemberships",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
-    i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputGroupMemberships.Name",
+    i18nPackageName = "org.pentaho.di.trans.steps.zendesk",
+    name = "ZendeskInputGroupMemberships.Name",
     description = "ZendeskInputGroupMemberships.TooltipDesc",
-    categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
-)
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
+  )
 public class ZendeskInputGroupMembershipsMeta extends ZendeskInputMeta {
 
   private String groupMembershipIdFieldname;
@@ -164,7 +164,6 @@ public class ZendeskInputGroupMembershipsMeta extends ZendeskInputMeta {
     rep.saveStepAttribute( id_transformation, id_step, "createdAtFieldname", getCreatedAtFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "updatedAtFieldname", getUpdatedAtFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "defaultGroupFieldname", getDefaultGroupFieldname() );
-    
   }
 
   public void setCreatedAtFieldname( String createdAtFieldname ) {
@@ -179,7 +178,7 @@ public class ZendeskInputGroupMembershipsMeta extends ZendeskInputMeta {
     setUserIdFieldname( "User_ID" );
     setGroupIdFieldname( "Group_ID" );
     setCreatedAtFieldname( "Created_Time" );
-    setUpdatedAtFieldname( "Updated_Time");
+    setUpdatedAtFieldname( "Updated_Time" );
     setDefaultGroupFieldname( "Is_Default_Group" );
   }
 
