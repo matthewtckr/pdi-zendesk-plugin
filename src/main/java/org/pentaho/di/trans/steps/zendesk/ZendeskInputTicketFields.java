@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -80,7 +80,7 @@ public class ZendeskInputTicketFields extends ZendeskInput {
       return false;
     }
 
-    for (Field field : fields ) {
+    for ( Field field : fields ) {
       Object[] outputRow = RowDataUtil.allocateRowData( data.rowMeta.size() );
       if ( data.ticketFieldIdIndex >= 0 ) {
         outputRow[data.ticketFieldIdIndex] = field.getId();

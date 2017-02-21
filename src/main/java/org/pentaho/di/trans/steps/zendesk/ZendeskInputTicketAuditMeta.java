@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,14 +51,14 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(  
+@Step(
     id = "ZendeskInputTicketAudit",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
-    i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputTicketAudit.Name",
+    i18nPackageName = "org.pentaho.di.trans.steps.zendesk",
+    name = "ZendeskInputTicketAudit.Name",
     description = "ZendeskInputTicketAudit.TooltipDesc",
-    categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
-)
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
+  )
 public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements StepMetaInterface {
 
   private static final Class<?> PKG = ZendeskInputTicketAuditMeta.class;
@@ -108,7 +108,7 @@ public class ZendeskInputTicketAuditMeta extends ZendeskInputMeta implements Ste
   private StepMeta ticketCommentsStepMeta;
   private StepMeta ticketTagsStepMeta;
   private StepMeta ticketCollaboratorsStepMeta;
-  
+
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {

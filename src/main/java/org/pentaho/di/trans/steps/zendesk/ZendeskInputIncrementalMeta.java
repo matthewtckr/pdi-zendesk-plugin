@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,14 +45,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(  
+@Step(
     id = "ZendeskInputIncrementalTicket",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
-    i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputIncremental.Name",
+    i18nPackageName = "org.pentaho.di.trans.steps.zendesk",
+    name = "ZendeskInputIncremental.Name",
     description = "ZendeskInputIncremental.TooltipDesc",
-    categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
-)
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
+  )
 public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements StepMetaInterface {
 
   public enum IncrementalType {

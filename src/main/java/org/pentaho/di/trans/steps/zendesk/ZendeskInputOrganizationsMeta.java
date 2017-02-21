@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,14 +50,14 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(  
+@Step(
     id = "ZendeskInputOrganizations",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
-    i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputOrganizations.Name",
+    i18nPackageName = "org.pentaho.di.trans.steps.zendesk",
+    name = "ZendeskInputOrganizations.Name",
     description = "ZendeskInputOrganizations.TooltipDesc",
-    categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
-)
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
+  )
 public class ZendeskInputOrganizationsMeta extends ZendeskInputMeta {
 
   private static final Class<?> PKG = ZendeskInputOrganizationsMeta.class;
@@ -87,7 +87,7 @@ public class ZendeskInputOrganizationsMeta extends ZendeskInputMeta {
   private String organizationStepName;
   private String organizationTagStepName;
   private String organizationFieldStepName;
-  private String organizationDomainStepName; 
+  private String organizationDomainStepName;
 
   private StepMeta organizationStepMeta;
   private StepMeta organizationTagStepMeta;

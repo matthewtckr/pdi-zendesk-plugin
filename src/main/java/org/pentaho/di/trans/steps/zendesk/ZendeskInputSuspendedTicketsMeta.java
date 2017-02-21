@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,14 +43,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(  
+@Step(
     id = "ZendeskInputSuspendedTickets",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
-    i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputSuspendedTickets.Name",
+    i18nPackageName = "org.pentaho.di.trans.steps.zendesk",
+    name = "ZendeskInputSuspendedTickets.Name",
     description = "ZendeskInputSuspendedTickets.TooltipDesc",
-    categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
-)
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
+  )
 public class ZendeskInputSuspendedTicketsMeta extends ZendeskInputMeta {
 
   private String suspendedTicketIdFieldname;

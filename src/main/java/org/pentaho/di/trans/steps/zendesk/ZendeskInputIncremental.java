@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,7 @@ public class ZendeskInputIncremental extends ZendeskInput {
 
   ZendeskInputIncrementalMeta meta;
   ZendeskInputIncrementalData data;
-  
+
   public ZendeskInputIncremental( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -87,7 +87,7 @@ public class ZendeskInputIncremental extends ZendeskInput {
       }
     }
 
-    switch( meta.getDownloadType() ) {
+    switch ( meta.getDownloadType() ) {
       case TICKETS:
         for ( Ticket ticket : data.conn.getTicketsIncrementally( startDate ) ) {
           putRow( data.rowMeta, processTicket( ticket ) );

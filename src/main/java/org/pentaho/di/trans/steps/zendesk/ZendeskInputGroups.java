@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,7 +71,7 @@ public class ZendeskInputGroups extends ZendeskInput {
       return false;
     }
 
-    for (Group group : groups ) {
+    for ( Group group : groups ) {
       Object[] outputRow = RowDataUtil.allocateRowData( data.rowMeta.size() );
       if ( data.groupIdIndex >= 0 ) {
         outputRow[data.groupIdIndex] = group.getId();

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,14 +43,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(  
+@Step(
     id = "ZendeskInputHCSections",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
-    i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputHCSections.Name",
+    i18nPackageName = "org.pentaho.di.trans.steps.zendesk",
+    name = "ZendeskInputHCSections.Name",
     description = "ZendeskInputHCSections.TooltipDesc",
-    categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
-)
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
+  )
 public class ZendeskInputHCSectionMeta extends ZendeskInputMeta {
 
   private String sectionIdFieldname;
@@ -167,7 +167,6 @@ public class ZendeskInputHCSectionMeta extends ZendeskInputMeta {
     rep.saveStepAttribute( id_transformation, id_step, "positionFieldname", getPositionFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "createdAtFieldname", getCreatedAtFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "updatedAtFieldname", getUpdatedAtFieldname() );
-    
   }
 
   public void setCreatedAtFieldname( String createdAtFieldname ) {
@@ -187,7 +186,7 @@ public class ZendeskInputHCSectionMeta extends ZendeskInputMeta {
     setOutdatedFieldname( "Section_IsOutdated" );
     setPositionFieldname( "Section_Position" );
     setCreatedAtFieldname( "Created_Time" );
-    setUpdatedAtFieldname( "Updated_Time");
+    setUpdatedAtFieldname( "Updated_Time" );
   }
 
   public void setUpdatedAtFieldname( String updatedAtFieldname ) {

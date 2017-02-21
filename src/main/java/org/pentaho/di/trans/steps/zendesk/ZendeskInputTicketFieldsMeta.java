@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,14 +43,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step(  
+@Step(
     id = "ZendeskInputTicketFields",
     image = "org/pentaho/di/trans/steps/zendesk/zendesk.png",
-    i18nPackageName="org.pentaho.di.trans.steps.zendesk",
-    name="ZendeskInputTicketFields.Name",
+    i18nPackageName = "org.pentaho.di.trans.steps.zendesk",
+    name = "ZendeskInputTicketFields.Name",
     description = "ZendeskInputTicketFields.TooltipDesc",
-    categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
-)
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input"
+  )
 public class ZendeskInputTicketFieldsMeta extends ZendeskInputMeta {
 
   private String ticketFieldIdFieldname;
@@ -169,7 +169,6 @@ public class ZendeskInputTicketFieldsMeta extends ZendeskInputMeta {
       getTicketFieldVisibleEndUsersFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "createdAtFieldname", getCreatedAtFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "updatedAtFieldname", getUpdatedAtFieldname() );
-    
   }
 
   public void setCreatedAtFieldname( String createdAtFieldname ) {
@@ -187,7 +186,7 @@ public class ZendeskInputTicketFieldsMeta extends ZendeskInputMeta {
     setTicketFieldRequiredFieldname( "field_required" );
     setTicketFieldVisibleEndUsersFieldname( "field_visible_endusers" );
     setCreatedAtFieldname( "Created_Time" );
-    setUpdatedAtFieldname( "Updated_Time");
+    setUpdatedAtFieldname( "Updated_Time" );
   }
 
   public void setUpdatedAtFieldname( String updatedAtFieldname ) {

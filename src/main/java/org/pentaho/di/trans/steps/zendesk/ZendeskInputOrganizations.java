@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -133,7 +133,7 @@ public class ZendeskInputOrganizations extends ZendeskInput {
           incrementLinesOutput();
         }
       }
-      logBasic("Total Organizations: " + i );
+      logBasic( "Total Organizations: " + i );
       setOutputDone();
       return false;
     } else if ( row == null ) {
