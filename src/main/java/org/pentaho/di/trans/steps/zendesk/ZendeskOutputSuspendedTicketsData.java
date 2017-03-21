@@ -27,5 +27,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 public class ZendeskOutputSuspendedTicketsData extends ZendeskInputData {
 
   int ticketFieldNameIndex;
+  int resultFieldNameIndex;
   RowMetaInterface outputRowMeta;
 }

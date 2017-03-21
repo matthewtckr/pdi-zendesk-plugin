@@ -23,11 +23,13 @@
 package org.pentaho.di.trans.steps.zendesk;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.zendesk.client.v2.ZendeskResponseException;
 
 public class ZendeskOutputSuspendedTickets extends ZendeskInput {
 
@@ -59,15 +61,33 @@ public class ZendeskOutputSuspendedTickets extends ZendeskInput {
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      data.resultFieldNameIndex = data.outputRowMeta.indexOfValue( meta.getResultFieldName() );
     }
 
+    Object[] outputRow = RowDataUtil.resizeArray( r, data.outputRowMeta.size() );
+
     Long ticketId = (Long) r[data.ticketFieldNameIndex];
+    Boolean result = false;
+
     switch ( meta.getAction() ) {
       case DELETE:
-        data.conn.deleteSuspendedTicket( ticketId );
+        try {
+          data.conn.deleteSuspendedTicket( ticketId );
+          result = true;
+        } catch ( ZendeskResponseException zre ) {
+          // If Suspended Ticket ID not found, catch the error, and mark Result as false
+          // Otherwise, if different error, continue throwing the error
+          if ( 404 != zre.getStatusCode() ) {
+            throw zre;
+          }
+        }
         break;
     }
-    putRow( data.outputRowMeta, r );
+
+    if ( data.resultFieldNameIndex >= 0 ) {
+      outputRow[data.resultFieldNameIndex] = result;
+    }
+    putRow( data.outputRowMeta, outputRow );
     return true;
   }
 

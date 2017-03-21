@@ -49,7 +49,7 @@ public class ZendeskOutputSuspendedTicketsMetaTest {
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
       Arrays.asList( "subDomain", "username", "password", "token",
-        "action", "ticketFieldName" );
+        "action", "ticketFieldName", "resultFieldName" );
 
     Map<String, FieldLoadSaveValidator<?>> attributeMap = new HashMap<String, FieldLoadSaveValidator<?>>();
     attributeMap.put( "action", new SuspendedTicketActionFieldLoadSaveValidator() );
