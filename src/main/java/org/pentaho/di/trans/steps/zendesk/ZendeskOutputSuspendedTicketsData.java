@@ -22,7 +22,10 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import org.pentaho.di.core.row.RowMetaInterface;
+
 public class ZendeskOutputSuspendedTicketsData extends ZendeskInputData {
 
   int ticketFieldNameIndex;
+  RowMetaInterface outputRowMeta;
 }

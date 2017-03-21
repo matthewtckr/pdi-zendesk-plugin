@@ -57,6 +57,8 @@ public class ZendeskOutputSuspendedTickets extends ZendeskInput {
     if ( first ) {
       data.ticketFieldNameIndex = getInputRowMeta().indexOfValue( meta.getTicketFieldName() );
       first = false;
+      data.outputRowMeta = getInputRowMeta().clone();
+      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
     }
 
     Long ticketId = (Long) r[data.ticketFieldNameIndex];
@@ -65,6 +67,7 @@ public class ZendeskOutputSuspendedTickets extends ZendeskInput {
         data.conn.deleteSuspendedTicket( ticketId );
         break;
     }
+    putRow( data.outputRowMeta, r );
     return true;
   }
 
