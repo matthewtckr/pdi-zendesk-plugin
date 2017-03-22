@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -63,7 +63,7 @@ public class ZendeskOutputSuspendedTicketsDialog extends BaseStepDialog implemen
  private static Class<?> PKG = ZendeskOutputSuspendedTicketsMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskOutputSuspendedTicketsMeta input;
 
- private LabelTextVar wSubDomain, wUsername;
+ private LabelTextVar wSubDomain, wUsername, wResult;
  private Label wlPassword, wlActionType, wlFieldname, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
@@ -254,13 +254,25 @@ public class ZendeskOutputSuspendedTicketsDialog extends BaseStepDialog implemen
      }
    } );
 
+   // Result Field
+   wResult = new LabelTextVar( transMeta, shell,
+     BaseMessages.getString( PKG, "ZendeskOutputSuspendedTicketsDialog.Result.Label" ),
+     BaseMessages.getString( PKG, "ZendeskOutputSuspendedTicketsDialog.Result.Tooltip" ) );
+   props.setLook( wResult );
+   wResult.addModifyListener( lsMod );
+   FormData fdResult = new FormData();
+   fdResult.left = new FormAttachment( 0, -margin );
+   fdResult.top = new FormAttachment( wFieldname, 2 * margin );
+   fdResult.right = new FormAttachment( 100, -margin );
+   wResult.setLayoutData( fdResult );
+
    // Some buttons
    wOK = new Button( shell, SWT.PUSH );
    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
    wCancel = new Button( shell, SWT.PUSH );
    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-   setButtonPositions( new Button[] { wOK, wCancel }, margin, wFieldname );
+   setButtonPositions( new Button[] { wOK, wCancel }, margin, wResult );
 
    // Add listeners
    lsCancel = new Listener() {
@@ -322,6 +334,7 @@ public class ZendeskOutputSuspendedTicketsDialog extends BaseStepDialog implemen
      wActionType.setText( input.getAction().toString() );
    }
    wFieldname.setText( Const.NVL( input.getTicketFieldName(), "" ) );
+   wResult.setText( Const.NVL( input.getResultFieldName(), "" ) );
 
    wStepname.selectAll();
    wStepname.setFocus();
@@ -351,6 +364,7 @@ public class ZendeskOutputSuspendedTicketsDialog extends BaseStepDialog implemen
    inf.setToken( wToken.getSelection() );
    inf.setAction( SuspendedTicketAction.values()[wActionType.getSelectionIndex()] );
    inf.setTicketFieldName( wFieldname.getText() );
+   inf.setResultFieldName( wResult.getText() );
    stepname = wStepname.getText(); // return value
  }
 }

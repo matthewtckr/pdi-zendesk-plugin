@@ -30,6 +30,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -68,6 +69,7 @@ public class ZendeskOutputSuspendedTicketsMeta extends ZendeskInputMeta {
   private static final Class<?> PKG = ZendeskOutputSuspendedTicketsMeta.class;
 
   private String ticketFieldName;
+  private String resultFieldName;
   private SuspendedTicketAction action;
 
   public String getTicketFieldName() {
@@ -76,6 +78,14 @@ public class ZendeskOutputSuspendedTicketsMeta extends ZendeskInputMeta {
 
   public void setTicketFieldName( String ticketFieldName ) {
     this.ticketFieldName = ticketFieldName;
+  }
+
+  public String getResultFieldName() {
+    return resultFieldName;
+  }
+
+  public void setResultFieldName( String resultFieldName ) {
+    this.resultFieldName = resultFieldName;
   }
 
   public SuspendedTicketAction getAction() {
@@ -93,6 +103,7 @@ public class ZendeskOutputSuspendedTicketsMeta extends ZendeskInputMeta {
     builder.append( "    " ).append( XMLHandler.addTagValue( "action",
       getAction() == null ? null : getAction().name() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "ticketFieldName", getTicketFieldName() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "resultFieldName", getResultFieldName() ) );
     return builder.toString();
   }
 
@@ -100,6 +111,7 @@ public class ZendeskOutputSuspendedTicketsMeta extends ZendeskInputMeta {
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
     setTicketFieldName( XMLHandler.getTagValue( stepnode, "ticketFieldName" ) );
+    setResultFieldName( XMLHandler.getTagValue( stepnode, "resultFieldName" ) );
     String actionValue = XMLHandler.getTagValue( stepnode, "action" );
     if ( !Const.isEmpty( actionValue ) ) {
       setAction( SuspendedTicketAction.valueOf( actionValue ) );
@@ -113,6 +125,7 @@ public class ZendeskOutputSuspendedTicketsMeta extends ZendeskInputMeta {
       throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     setTicketFieldName( rep.getStepAttributeString( id_step, "ticketFieldName" ) );
+    setResultFieldName( rep.getStepAttributeString( id_step, "resultFieldName" ) );
     String actionValue = rep.getStepAttributeString( id_step, "action" );
     if ( !Const.isEmpty( actionValue ) ) {
       setAction( SuspendedTicketAction.valueOf( actionValue ) );
@@ -126,6 +139,7 @@ public class ZendeskOutputSuspendedTicketsMeta extends ZendeskInputMeta {
       throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute( id_transformation, id_step, "ticketFieldName", getTicketFieldName() );
+    rep.saveStepAttribute( id_transformation, id_step, "resultFieldName", getResultFieldName() );
     rep.saveStepAttribute( id_transformation, id_step, "action", getAction() == null ? null : getAction().name() );
   }
 
@@ -158,6 +172,20 @@ public class ZendeskOutputSuspendedTicketsMeta extends ZendeskInputMeta {
           BaseMessages.getString( PKG, "ZendeskOutputSuspendedTicketsMeta.CheckResult.ErrorTicketFieldNotInRow" ),
           stepMeta ) );
     }
+
+    if ( Const.isEmpty( getResultFieldName() ) ) {
+      remarks.add(
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING,
+          BaseMessages.getString( PKG, "ZendeskOutputSuspendedTicketsMeta.CheckResult.ErrorNoResultField" ),
+          stepMeta ) );
+    }
+  }
+
+  @Override
+  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    super.getFields( inputRowMeta, name, info, nextStep, space, repository, metaStore );
+    addFieldToRow( inputRowMeta, space.environmentSubstitute( getResultFieldName() ), ValueMetaInterface.TYPE_BOOLEAN );
   }
 
   @Override

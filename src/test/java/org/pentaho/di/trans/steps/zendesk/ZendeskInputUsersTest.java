@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.zendesk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -40,6 +41,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
@@ -77,8 +79,6 @@ public class ZendeskInputUsersTest {
       spy( new ZendeskInputUsers( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
     doReturn( conn ).when( step ).createConnection( subDomainCaptor.capture(), userCaptor.capture(),
       passCaptor.capture(), tokenCaptor.capture() );
-    /*when( step.createConnection( subDomainCaptor.capture(), userCaptor.capture(), passCaptor.capture(),
-      tokenCaptor.capture() ) ).thenReturn( conn );*/
     ZendeskInputUsersMeta meta = new ZendeskInputUsersMeta();
 
     meta.setDefault();
@@ -96,6 +96,7 @@ public class ZendeskInputUsersTest {
     meta.setPassword( "${ZENDESK_PASS}" );
     assertTrue( step.init( meta, smh.stepDataInterface ) );
 
+    // Confirm variables are substituted
     assertEquals( "fakeSubdomain", subDomainCaptor.getValue() );
     assertEquals( "unit_test_user", userCaptor.getValue() );
     assertEquals( "randomPassword", passCaptor.getValue() );
@@ -105,6 +106,13 @@ public class ZendeskInputUsersTest {
     assertTrue( step.init( meta, smh.stepDataInterface ) );
     assertEquals( true, tokenCaptor.getValue() );
 
+    // Encrypted variable password is decrypted on connection
+    step.setVariable( "ZENDESK_PASS", Encr.encryptPasswordIfNotUsingVariables( "AnEncryptedPassword" ) );
+    assertNotEquals( "AnEncryptedPassword", step.getVariable( "ZENDESK_PASS" ) );
+    assertTrue( step.init( meta, smh.stepDataInterface ) );
+    assertEquals( "AnEncryptedPassword", passCaptor.getValue() );
+
+    // Connection is closed exactly once at end of step execution
     step.dispose( meta, smh.stepDataInterface );
     verify( conn, times( 1 ) ).close();
 
