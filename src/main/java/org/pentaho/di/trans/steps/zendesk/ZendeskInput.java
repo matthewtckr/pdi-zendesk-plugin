@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.zendesk;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -56,7 +57,7 @@ public abstract class ZendeskInput extends BaseStep implements StepInterface {
 
     String subDomain = environmentSubstitute( meta.getSubDomain() );
     String username = environmentSubstitute( meta.getUsername() );
-    String password = environmentSubstitute( meta.getPassword() );
+    String password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getPassword() ) );
 
     if ( Const.isEmpty( subDomain ) || Const.isEmpty( username ) || Const.isEmpty( password ) ) {
       logError( BaseMessages.getString( PKG, "ZendeskInput.Error.MissingCredentials" ) );
