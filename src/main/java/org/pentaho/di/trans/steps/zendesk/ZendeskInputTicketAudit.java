@@ -202,7 +202,8 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         }
       }
 
-      if ( audit.collaborators != null && audit.collaborators.size() > 0 && true && true ) {
+      if ( audit.collaborators != null && audit.collaborators.size() > 0
+          && data.ticketCollaboratorsOutputRowMeta != null && data.ticketCollaboratorsOutputRowSet != null ) {
         for ( Long collaborator : audit.collaborators ) {
           Object[] collaboratorRow = RowDataUtil.allocateRowData( data.ticketCollaboratorsOutputRowMeta.size() );
           collaboratorRow[0] = audit.ticketId;
