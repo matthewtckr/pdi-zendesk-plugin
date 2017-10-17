@@ -92,23 +92,36 @@ public class ZendeskInputIncremental extends ZendeskInput {
         for ( Ticket ticket : data.conn.getTicketsIncrementally( startDate ) ) {
           putRow( data.rowMeta, processTicket( ticket ) );
           incrementLinesOutput();
+          if ( isStopped() ) {
+            break;
+          }
         }
         break;
       case USERS:
         for ( User user : data.conn.getUsersIncrementally( startDate ) ) {
           putRow( data.rowMeta, processUser( user ) );
           incrementLinesOutput();
+          if ( isStopped() ) {
+            break;
+          }
         }
         break;
       case ORGANIZATIONS:
         for ( Organization org : data.conn.getOrganizationsIncrementally( startDate ) ) {
           putRow( data.rowMeta, processOrganization( org ) );
           incrementLinesOutput();
+          if ( isStopped() ) {
+            break;
+          }
         }
         break;
       case HELPCENTER_ARTICLES:
         for ( Article article : data.conn.getArticlesIncrementally( startDate ) ) {
           putRow( data.rowMeta, processArticle( article ) );
+          incrementLinesOutput();
+          if ( isStopped() ) {
+            break;
+          }
         }
         break;
     }

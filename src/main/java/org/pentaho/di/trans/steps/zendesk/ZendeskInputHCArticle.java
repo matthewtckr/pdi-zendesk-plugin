@@ -140,6 +140,9 @@ public class ZendeskInputHCArticle extends ZendeskInput {
           }
         }
         incrementLinesOutput();
+        if ( isStopped() ) {
+          break;
+        }
       }
 
       setOutputDone();

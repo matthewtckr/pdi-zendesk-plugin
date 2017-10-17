@@ -131,9 +131,14 @@ public class ZendeskInputOrganizations extends ZendeskInput {
           outputOrganizationFieldRow( organization );
           outputOrganizationDomainRow( organization );
           incrementLinesOutput();
+          if ( isStopped() ) {
+            break;
+          }
         }
       }
-      logBasic( "Total Organizations: " + i );
+      if ( !isStopped() ) {
+        logBasic( "Total Organizations: " + i );
+      }
       setOutputDone();
       return false;
     } else if ( row == null ) {

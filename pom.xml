@@ -1,11 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.pentaho</groupId>
-    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>1.1.8</version>
-  </parent>
 
   <groupId>org.pentaho.pdi</groupId>
   <artifactId>pdi-zendesk-plugin</artifactId>
@@ -13,7 +8,7 @@
   <name>PDI Zendesk Plugin</name>
 
   <properties>
-    <zendesk.client.version>0.5.4</zendesk.client.version>
+    <zendesk.client.version>0.5.5</zendesk.client.version>
     <kettle.version>5.4.0.1-130</kettle.version>
     <dependency.mockito.version>1.10.19</dependency.mockito.version>
   </properties>
@@ -199,8 +194,13 @@
   <repositories>
     <repository>
       <id>Pentaho Artifactory</id>
-      <url>http://repo.pentaho.org/artifactory/repo</url>
+      <url>http://nexus.pentaho.org/content/groups/omni</url>
     </repository>
   </repositories>
   <url>http://github.com/matthewtckr/pdi-zendesk-plugin</url>
+  <parent>
+  	<artifactId>pentaho-ce-jar-parent-pom</artifactId>
+  	<groupId>org.pentaho</groupId>
+  	<version>7.1.0.5-69</version>
+  </parent>
 </project>
