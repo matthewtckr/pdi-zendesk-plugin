@@ -97,6 +97,9 @@ public class ZendeskInputGroupMemberships extends ZendeskInput {
       }
       putRow( data.rowMeta, outputRow );
       incrementLinesOutput();
+      if ( isStopped() ) {
+        break;
+      }
     }
 
     setOutputDone();

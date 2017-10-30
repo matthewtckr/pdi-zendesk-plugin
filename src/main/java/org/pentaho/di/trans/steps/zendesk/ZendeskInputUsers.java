@@ -132,6 +132,9 @@ public class ZendeskInputUsers extends ZendeskInput {
 
       int i = 0;
       for ( User user : users ) {
+        if ( isStopped() ) {
+          break;
+        }
         if ( user != null ) {
           i++;
           List<Identity> identities = new ArrayList<Identity>();
@@ -150,7 +153,9 @@ public class ZendeskInputUsers extends ZendeskInput {
           incrementLinesOutput();
         }
       }
-      logBasic( "Total Users: " + i );
+      if ( !isStopped() ) {
+        logBasic( "Total Users: " + i );
+      }
       setOutputDone();
       return false;
     } else if ( row == null ) {
