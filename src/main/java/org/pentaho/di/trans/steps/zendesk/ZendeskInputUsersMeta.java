@@ -202,6 +202,10 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
     }
   }
 
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
       TransMeta transMeta, Trans trans ) {

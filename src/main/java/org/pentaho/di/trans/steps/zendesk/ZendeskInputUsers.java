@@ -45,6 +45,8 @@ public class ZendeskInputUsers extends ZendeskInput {
   ZendeskInputUsersMeta meta;
   ZendeskInputUsersData data;
 
+  private int incomingIdFieldIndex;
+
   @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( !super.init( smi, sdi ) ) {
@@ -61,6 +63,7 @@ public class ZendeskInputUsers extends ZendeskInput {
 
     if ( first ) {
       first = false;
+      incomingIdFieldIndex= getInputRowMeta().indexOfValue( environmentSubstitute( meta.getIncomingFieldname() ) );
 
       if ( getInputRowMeta() != null ) {
         data.isReceivingInput = true;
@@ -175,10 +178,15 @@ public class ZendeskInputUsers extends ZendeskInput {
       try {
         user = data.conn.getUser( userId );
       } catch ( ZendeskResponseException zre ) {
-        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-        setErrors( 1L );
-        setOutputDone();
-        return false;
+        if ( 404 == zre.getStatusCode() ) {
+          putError( getInputRowMeta(), row, 1L, zre.toString(),
+            getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
+        } else {
+          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+          setErrors( 1L );
+          setOutputDone();
+          return false;
+        }
       }
       if ( user != null ) {
         List<Identity> identities = new ArrayList<Identity>();
@@ -187,10 +195,15 @@ public class ZendeskInputUsers extends ZendeskInput {
             identities.addAll( data.conn.getUserIdentities( user ) );
           }
         } catch ( ZendeskResponseException zre ) {
-          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-          setErrors( 1L );
-          setOutputDone();
-          return false;
+          if ( 404 == zre.getStatusCode() ) {
+            putError( getInputRowMeta(), row, 1L, zre.toString(),
+              getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
+          } else {
+            logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+            setErrors( 1L );
+            setOutputDone();
+            return false;
+          }
         }
         outputUserRow( user );
         outputUserIdentityRow( identities );
