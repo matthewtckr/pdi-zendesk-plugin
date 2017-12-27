@@ -37,8 +37,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.zendesk.client.v2.ZendeskResponseException;
+import org.zendesk.client.v2.ZendeskResponseRateLimitException;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.User;
+import java.util.concurrent.TimeUnit;
 
 public class ZendeskInputUsers extends ZendeskInput {
 
@@ -175,34 +177,59 @@ public class ZendeskInputUsers extends ZendeskInput {
 
       Long userId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       User user = null;
-      try {
-        user = data.conn.getUser( userId );
-      } catch ( ZendeskResponseException zre ) {
-        if ( 404 == zre.getStatusCode() ) {
-          putError( getInputRowMeta(), row, 1L, zre.toString(),
-            getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
-        } else {
-          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-          setErrors( 1L );
-          setOutputDone();
-          return false;
-        }
-      }
-      if ( user != null ) {
-        List<Identity> identities = new ArrayList<Identity>();
+      while (true) {
         try {
-          if ( meta.getUserIdentityStepMeta() != null ) {
-            identities.addAll( data.conn.getUserIdentities( user ) );
-          }
+          user = data.conn.getUser( userId );
         } catch ( ZendeskResponseException zre ) {
           if ( 404 == zre.getStatusCode() ) {
             putError( getInputRowMeta(), row, 1L, zre.toString(),
               getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
+            break; //non fatal failure
+        } else if ( 429 == zre.getStatusCode() ) {
+          logError ( "Hit rate limiting. Sleeping");
+          try {
+            TimeUnit.SECONDS.sleep(((ZendeskResponseRateLimitException)zre).getRetryAfter());
+            continue; // retry
+            } catch ( InterruptedException interruptedError ) {
+              // Consider we have slept enough. The api should tell us how much to wait
+              continue;
+            }
           } else {
             logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
             setErrors( 1L );
             setOutputDone();
-            return false;
+            return false; // die unknown error
+          }
+        }
+      }
+      if ( user != null ) {
+        List<Identity> identities = new ArrayList<Identity>();
+        while (true) {
+          try {
+            if ( meta.getUserIdentityStepMeta() != null ) {
+              identities.addAll( data.conn.getUserIdentities( user ) );
+            }
+            break; // Success
+          } catch ( ZendeskResponseException zre ) {
+            if ( 404 == zre.getStatusCode() ) {
+              putError( getInputRowMeta(), row, 1L, zre.toString(),
+                getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
+                break; //non fatal failure
+            } else if ( 429 == zre.getStatusCode() ) {
+              logError ( "Hit rate limiting. Sleeping");
+              try {
+                TimeUnit.SECONDS.sleep(((ZendeskResponseRateLimitException)zre).getRetryAfter());
+                continue; //retry
+              } catch ( InterruptedException interruptedError ) {
+                // Consider we have slept enough. The api should tell us how much to wait
+                continue;
+              }
+            } else {
+              logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+              setErrors( 1L );
+              setOutputDone();
+              return false;
+            }
           }
         }
         outputUserRow( user );
