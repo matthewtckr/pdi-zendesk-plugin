@@ -130,10 +130,10 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
           try {
             TimeUnit.SECONDS.sleep(((ZendeskResponseRateLimitException)zre).getRetryAfter());
             continue; // retry
-            } catch ( InterruptedException interruptedError ) {
-              // Consider we have slept enough. The api should tell us how much to wait
-              continue;
-            }
+          } catch ( InterruptedException interruptedError ) {
+            // Consider we have slept enough. The api should tell us how much to wait
+            continue;
+          }
         } else {
           logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
           setErrors( 1L );

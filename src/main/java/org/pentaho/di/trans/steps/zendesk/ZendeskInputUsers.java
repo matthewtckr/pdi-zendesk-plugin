@@ -177,7 +177,7 @@ public class ZendeskInputUsers extends ZendeskInput {
 
       Long userId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       User user = null;
-      while (true) {
+      while (user == null) {
         try {
           user = data.conn.getUser( userId );
         } catch ( ZendeskResponseException zre ) {
@@ -186,13 +186,14 @@ public class ZendeskInputUsers extends ZendeskInput {
               getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
             break; //non fatal failure
         } else if ( 429 == zre.getStatusCode() ) {
-          logError ( "Hit rate limiting. Sleeping");
+          Long retryAfter = ((ZendeskResponseRateLimitException)zre).getRetryAfter();
+          logBasic ( "Hit rate limiting user record(" + userId + "). Sleeping" + retryAfter + "s");
           try {
-            TimeUnit.SECONDS.sleep(((ZendeskResponseRateLimitException)zre).getRetryAfter());
+            TimeUnit.SECONDS.sleep(retryAfter);
             continue; // retry
             } catch ( InterruptedException interruptedError ) {
               // Consider we have slept enough. The api should tell us how much to wait
-              continue;
+              continue; // retry
             }
           } else {
             logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
@@ -216,9 +217,10 @@ public class ZendeskInputUsers extends ZendeskInput {
                 getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
                 break; //non fatal failure
             } else if ( 429 == zre.getStatusCode() ) {
-              logError ( "Hit rate limiting. Sleeping");
+              Long retryAfter = ((ZendeskResponseRateLimitException)zre).getRetryAfter();
+              logBasic ( "Hit rate limiting user identities. Sleeping" + retryAfter + "s");
               try {
-                TimeUnit.SECONDS.sleep(((ZendeskResponseRateLimitException)zre).getRetryAfter());
+                TimeUnit.SECONDS.sleep(retryAfter);
                 continue; //retry
               } catch ( InterruptedException interruptedError ) {
                 // Consider we have slept enough. The api should tell us how much to wait
