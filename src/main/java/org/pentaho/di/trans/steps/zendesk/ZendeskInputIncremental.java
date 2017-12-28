@@ -137,21 +137,19 @@ public class ZendeskInputIncremental extends ZendeskInput {
            }
          }
          break allrecords; // We need to exit from the upper loop now we have all records
-       } catch ( ZendeskResponseException zre ) {
-         if ( 429 == zre.getStatusCode() ) {
-           Long retryAfter = ((ZendeskResponseRateLimitException)zre).getRetryAfter();
-           logBasic ( "Hit rate limiting. Sleeping " + retryAfter + "s" );
-           try {
-             TimeUnit.SECONDS.sleep(retryAfter);
-             continue; // retry
-           } catch ( InterruptedException interruptedError ) {
-             // Consider we have slept enough. The api should tell us how much to wait
-             continue; //retry
-           }
-         } else {
-           logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-           break allrecords;
+       } catch ( ZendeskResponseRateLimitException zre ) {
+         Long retryAfter = zre.getRetryAfter();
+         logBasic ( "Hit rate limiting. Sleeping " + retryAfter + "s" );
+         try {
+           TimeUnit.SECONDS.sleep(retryAfter);
+           continue; // retry
+         } catch ( InterruptedException interruptedError ) {
+           // Consider we have slept enough. The api should tell us how much to wait
+           continue; //retry
          }
+       } catch ( ZendeskResponseException zre ) {
+         logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+         break allrecords;
        }
      }
     setOutputDone();

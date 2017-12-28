@@ -120,20 +120,21 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         }
         outputRows();
         break; // success
+      } catch ( ZendeskResponseRateLimitException zre ) {
+        Long retryAfter = zre.getRetryAfter();
+        logError ( "Hit rate limiting. Sleeping " + retryAfter + "s");
+        try {
+          TimeUnit.SECONDS.sleep(retryAfter);
+          continue; // retry
+        } catch ( InterruptedException interruptedError ) {
+          // Consider we have slept enough. The api should tell us how much to wait
+          continue;
+        }
       } catch ( ZendeskResponseException zre ) {
         if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
           putError( getInputRowMeta(), row, 1L, zre.toString(),
             getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getName(), zre.getStatusText() );
           break; // non fatal failure
-        } else if ( 429 == zre.getStatusCode() ) {
-          logError ( "Hit rate limiting. Sleeping");
-          try {
-            TimeUnit.SECONDS.sleep(((ZendeskResponseRateLimitException)zre).getRetryAfter());
-            continue; // retry
-          } catch ( InterruptedException interruptedError ) {
-            // Consider we have slept enough. The api should tell us how much to wait
-            continue;
-          }
         } else {
           logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
           setErrors( 1L );

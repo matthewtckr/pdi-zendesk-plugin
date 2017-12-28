@@ -180,13 +180,8 @@ public class ZendeskInputUsers extends ZendeskInput {
       while (user == null) {
         try {
           user = data.conn.getUser( userId );
-        } catch ( ZendeskResponseException zre ) {
-          if ( 404 == zre.getStatusCode() ) {
-            putError( getInputRowMeta(), row, 1L, zre.toString(),
-              getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
-            break; //non fatal failure
-        } else if ( 429 == zre.getStatusCode() ) {
-          Long retryAfter = ((ZendeskResponseRateLimitException)zre).getRetryAfter();
+        } catch ( ZendeskResponseRateLimitException zre ) {
+          Long retryAfter = zre.getRetryAfter();
           logBasic ( "Hit rate limiting user record(" + userId + "). Sleeping" + retryAfter + "s");
           try {
             TimeUnit.SECONDS.sleep(retryAfter);
@@ -195,6 +190,11 @@ public class ZendeskInputUsers extends ZendeskInput {
               // Consider we have slept enough. The api should tell us how much to wait
               continue; // retry
             }
+        } catch ( ZendeskResponseException zre ) {
+          if ( 404 == zre.getStatusCode() ) {
+            putError( getInputRowMeta(), row, 1L, zre.toString(),
+              getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
+            break; //non fatal failure
           } else {
             logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
             setErrors( 1L );
@@ -211,21 +211,21 @@ public class ZendeskInputUsers extends ZendeskInput {
               identities.addAll( data.conn.getUserIdentities( user ) );
             }
             break; // Success
+          } catch ( ZendeskResponseRateLimitException zre ) {
+            Long retryAfter = zre.getRetryAfter();
+            logBasic ( "Hit rate limiting user identities. Sleeping" + retryAfter + "s");
+            try {
+              TimeUnit.SECONDS.sleep(retryAfter);
+              continue; //retry
+            } catch ( InterruptedException interruptedError ) {
+              // Consider we have slept enough. The api should tell us how much to wait
+              continue;
+            }
           } catch ( ZendeskResponseException zre ) {
             if ( 404 == zre.getStatusCode() ) {
               putError( getInputRowMeta(), row, 1L, zre.toString(),
                 getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
                 break; //non fatal failure
-            } else if ( 429 == zre.getStatusCode() ) {
-              Long retryAfter = ((ZendeskResponseRateLimitException)zre).getRetryAfter();
-              logBasic ( "Hit rate limiting user identities. Sleeping" + retryAfter + "s");
-              try {
-                TimeUnit.SECONDS.sleep(retryAfter);
-                continue; //retry
-              } catch ( InterruptedException interruptedError ) {
-                // Consider we have slept enough. The api should tell us how much to wait
-                continue;
-              }
             } else {
               logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
               setErrors( 1L );
