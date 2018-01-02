@@ -112,7 +112,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
     // Process ticket audit
     data.newTicket();
     Long currentTicketId = getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getInteger( row[ticketIdFieldIndex] );
-    while (true) {
+    while ( true ) {
       try {
         Iterable<Audit> ticketAudits = data.conn.getTicketAudits( currentTicketId );
         for ( Audit ticketAudit : ticketAudits ) {
@@ -122,9 +122,9 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
         break; // success
       } catch ( ZendeskResponseRateLimitException zre ) {
         Long retryAfter = zre.getRetryAfter();
-        logError ( "Hit rate limiting. Sleeping " + retryAfter + "s");
+        logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
         try {
-          TimeUnit.SECONDS.sleep(retryAfter);
+          TimeUnit.SECONDS.sleep( retryAfter );
           continue; // retry
         } catch ( InterruptedException interruptedError ) {
           // Consider we have slept enough. The api should tell us how much to wait

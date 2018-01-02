@@ -47,8 +47,6 @@ public class ZendeskInputUsers extends ZendeskInput {
   ZendeskInputUsersMeta meta;
   ZendeskInputUsersData data;
 
-  private int incomingIdFieldIndex;
-
   @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     if ( !super.init( smi, sdi ) ) {
@@ -65,7 +63,6 @@ public class ZendeskInputUsers extends ZendeskInput {
 
     if ( first ) {
       first = false;
-      incomingIdFieldIndex= getInputRowMeta().indexOfValue( environmentSubstitute( meta.getIncomingFieldname() ) );
 
       if ( getInputRowMeta() != null ) {
         data.isReceivingInput = true;
@@ -177,23 +174,26 @@ public class ZendeskInputUsers extends ZendeskInput {
 
       Long userId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       User user = null;
-      while (user == null) {
+      boolean fetchUser = true;
+      while ( fetchUser ) {
         try {
           user = data.conn.getUser( userId );
+          fetchUser = false;
         } catch ( ZendeskResponseRateLimitException zre ) {
           Long retryAfter = zre.getRetryAfter();
-          logBasic ( "Hit rate limiting user record(" + userId + "). Sleeping" + retryAfter + "s");
+          logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
           try {
-            TimeUnit.SECONDS.sleep(retryAfter);
+            TimeUnit.SECONDS.sleep( retryAfter );
             continue; // retry
-            } catch ( InterruptedException interruptedError ) {
-              // Consider we have slept enough. The api should tell us how much to wait
-              continue; // retry
-            }
+          } catch ( InterruptedException interruptedError ) {
+            // Consider we have slept enough. The api should tell us how much to wait
+            continue; // retry
+          }
         } catch ( ZendeskResponseException zre ) {
-          if ( 404 == zre.getStatusCode() ) {
+          if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
             putError( getInputRowMeta(), row, 1L, zre.toString(),
-              getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
+              getInputRowMeta().getValueMeta( data.incomingIndex ).getName(), zre.getStatusText() );
+            fetchUser = false;
             break; //non fatal failure
           } else {
             logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
@@ -205,27 +205,28 @@ public class ZendeskInputUsers extends ZendeskInput {
       }
       if ( user != null ) {
         List<Identity> identities = new ArrayList<Identity>();
-        while (true) {
+        boolean fetchMore = true;
+        while ( fetchMore ) {
           try {
             if ( meta.getUserIdentityStepMeta() != null ) {
               identities.addAll( data.conn.getUserIdentities( user ) );
             }
-            break; // Success
+            fetchMore = false; // Success
           } catch ( ZendeskResponseRateLimitException zre ) {
             Long retryAfter = zre.getRetryAfter();
-            logBasic ( "Hit rate limiting user identities. Sleeping" + retryAfter + "s");
+            logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
             try {
-              TimeUnit.SECONDS.sleep(retryAfter);
+              TimeUnit.SECONDS.sleep( retryAfter );
               continue; //retry
             } catch ( InterruptedException interruptedError ) {
               // Consider we have slept enough. The api should tell us how much to wait
               continue;
             }
           } catch ( ZendeskResponseException zre ) {
-            if ( 404 == zre.getStatusCode() ) {
+            if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
               putError( getInputRowMeta(), row, 1L, zre.toString(),
-                getInputRowMeta().getValueMeta( incomingIdFieldIndex ).getName(), zre.getStatusText() );
-                break; //non fatal failure
+                getInputRowMeta().getValueMeta( data.incomingIndex ).getName(), zre.getStatusText() );
+              fetchMore = false; //non fatal failure
             } else {
               logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
               setErrors( 1L );
