@@ -161,14 +161,16 @@ public class ZendeskInputHCArticle extends ZendeskInput {
       Long articleId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       Article article = null;
       try {
-        article = data.conn.getArticle( articleId.intValue() );
+        article = data.conn.getArticle( articleId );
       } catch ( ZendeskResponseException zre ) {
         logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
         setErrors( 1L );
         setOutputDone();
         return false;
       }
-      if ( article != null ) {
+      if ( article == null ) {
+        logDebug( "Article " + articleId + " not found." );
+      } else {
         outputArticleRow( article );
         Iterable<Translation> translations = null;
         if ( meta.getTranslationStepMeta() != null ) {
