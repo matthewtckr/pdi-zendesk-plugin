@@ -42,7 +42,10 @@ import org.zendesk.client.v2.model.Organization;
 import org.zendesk.client.v2.model.Ticket;
 import org.zendesk.client.v2.model.User;
 import org.zendesk.client.v2.model.hc.Article;
-
+import org.zendesk.client.v2.ZendeskResponseException;
+import org.zendesk.client.v2.ZendeskResponseRateLimitException;
+import java.util.concurrent.TimeUnit;
+import java.util.Iterator;
 
 public class ZendeskInputIncremental extends ZendeskInput {
 
@@ -87,43 +90,67 @@ public class ZendeskInputIncremental extends ZendeskInput {
       }
     }
 
+    Iterator<?> serviceIterator;
+
     switch ( meta.getDownloadType() ) {
       case TICKETS:
-        for ( Ticket ticket : data.conn.getTicketsIncrementally( startDate ) ) {
-          putRow( data.rowMeta, processTicket( ticket ) );
-          incrementLinesOutput();
-          if ( isStopped() ) {
-            break;
-          }
-        }
+        serviceIterator = data.conn.getTicketsIncrementally( startDate ).iterator();
         break;
       case USERS:
-        for ( User user : data.conn.getUsersIncrementally( startDate ) ) {
-          putRow( data.rowMeta, processUser( user ) );
-          incrementLinesOutput();
-          if ( isStopped() ) {
-            break;
-          }
-        }
+        serviceIterator = data.conn.getUsersIncrementally( startDate ).iterator();
         break;
       case ORGANIZATIONS:
-        for ( Organization org : data.conn.getOrganizationsIncrementally( startDate ) ) {
-          putRow( data.rowMeta, processOrganization( org ) );
-          incrementLinesOutput();
-          if ( isStopped() ) {
-            break;
-          }
-        }
+        serviceIterator = data.conn.getOrganizationsIncrementally( startDate ).iterator();
         break;
       case HELPCENTER_ARTICLES:
-        for ( Article article : data.conn.getArticlesIncrementally( startDate ) ) {
-          putRow( data.rowMeta, processArticle( article ) );
+        serviceIterator = data.conn.getArticlesIncrementally( startDate ).iterator();
+        break;
+      default:
+        serviceIterator = null; //get rid of compile error
+        break;
+    }
+    boolean fetchMore = true;
+    while ( fetchMore ) {
+      try {
+        while ( serviceIterator.hasNext() ) {
+          switch ( meta.getDownloadType() ) {
+            case TICKETS:
+              Ticket ticket = (Ticket) ( serviceIterator.next() );
+              putRow( data.rowMeta, processTicket( ticket ) );
+              break;
+            case USERS:
+              User user = (User) ( serviceIterator.next() );
+              putRow( data.rowMeta, processUser( user ) );
+              break;
+            case ORGANIZATIONS:
+              Organization org = (Organization) ( serviceIterator.next() );
+              putRow( data.rowMeta, processOrganization( org ) );
+              break;
+            case HELPCENTER_ARTICLES:
+              Article article = (Article) ( serviceIterator.next() );
+              putRow( data.rowMeta, processArticle( article ) );
+              break;
+          }
           incrementLinesOutput();
           if ( isStopped() ) {
-            break;
+            fetchMore = false;
           }
         }
-        break;
+        fetchMore = false; // We need to exit from the upper loop now we have all records
+      } catch ( ZendeskResponseRateLimitException zre ) {
+        Long retryAfter = zre.getRetryAfter();
+        logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
+        try {
+          TimeUnit.SECONDS.sleep( retryAfter );
+          continue; // retry
+        } catch ( InterruptedException interruptedError ) {
+          // Consider we have slept enough. The api should tell us how much to wait
+          continue; //retry
+        }
+      } catch ( ZendeskResponseException zre ) {
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+        fetchMore = false;
+      }
     }
     setOutputDone();
     return false;

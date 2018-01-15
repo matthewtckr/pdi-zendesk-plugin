@@ -33,7 +33,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.zendesk.client.v2.ZendeskResponseException;
+import org.zendesk.client.v2.ZendeskResponseRateLimitException;
 import org.zendesk.client.v2.model.Audit;
+import java.util.concurrent.TimeUnit;
 
 public class ZendeskInputTicketAudit extends ZendeskInput {
 
@@ -110,21 +112,35 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
     // Process ticket audit
     data.newTicket();
     Long currentTicketId = getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getInteger( row[ticketIdFieldIndex] );
-    try {
-      Iterable<Audit> ticketAudits = data.conn.getTicketAudits( currentTicketId );
-      for ( Audit ticketAudit : ticketAudits ) {
-        data.addAudit( ticketAudit );
-      }
-      outputRows();
-    } catch ( ZendeskResponseException zre ) {
-      if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
-        putError( getInputRowMeta(), row, 1L, zre.toString(),
-          getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getName(), zre.getStatusText() );
-      } else {
-        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-        setErrors( 1L );
-        setOutputDone();
-        return false;
+    while ( true ) {
+      try {
+        Iterable<Audit> ticketAudits = data.conn.getTicketAudits( currentTicketId );
+        for ( Audit ticketAudit : ticketAudits ) {
+          data.addAudit( ticketAudit );
+        }
+        outputRows();
+        break; // success
+      } catch ( ZendeskResponseRateLimitException zre ) {
+        Long retryAfter = zre.getRetryAfter();
+        logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
+        try {
+          TimeUnit.SECONDS.sleep( retryAfter );
+          continue; // retry
+        } catch ( InterruptedException interruptedError ) {
+          // Consider we have slept enough. The api should tell us how much to wait
+          continue;
+        }
+      } catch ( ZendeskResponseException zre ) {
+        if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
+          putError( getInputRowMeta(), row, 1L, zre.toString(),
+            getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getName(), zre.getStatusText() );
+          break; // non fatal failure
+        } else {
+          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+          setErrors( 1L );
+          setOutputDone();
+          return false; // die: unknown error
+        }
       }
     }
     return true;
