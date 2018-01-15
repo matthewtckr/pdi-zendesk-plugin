@@ -117,7 +117,7 @@ public class ZendeskInputTicketAudit extends ZendeskInput {
       }
       outputRows();
     } catch ( ZendeskResponseException zre ) {
-      if ( 404 == zre.getStatusCode() ) {
+      if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
         putError( getInputRowMeta(), row, 1L, zre.toString(),
           getInputRowMeta().getValueMeta( ticketIdFieldIndex ).getName(), zre.getStatusText() );
       } else {
