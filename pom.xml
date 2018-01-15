@@ -4,7 +4,7 @@
 
   <groupId>org.pentaho.pdi</groupId>
   <artifactId>pdi-zendesk-plugin</artifactId>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.2</version>
   <name>PDI Zendesk Plugin</name>
 
   <properties>
@@ -17,7 +17,7 @@
     <connection>scm:git:git://github.com/matthewtckr/pdi-zendesk-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:matthewtckr/pdi-zendesk-plugin.git</developerConnection>
     <url>http://github.com/matthewtckr/pdi-zendesk-plugin/tree/master</url>
-    <tag>HEAD</tag>
+    <tag>pdi-zendesk-plugin-1.2.2</tag>
   </scm>
 
   <developers>
