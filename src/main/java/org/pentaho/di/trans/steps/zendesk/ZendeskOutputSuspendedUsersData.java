@@ -33,10 +33,12 @@ public class ZendeskOutputSuspendedUsersData extends ZendeskInputData {
   RowMetaInterface outputRowMeta;
 
   public boolean suspendUser( long userId, boolean action ) {
-    User user = new User();
-    user.setId( userId );
-    user.setSuspended( action );
-    User result = conn.updateUser( user );
+    User result = null;
+    if ( action ) {
+      result = conn.suspendUser( userId );
+    } else {
+      result = conn.unsuspendUser( userId );
+    }
     return ( result.getSuspended() == action );
   }
 }

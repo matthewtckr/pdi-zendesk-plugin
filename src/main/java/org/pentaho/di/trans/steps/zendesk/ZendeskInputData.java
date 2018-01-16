@@ -24,8 +24,7 @@ package org.pentaho.di.trans.steps.zendesk;
 
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.zendesk.client.v2.Zendesk;
 
 public abstract class ZendeskInputData extends BaseStepData implements StepDataInterface {
-  Zendesk conn;
+  ZendeskFacade conn;
 }

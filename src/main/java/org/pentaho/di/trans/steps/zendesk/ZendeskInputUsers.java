@@ -36,13 +36,9 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.zendesk.client.v2.ZendeskException;
 import org.zendesk.client.v2.ZendeskResponseException;
-import org.zendesk.client.v2.ZendeskResponseRateLimitException;
 import org.zendesk.client.v2.model.Identity;
 import org.zendesk.client.v2.model.User;
-
-import java.util.concurrent.TimeUnit;
 
 public class ZendeskInputUsers extends ZendeskInput {
 
@@ -125,64 +121,37 @@ public class ZendeskInputUsers extends ZendeskInput {
 
     if ( !data.isReceivingInput ) {
       Iterable<User> users = null;
-      boolean fetchUser = true;
-      while ( fetchUser ) {
-        try {
-          users = data.conn.getUsers();
-          fetchUser = false;
-        } catch ( ZendeskResponseRateLimitException zre ) {
-          Long retryAfter = zre.getRetryAfter();
-          logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
-          try {
-            TimeUnit.SECONDS.sleep( retryAfter );
-            continue; // retry
-          } catch ( InterruptedException interruptedError ) {
-          //   Consider we have slept enough. The api should tell us how much to wait
-            continue; // retry
-          }
-        } catch ( ZendeskResponseException zre ) {
-          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-          setErrors( 1L );
-          setOutputDone();
-          return false;
-        }
+      try {
+        users = data.conn.getUsers();
+      } catch ( ZendeskResponseException zre ) {
+        logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+        setErrors( 1L );
+        setOutputDone();
+        return false;
       }
-      fetchUser = true;
       int i = 0;
-      while ( fetchUser ) {
-    	try {
-          for ( User user : users ) {
-            if ( isStopped() ) {
-              break;
-            }
-            if ( user != null ) {
-              i++;
-              List<Identity> identities = new ArrayList<Identity>();
-              try {
-                if ( meta.getUserIdentityStepMeta() != null ) {
-                  identities.addAll( data.conn.getUserIdentities( user ) );
-                }
-              } catch ( ZendeskResponseException zre ) {
-                logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-                setErrors( 1L );
-                setOutputDone();
-                return false;
-              }
-              outputUserRow( user );
-              outputUserIdentityRow( identities );
-              incrementLinesOutput();
-            }
-          }
-    	} catch ( ZendeskResponseRateLimitException zre ) {
-          Long retryAfter = zre.getRetryAfter();
-          logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
+      for ( User user : users ) {
+        if ( isStopped() ) {
+          break;
+        }
+        if ( user != null ) {
+          i++;
+          List<Identity> identities = new ArrayList<Identity>();
           try {
-            TimeUnit.SECONDS.sleep( retryAfter );
-            continue; // retry
-          } catch ( InterruptedException interruptedError ) {
-          //   Consider we have slept enough. The api should tell us how much to wait
-            continue; // retry
+            if ( meta.getUserIdentityStepMeta() != null ) {
+              for ( Identity identity : data.conn.getUserIdentities( user.getId() ) ) {
+                identities.add( identity );
+              }
+            }
+          } catch ( ZendeskResponseException zre ) {
+            logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+            setErrors( 1L );
+            setOutputDone();
+            return false;
           }
+          outputUserRow( user );
+          outputUserIdentityRow( identities );
+          incrementLinesOutput();
         }
       }
       if ( !isStopped() ) {
@@ -204,68 +173,36 @@ public class ZendeskInputUsers extends ZendeskInput {
 
       Long userId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       User user = null;
-      boolean fetchUser = true;
-      boolean isRetry = false;
-      while ( fetchUser ) {
+      try {
+        user = data.conn.getUser( userId );
+      } catch ( ZendeskResponseException zre ) {
+        if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
+          putError( getInputRowMeta(), row, 1L, zre.toString(),
+            getInputRowMeta().getValueMeta( data.incomingIndex ).getName(), zre.getStatusText() );
+        } else {
+          logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
+          setErrors( 1L );
+          setOutputDone();
+          return false; // die unknown error
+        }
+      }
+      if ( user != null ) {
+        List<Identity> identities = new ArrayList<Identity>();
         try {
-          user = data.conn.getUser( userId );
-          fetchUser = false; // break out of loop
-        } catch ( ZendeskResponseRateLimitException zre ) {
-          Long retryAfter = zre.getRetryAfter();
-          logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
-          try {
-            TimeUnit.SECONDS.sleep( retryAfter );
-            continue; // retry
-          } catch ( InterruptedException interruptedError ) {
-            // Consider we have slept enough. The api should tell us how much to wait
-            continue; // retry
+          if ( meta.getUserIdentityStepMeta() != null ) {
+            for ( Identity identity : data.conn.getUserIdentities( user.getId() ) ) {
+              identities.add( identity );
+            }
           }
         } catch ( ZendeskResponseException zre ) {
           if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
             putError( getInputRowMeta(), row, 1L, zre.toString(),
               getInputRowMeta().getValueMeta( data.incomingIndex ).getName(), zre.getStatusText() );
-            fetchUser = false;
-            break; //non fatal failure
           } else {
             logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
             setErrors( 1L );
             setOutputDone();
-            return false; // die unknown error
-          }
-        } catch ( Exception ze ) {
-          logDetailed( "Test: " + ze.getCause().getClass().getCanonicalName() );
-        }
-      }
-      if ( user != null ) {
-        List<Identity> identities = new ArrayList<Identity>();
-        boolean fetchMore = true;
-        while ( fetchMore ) {
-          try {
-            if ( meta.getUserIdentityStepMeta() != null ) {
-              identities.addAll( data.conn.getUserIdentities( user ) );
-            }
-            fetchMore = false; // Success
-          } catch ( ZendeskResponseRateLimitException zre ) {
-            Long retryAfter = zre.getRetryAfter();
-            logDetailed( BaseMessages.getString( PKG, "ZendeskInput.Info.RateLimited", retryAfter ) );
-            try {
-              TimeUnit.SECONDS.sleep( retryAfter );
-              continue; //retry
-            } catch ( InterruptedException interruptedError ) {
-              // Consider we have slept enough. The api should tell us how much to wait
-              continue;
-            }
-          } catch ( ZendeskResponseException zre ) {
-            if ( 404 == zre.getStatusCode() && getStepMeta().isDoingErrorHandling() ) {
-              putError( getInputRowMeta(), row, 1L, zre.toString(),
-                getInputRowMeta().getValueMeta( data.incomingIndex ).getName(), zre.getStatusText() );
-              fetchMore = false; //non fatal failure
-            } else {
-              logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
-              setErrors( 1L );
-              setOutputDone();
-              return false;
-            }
+            return false;
           }
         }
         outputUserRow( user );

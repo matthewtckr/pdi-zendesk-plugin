@@ -32,7 +32,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.zendesk.client.v2.Zendesk;
 
 
 public abstract class ZendeskInput extends BaseStep implements StepInterface {
@@ -64,29 +63,10 @@ public abstract class ZendeskInput extends BaseStep implements StepInterface {
       return false;
     }
 
-    data.conn = createConnection( subDomain, username, password, meta.isToken() );
-    if ( data.conn == null || data.conn.isClosed() ) {
-      return false;
-    }
-    return true;
-  }
-
-  Zendesk createConnection( String subDomain, String username, String password, boolean token ) {
-    Zendesk.Builder builder = new Zendesk.Builder( String.format( "https://%s.zendesk.com", subDomain ) );
-
-    if ( username.contains( "/token" ) ) {
-      token = true;
-      username = username.replaceAll( "/token", "" );
-      logDetailed( BaseMessages.getString( PKG, "ZendeskInput.UsernameContainsToken.Warning" ) );
-    }
-    builder.setUsername( username );
-
-    if ( token ) {
-      builder.setToken( password );
-    } else {
-      builder.setPassword( password );
-    }
-    return builder.build();
+    data.conn = new ZendeskFacade( this );
+    data.conn.connect( subDomain, username, password, meta.isToken() );
+    logDetailed( "Connected: " + data.conn.isConnected() );
+    return data.conn.isConnected();
   }
 
   @Override

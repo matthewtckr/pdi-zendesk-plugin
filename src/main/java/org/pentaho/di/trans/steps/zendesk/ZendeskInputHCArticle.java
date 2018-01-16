@@ -115,7 +115,7 @@ public class ZendeskInputHCArticle extends ZendeskInput {
     if ( !data.isReceivingInput ) {
       Iterable<Article> articles = null;
       try {
-        articles = data.conn.getArticles();
+        articles = data.conn.getHelpCenterArticles();
       } catch ( ZendeskResponseException zre ) {
         logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
         setErrors( 1L );
@@ -128,7 +128,7 @@ public class ZendeskInputHCArticle extends ZendeskInput {
         Iterable<Translation> translations = null;
         if ( meta.getTranslationStepMeta() != null ) {
           try {
-            translations = data.conn.getArticleTranslations( article.getId() );
+            translations = data.conn.getHelpCenterArticleTranslations( article.getId() );
           } catch ( ZendeskResponseException zre ) {
             logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
             setErrors( 1L );
@@ -161,7 +161,7 @@ public class ZendeskInputHCArticle extends ZendeskInput {
       Long articleId = getInputRowMeta().getValueMeta( data.incomingIndex ).getInteger( row[data.incomingIndex] );
       Article article = null;
       try {
-        article = data.conn.getArticle( articleId );
+        article = data.conn.getHelpCenterArticle( articleId );
       } catch ( ZendeskResponseException zre ) {
         logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
         setErrors( 1L );
@@ -175,7 +175,7 @@ public class ZendeskInputHCArticle extends ZendeskInput {
         Iterable<Translation> translations = null;
         if ( meta.getTranslationStepMeta() != null ) {
           try {
-            translations = data.conn.getArticleTranslations( article.getId() );
+            translations = data.conn.getHelpCenterArticleTranslations( article.getId() );
           } catch ( ZendeskResponseException zre ) {
             logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
             setErrors( 1L );

@@ -132,8 +132,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
           || fieldType.equals( OrganizationActivityEvent.class.getName() )
           || fieldType.equals( AttachmentRedactionEvent.class.getName() )
           || fieldType.equals( CommentRedactionEvent.class.getName() ) ) {
-        // TODO: Replace OrgActivity and RedactionEvents with class references, pending upstream project commit
-        // Do nothing
+        continue; // These events are not currently planned to be part of the step output
       } else if ( fieldType.equals( CommentPrivacyChangeEvent.class.getName() ) ) {
         if ( auditSummaries != null ) {
           Long commentId = ( (CommentPrivacyChangeEvent) event ).getCommentId();
@@ -217,7 +216,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
               throw new KettleValueException( "Unable to parse [" + fieldValue + "] + with format [" + DUE_AT_DATE_FORMAT_STRING + "]", e );
             }
           case "current_collaborators":
-            // Ignore, these are "pretty-printed emails",
+            // Ignore, these are "pretty-printed email addresses",
             // and the CcEvent is used above instead
             break;
           default:
