@@ -212,7 +212,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
             break;
           case "due_at":
             try {
-              this.dueAt = DUE_AT_DATE_FORMAT.parse( fieldValue );
+              this.dueAt = fieldValue == null ? null : DUE_AT_DATE_FORMAT.parse( fieldValue );
             } catch ( ParseException e ) {
               throw new KettleValueException( "Unable to parse [" + fieldValue + "] + with format [" + DUE_AT_DATE_FORMAT_STRING + "]", e );
             }
