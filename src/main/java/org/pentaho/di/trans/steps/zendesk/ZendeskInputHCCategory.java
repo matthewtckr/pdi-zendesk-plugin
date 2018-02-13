@@ -68,7 +68,7 @@ public class ZendeskInputHCCategory extends ZendeskInput {
     }
     Iterable<Category> categories = null;
     try {
-      categories = data.conn.getCategories();
+      categories = data.conn.getHelpCenterCategories();
     } catch ( ZendeskResponseException zre ) {
       logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
       setErrors( 1L );

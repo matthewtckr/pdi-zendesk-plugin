@@ -68,7 +68,7 @@ public class ZendeskInputHCSection extends ZendeskInput {
     }
     Iterable<Section> sections = null;
     try {
-      sections = data.conn.getSections();
+      sections = data.conn.getHelpCenterSections();
     } catch ( ZendeskResponseException zre ) {
       logError( BaseMessages.getString( PKG, "ZendeskInput.Error.Generic", zre ) );
       setErrors( 1L );
