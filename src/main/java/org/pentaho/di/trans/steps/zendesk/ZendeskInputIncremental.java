@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.zendesk;
 
 import java.util.Date;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -31,7 +32,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
-import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -84,11 +84,11 @@ public class ZendeskInputIncremental extends ZendeskInput {
       }
       if ( data.rowMeta == null ) {
         data.rowMeta = new RowMeta();
-        data.rowMeta.addValueMeta( new ValueMetaInteger( environmentSubstitute( meta.getOutputFieldName() ) ) );
+        meta.getFields( data.rowMeta, getStepname(), null, null, this, getRepository(), getMetaStore() );
       }
     }
 
-    Iterator<?> serviceIterator;
+    Iterator<?> serviceIterator = null;
 
     switch ( meta.getDownloadType() ) {
       case TICKETS:
@@ -104,7 +104,6 @@ public class ZendeskInputIncremental extends ZendeskInput {
         serviceIterator = data.conn.getArticlesIncrementally( startDate ).iterator();
         break;
       default:
-        serviceIterator = null; //get rid of compile error
         break;
     }
 
@@ -185,7 +184,11 @@ public class ZendeskInputIncremental extends ZendeskInput {
   }
 
   Object[] processTicket( Ticket ticket ) {
-    return new Object[]{ ticket.getId() };
+    if ( !Const.isEmpty( environmentSubstitute( meta.getStatusFieldName() ) ) ) { 
+      return new Object[]{ ticket.getId(), ticket.getStatus() };
+    } else {
+      return new Object[] { ticket.getId() };
+    }
   }
 
   Object[] processUser( User user ) {

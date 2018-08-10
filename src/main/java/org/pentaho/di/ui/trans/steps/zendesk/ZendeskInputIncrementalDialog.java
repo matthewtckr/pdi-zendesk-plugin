@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -63,7 +63,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
  private static Class<?> PKG = ZendeskInputIncrementalMeta.class; // for i18n purposes, needed by Translator2!!
  private ZendeskInputIncrementalMeta input;
 
- private LabelTextVar wSubDomain, wUsername, wOutputFieldname;
+ private LabelTextVar wSubDomain, wUsername, wOutputFieldname, wStatusFieldname;
  private Label wlPassword, wlDownloadType, wlFieldname, wlToken;
  private PasswordTextVar wPassword;
  private Button wToken;
@@ -259,7 +259,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wOutputFieldname = new LabelTextVar( transMeta, shell,
      BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Label" ),
      BaseMessages.getString( PKG, "ZendeskInputIncremental.OutputFieldName.Tooltip" ) );
-   props.setLook( wSubDomain );
+   props.setLook( wOutputFieldname );
    wOutputFieldname.addModifyListener( lsMod );
    FormData fdOutputFieldname = new FormData();
    fdOutputFieldname.left = new FormAttachment( 0, -margin );
@@ -267,13 +267,25 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    fdOutputFieldname.right = new FormAttachment( 100, -margin );
    wOutputFieldname.setLayoutData( fdOutputFieldname );
 
+   // Status Fieldname
+   wStatusFieldname = new LabelTextVar( transMeta, shell,
+     BaseMessages.getString( PKG, "ZendeskInputIncremental.StatusFieldName.Label" ),
+     BaseMessages.getString( PKG, "ZendeskInputIncremental.StatusFieldName.Tooltip" ) );
+   props.setLook( wStatusFieldname );
+   wStatusFieldname.addModifyListener( lsMod );
+   FormData fdStatusFieldname = new FormData();
+   fdStatusFieldname.left = new FormAttachment( 0, -margin );
+   fdStatusFieldname.top = new FormAttachment( wOutputFieldname, 2 * margin );
+   fdStatusFieldname.right = new FormAttachment( 100, -margin );
+   wStatusFieldname.setLayoutData( fdStatusFieldname );
+
    // Some buttons
    wOK = new Button( shell, SWT.PUSH );
    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
    wCancel = new Button( shell, SWT.PUSH );
    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-   setButtonPositions( new Button[] { wOK, wCancel }, margin, wOutputFieldname );
+   setButtonPositions( new Button[] { wOK, wCancel }, margin, wStatusFieldname );
 
    // Add listeners
    lsCancel = new Listener() {
@@ -345,6 +357,12 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    wOutputFieldname.getLabelWidget().setText( label );
    wOutputFieldname.getLabelWidget().setToolTipText( toolTip );
    wOutputFieldname.getTextWidget().setToolTipText( toolTip );
+
+   if ( IncrementalType.values()[newSelection].equals( IncrementalType.TICKETS ) ) {
+     wStatusFieldname.setVisible( true );
+   } else {
+     wStatusFieldname.setVisible( false );
+   }
  }
 
  /**
@@ -363,6 +381,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    }
    wFieldname.setText( Const.NVL( input.getTimestampFieldName(), "" ) );
    wOutputFieldname.setText( Const.NVL( input.getOutputFieldName(), "" ) );
+   wStatusFieldname.setText( Const.NVL( input.getStatusFieldName(), "" ) );
 
    setOutputLabel();
    wStepname.selectAll();
@@ -394,6 +413,7 @@ public class ZendeskInputIncrementalDialog extends BaseStepDialog implements Ste
    inf.setDownloadType( IncrementalType.values()[wDownloadType.getSelectionIndex()] );
    inf.setTimestampFieldName( wFieldname.getText() );
    inf.setOutputFieldName( wOutputFieldname.getText() );
+   inf.setStatusFieldName( wStatusFieldname.getText() );
    stepname = wStepname.getText(); // return value
  }
 }
