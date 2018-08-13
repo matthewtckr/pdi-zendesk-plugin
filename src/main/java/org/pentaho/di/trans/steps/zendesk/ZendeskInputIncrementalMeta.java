@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -82,6 +83,7 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
   private IncrementalType downloadType;
   private String timestampFieldName;
   private String outputFieldName;
+  private String statusFieldName;
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
@@ -119,6 +121,14 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
     this.outputFieldName = outputFieldName;
   }
 
+  public String getStatusFieldName() {
+    return statusFieldName;
+  }
+
+  public void setStatusFieldName( String statusFieldName ) {
+    this.statusFieldName = statusFieldName;
+  }
+
   @Override
   public String getXML() throws KettleException {
     StringBuilder builder = new StringBuilder();
@@ -127,6 +137,7 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
       getDownloadType() == null ? null : getDownloadType().name() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "timestampFieldName", getTimestampFieldName() ) );
     builder.append( "    " ).append( XMLHandler.addTagValue( "outputFieldName", getOutputFieldName() ) );
+    builder.append( "    " ).append( XMLHandler.addTagValue( "statusFieldName", getStatusFieldName() ) );
     return builder.toString();
   }
 
@@ -141,6 +152,7 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
     }
     setTimestampFieldName( XMLHandler.getTagValue( stepnode, "timestampFieldName" ) );
     setOutputFieldName( XMLHandler.getTagValue( stepnode, "outputFieldName" ) );
+    setStatusFieldName( XMLHandler.getTagValue( stepnode, "statusFieldName" ) );
   }
 
   @Override
@@ -155,6 +167,7 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
     }
     setTimestampFieldName( rep.getStepAttributeString( id_step, "timestampFieldName" ) );
     setOutputFieldName( rep.getStepAttributeString( id_step, "outputFieldName" ) );
+    setStatusFieldName( rep.getStepAttributeString( id_step, "statusFieldName" ) );
   }
 
   @Override
@@ -165,6 +178,7 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
       getDownloadType() == null ? null : getDownloadType().name() );
     rep.saveStepAttribute( id_transformation, id_step, "timestampFieldName", getTimestampFieldName() );
     rep.saveStepAttribute( id_transformation, id_step, "outputFieldName", getOutputFieldName() );
+    rep.saveStepAttribute( id_transformation, id_step, "statusFieldName", getStatusFieldName() );
   }
 
   @Override
@@ -178,6 +192,9 @@ public class ZendeskInputIncrementalMeta extends ZendeskInputMeta implements Ste
     super.getFields( inputRowMeta, name, info, nextStep, space, repository, metaStore );
     inputRowMeta.clear();
     inputRowMeta.addValueMeta( new ValueMetaInteger( space.environmentSubstitute( getOutputFieldName() ) ) );
+    if ( getDownloadType().equals( IncrementalType.TICKETS ) && !Const.isEmpty( getStatusFieldName() ) ) {
+      inputRowMeta.addValueMeta( new ValueMetaString( space.environmentSubstitute( getStatusFieldName() ) ) );
+    }
   }
 
 }

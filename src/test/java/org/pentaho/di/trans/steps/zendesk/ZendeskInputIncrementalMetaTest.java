@@ -51,7 +51,7 @@ public class ZendeskInputIncrementalMetaTest {
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
       Arrays.asList( "subDomain", "username", "password", "token",
-        "downloadType", "timestampFieldName", "outputFieldName" );
+        "downloadType", "timestampFieldName", "outputFieldName", "statusFieldName" );
 
     Map<String, FieldLoadSaveValidator<?>> attributeMap = new HashMap<String, FieldLoadSaveValidator<?>>();
     attributeMap.put( "downloadType", new IncrementalTypeFieldLoadSaveValidator() );
