@@ -23,16 +23,25 @@
 package org.pentaho.di.trans.steps.zendesk;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputTicketFieldsMeta.TicketField;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputTicketFieldsMeta.TicketField.Attribute;
 
 public class ZendeskInputTicketFieldsMetaTest {
 
@@ -44,31 +53,50 @@ public class ZendeskInputTicketFieldsMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "subDomain", "username", "password", "token", "ticketFieldIdFieldname", "ticketFieldUrlFieldname",
-        "ticketFieldTypeFieldname", "ticketFieldTitleFieldname", "ticketFieldActiveFieldname",
-        "ticketFieldRequiredFieldname", "ticketFieldVisibleEndUsersFieldname", "createdAtFieldname",
-        "updatedAtFieldname" );
+      Arrays.asList( "TicketFields" );
+
+    Map<String, String> getters = Collections.emptyMap();
+    Map<String, String> setters = Collections.emptyMap();
+    Map<String, FieldLoadSaveValidator<?>> attributeValidators = new HashMap<>();
+    Map<String, FieldLoadSaveValidator<?>> typeValidators = new HashMap<>();
+    attributeValidators.put( "TicketFields",
+      new ArrayLoadSaveValidator<TicketField>( new TicketFieldLoadSaveValidator(), 25 ) );
 
     LoadSaveTester loadSaveTester =
-      new LoadSaveTester( ZendeskInputTicketFieldsMeta.class, attributes, new HashMap<String, String>(),
-        new HashMap<String, String>() );
+      new LoadSaveTester( ZendeskInputTicketFieldsMeta.class, attributes, getters, setters,
+        attributeValidators, typeValidators );
 
-    loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
+    loadSaveTester.testRepoRoundTrip();
   }
 
   @Test
   public void testDefault() {
     ZendeskInputTicketFieldsMeta meta = new ZendeskInputTicketFieldsMeta();
     meta.setDefault();
-    assertNotNull( meta.getTicketFieldIdFieldname() );
-    assertNotNull( meta.getTicketFieldUrlFieldname() );
-    assertNotNull( meta.getTicketFieldTypeFieldname() );
-    assertNotNull( meta.getTicketFieldTitleFieldname() );
-    assertNotNull( meta.getTicketFieldActiveFieldname() );
-    assertNotNull( meta.getTicketFieldRequiredFieldname() );
-    assertNotNull( meta.getTicketFieldVisibleEndUsersFieldname() );
-    assertNotNull( meta.getCreatedAtFieldname() );
-    assertNotNull( meta.getUpdatedAtFieldname() );
+    assertNotNull( meta.getTicketFields() );
+    assertTrue( meta.getTicketFields().length > 0 );
+  }
+
+  public static class TicketFieldLoadSaveValidator implements FieldLoadSaveValidator<TicketField>{
+
+    @Override
+    public TicketField getTestObject() {
+      Attribute[] values = Attribute.values();
+
+      return new TicketField(
+        UUID.randomUUID().toString(),
+        values[new Random().nextInt( values.length )] );
+    }
+
+    @Override
+    public boolean validateTestObject(TicketField testObject, Object actual) {
+      if ( !( actual instanceof TicketField ) ) {
+        return false;
+      }
+      TicketField actualObject = (TicketField) actual;
+      return testObject.getName().equals( actualObject.getName() ) &&
+        testObject.getType() == actualObject.getType();
+    }
   }
 }

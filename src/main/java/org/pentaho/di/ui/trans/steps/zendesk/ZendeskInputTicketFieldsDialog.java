@@ -22,6 +22,9 @@
 
 package org.pentaho.di.ui.trans.steps.zendesk;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -40,7 +43,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -49,8 +54,12 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.zendesk.ZendeskInputTicketFieldsMeta;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputTicketFieldsMeta.TicketField;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputTicketFieldsMeta.TicketField.Attribute;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements StepDialogInterface {
@@ -67,15 +76,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
  private PasswordTextVar wPassword;
  private Button wToken;
 
- private LabelTextVar wTicketFieldIdFieldname;
- private LabelTextVar wTicketFieldUrlFieldname;
- private LabelTextVar wTicketFieldTypeFieldname;
- private LabelTextVar wTicketFieldTitleFieldname;
- private LabelTextVar wTicketFieldActiveFieldname;
- private LabelTextVar wTicketFieldRequiredFieldname;
- private LabelTextVar wTicketFieldVisibleEndUsersFieldname;
- private LabelTextVar wCreatedAtFieldname;
- private LabelTextVar wUpdatedAtFieldname;
+ private TableView wFields;
 
  public ZendeskInputTicketFieldsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
    super( parent, (BaseStepMeta) in, tr, sname );
@@ -242,123 +243,39 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
    fieldsLayout.marginWidth = margin;
    fieldsLayout.marginHeight = margin;
    wFieldsComp.setLayout( fieldsLayout );
+   
+   wGet = new Button( wFieldsComp, SWT.PUSH );
+   wGet.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.GetFields.Button" ) );
+   fdGet = new FormData();
+   fdGet.left = new FormAttachment( 50, 0 );
+   fdGet.bottom = new FormAttachment( 100, 0 );
+   wGet.setLayoutData( fdGet );
+   
+   final int currentRows = input.getTicketFields().length;
+   
+   ColumnInfo[] colinf =
+     new ColumnInfo[] {
+       new ColumnInfo(
+         BaseMessages.getString( PKG, "ZendeskInputDialog.FieldsTable.Name" ),
+         ColumnInfo.COLUMN_TYPE_TEXT, false ),
+       new ColumnInfo(
+         BaseMessages.getString( PKG, "ZendeskInputDialog.FieldsTable.Element" ),
+         ColumnInfo.COLUMN_TYPE_CCOMBO, getElementNames(), false ),
+     };
+   colinf[0].setUsingVariables( true );
+   colinf[0].setToolTip(
+     BaseMessages.getString( PKG, "ZendeskInputDialog.FieldsTable.Name.Tooltip" ) );
+   colinf[1].setToolTip(
+     BaseMessages.getString( PKG, "ZendeskInputDialog.FieldsTable.Element.Tooltip" ) );
 
-   // ticketFieldIdFieldname
-   wTicketFieldIdFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldIdFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldIdFieldname.Tooltip" ) );
-   props.setLook( wTicketFieldIdFieldname );
-   wTicketFieldIdFieldname.addModifyListener( lsMod );
-   FormData fdTicketFieldIdFieldname = new FormData();
-   fdTicketFieldIdFieldname.left = new FormAttachment( 0, -margin );
-   fdTicketFieldIdFieldname.top = new FormAttachment( wToken, 2 * margin );
-   fdTicketFieldIdFieldname.right = new FormAttachment( 100, -margin );
-   wTicketFieldIdFieldname.setLayoutData( fdTicketFieldIdFieldname );
+   wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, currentRows, lsMod, props );
 
-   // ticketFieldUrlFieldname
-   wTicketFieldUrlFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldUrlFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldUrlFieldname.Tooltip" ) );
-   props.setLook( wTicketFieldUrlFieldname );
-   wTicketFieldUrlFieldname.addModifyListener( lsMod );
-   FormData fdTicketFieldUrlFieldname = new FormData();
-   fdTicketFieldUrlFieldname.left = new FormAttachment( 0, -margin );
-   fdTicketFieldUrlFieldname.top = new FormAttachment( wTicketFieldIdFieldname, 2 * margin );
-   fdTicketFieldUrlFieldname.right = new FormAttachment( 100, -margin );
-   wTicketFieldUrlFieldname.setLayoutData( fdTicketFieldUrlFieldname );
-
-   // ticketFieldTypeFieldname
-   wTicketFieldTypeFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTypeFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTypeFieldname.Tooltip" ) );
-   props.setLook( wTicketFieldTypeFieldname );
-   wTicketFieldTypeFieldname.addModifyListener( lsMod );
-   FormData fdTicketFieldTypeFieldname = new FormData();
-   fdTicketFieldTypeFieldname.left = new FormAttachment( 0, -margin );
-   fdTicketFieldTypeFieldname.top = new FormAttachment( wTicketFieldUrlFieldname, 2 * margin );
-   fdTicketFieldTypeFieldname.right = new FormAttachment( 100, -margin );
-   wTicketFieldTypeFieldname.setLayoutData( fdTicketFieldTypeFieldname );
-
-   // ticketFieldTitleFieldname
-   wTicketFieldTitleFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTitleFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldTitleFieldname.Tooltip" ) );
-   props.setLook( wTicketFieldTitleFieldname );
-   wTicketFieldTitleFieldname.addModifyListener( lsMod );
-   FormData fdTicketFieldTitleFieldname = new FormData();
-   fdTicketFieldTitleFieldname.left = new FormAttachment( 0, -margin );
-   fdTicketFieldTitleFieldname.top = new FormAttachment( wTicketFieldTypeFieldname, 2 * margin );
-   fdTicketFieldTitleFieldname.right = new FormAttachment( 100, -margin );
-   wTicketFieldTitleFieldname.setLayoutData( fdTicketFieldTitleFieldname );
-
-   // ticketFieldActiveFieldname
-   wTicketFieldActiveFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldActiveFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldActiveFieldname.Tooltip" ) );
-   props.setLook( wTicketFieldActiveFieldname );
-   wTicketFieldActiveFieldname.addModifyListener( lsMod );
-   FormData fdTicketFieldActiveFieldname = new FormData();
-   fdTicketFieldActiveFieldname.left = new FormAttachment( 0, -margin );
-   fdTicketFieldActiveFieldname.top = new FormAttachment( wTicketFieldTitleFieldname, 2 * margin );
-   fdTicketFieldActiveFieldname.right = new FormAttachment( 100, -margin );
-   wTicketFieldActiveFieldname.setLayoutData( fdTicketFieldActiveFieldname );
-
-   // ticketFieldRequiredFieldname
-   wTicketFieldRequiredFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldRequiredFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldRequiredFieldname.Tooltip" ) );
-   props.setLook( wTicketFieldRequiredFieldname );
-   wTicketFieldRequiredFieldname.addModifyListener( lsMod );
-   FormData fdTicketFieldRequiredFieldname = new FormData();
-   fdTicketFieldRequiredFieldname.left = new FormAttachment( 0, -margin );
-   fdTicketFieldRequiredFieldname.top = new FormAttachment( wTicketFieldActiveFieldname, 2 * margin );
-   fdTicketFieldRequiredFieldname.right = new FormAttachment( 100, -margin );
-   wTicketFieldRequiredFieldname.setLayoutData( fdTicketFieldRequiredFieldname );
-
-   // ticketFieldVisibleEndUsersFieldname
-   wTicketFieldVisibleEndUsersFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldVisibleEndUsersFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.TicketFieldVisibleEndUsersFieldname.Tooltip" ) );
-   props.setLook( wTicketFieldVisibleEndUsersFieldname );
-   wTicketFieldVisibleEndUsersFieldname.addModifyListener( lsMod );
-   FormData fdTicketFieldVisibleEndUsersFieldname = new FormData();
-   fdTicketFieldVisibleEndUsersFieldname.left = new FormAttachment( 0, -margin );
-   fdTicketFieldVisibleEndUsersFieldname.top = new FormAttachment( wTicketFieldRequiredFieldname, 2 * margin );
-   fdTicketFieldVisibleEndUsersFieldname.right = new FormAttachment( 100, -margin );
-   wTicketFieldVisibleEndUsersFieldname.setLayoutData( fdTicketFieldVisibleEndUsersFieldname );
-
-   // createdAtFieldname
-   wCreatedAtFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.CreatedAtFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.CreatedAtFieldname.Tooltip" ) );
-   props.setLook( wCreatedAtFieldname );
-   wCreatedAtFieldname.addModifyListener( lsMod );
-   FormData fdCreatedAtFieldname = new FormData();
-   fdCreatedAtFieldname.left = new FormAttachment( 0, -margin );
-   fdCreatedAtFieldname.top = new FormAttachment( wTicketFieldVisibleEndUsersFieldname, 2 * margin );
-   fdCreatedAtFieldname.right = new FormAttachment( 100, -margin );
-   wCreatedAtFieldname.setLayoutData( fdCreatedAtFieldname );
-
-   // updatedAtFieldname
-   wUpdatedAtFieldname =
-     new LabelTextVar(
-       transMeta, wFieldsComp, BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.UpdatedAtFieldname.Label" ),
-       BaseMessages.getString( PKG, "ZendeskInputTicketFieldsDialog.UpdatedAtFieldname.Tooltip" ) );
-   props.setLook( wUpdatedAtFieldname );
-   wUpdatedAtFieldname.addModifyListener( lsMod );
-   FormData fdUpdatedAtFieldname = new FormData();
-   fdUpdatedAtFieldname.left = new FormAttachment( 0, -margin );
-   fdUpdatedAtFieldname.top = new FormAttachment( wCreatedAtFieldname, 2 * margin );
-   fdUpdatedAtFieldname.right = new FormAttachment( 100, -margin );
-   wUpdatedAtFieldname.setLayoutData( fdUpdatedAtFieldname );
+   FormData fdFields = new FormData();
+   fdFields.left = new FormAttachment( 0, 0 );
+   fdFields.top = new FormAttachment( 0, 0 );
+   fdFields.right = new FormAttachment( 100, 0 );
+   fdFields.bottom = new FormAttachment( wGet, -margin );
+   wFields.setLayoutData( fdFields );
 
    FormData fdFieldsComp = new FormData();
    fdFieldsComp.left = new FormAttachment( 0, 0 );
@@ -406,9 +323,15 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
        ok();
      }
    };
+   lsGet = new Listener() {
+     public void handleEvent( Event e ) {
+       getFields();
+     }
+   };
 
    wCancel.addListener( SWT.Selection, lsCancel );
    wOK.addListener( SWT.Selection, lsOK );
+   wGet.addListener( SWT.Selection, lsGet );
 
    lsDef = new SelectionAdapter() {
      public void widgetDefaultSelected( SelectionEvent e ) {
@@ -430,6 +353,7 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
 
    getData();
    input.setChanged( changed );
+   wFields.optWidth( true );
 
    shell.open();
    while ( !shell.isDisposed() ) {
@@ -448,19 +372,54 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
    wUsername.setText( Const.NVL( input.getUsername(), "" ) );
    wPassword.setText( Const.NVL( input.getPassword(), "" ) );
    wToken.setSelection( input.isToken() );
-   wTicketFieldIdFieldname.setText( Const.NVL( input.getTicketFieldIdFieldname(), "" ) );
-   wTicketFieldUrlFieldname.setText( Const.NVL( input.getTicketFieldUrlFieldname(), "" ) );
-   wTicketFieldTypeFieldname.setText( Const.NVL( input.getTicketFieldTypeFieldname(), "" ) );
-   wTicketFieldTitleFieldname.setText( Const.NVL( input.getTicketFieldTitleFieldname(), "" ) );
-   wTicketFieldActiveFieldname.setText( Const.NVL( input.getTicketFieldActiveFieldname(), "" ) );
-   wTicketFieldRequiredFieldname.setText( Const.NVL( input.getTicketFieldRequiredFieldname(), "" ) );
-   wTicketFieldVisibleEndUsersFieldname.setText( Const.NVL( input.getTicketFieldVisibleEndUsersFieldname(), "" ) );
-   wCreatedAtFieldname.setText( Const.NVL( input.getCreatedAtFieldname(), "" ) );
-   wUpdatedAtFieldname.setText( Const.NVL( input.getUpdatedAtFieldname(), "" ) );
+
+   for ( int i = 0; i < input.getTicketFields().length; i++ ) {
+     TableItem item = wFields.table.getItem( i );
+     item.setText( 1, Const.NVL( input.getTicketFields()[i].getName(), "") );
+     item.setText( 2, Const.NVL( input.getTicketFields()[i].getType().toString(), "" ) );
+   }
+   wFields.removeEmptyRows();
+   wFields.setRowNums();
 
    wStepname.selectAll();
    wStepname.setFocus();
  }
+
+  public void getFields() {
+    int clearFields = SWT.NO;
+    int nrInputFields = wFields.nrNonEmpty();
+    if ( nrInputFields > 0 ) {
+      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+      mb.setMessage( BaseMessages.getString( PKG, "ZendeskInputDialog.ClearFieldList.DialogMessage" ) );
+      mb.setText( BaseMessages.getString( PKG, "ZendeskInputDialog.ClearFieldList.DialogTitle" ) );
+      clearFields = mb.open();
+    }
+
+    if ( clearFields == SWT.YES ) {
+      // Clear Fields Grid
+      wFields.table.removeAll();
+    }
+
+    for ( Attribute value : Attribute.values() ) {
+      TableItem item = new TableItem( wFields.table, SWT.NONE );
+      item.setText( 1, value.toString() );
+      item.setText( 2, value.toString() );
+    }
+
+    wFields.removeEmptyRows();
+    wFields.setRowNums();
+    wFields.optWidth( true );
+    input.setChanged();
+  }
+
+  private String[] getElementNames() {
+    Attribute[] values = Attribute.values();
+    String[] valueNames = new String[values.length];
+    for ( int i = 0; i < values.length; i++ ) {
+      valueNames[i] = values[i].toString();
+    }
+    return valueNames;
+  }
 
  private void cancel() {
    stepname = null;
@@ -480,21 +439,24 @@ public class ZendeskInputTicketFieldsDialog extends BaseStepDialog implements St
    dispose();
  }
 
- private void getInfo( ZendeskInputTicketFieldsMeta inf ) {
-   inf.setSubDomain( wSubDomain.getText() );
-   inf.setUsername( wUsername.getText() );
-   inf.setPassword( wPassword.getText() );
-   inf.setToken( wToken.getSelection() );
-   inf.setTicketFieldIdFieldname( wTicketFieldIdFieldname.getText() );
-   inf.setTicketFieldUrlFieldname( wTicketFieldUrlFieldname.getText() );
-   inf.setTicketFieldTypeFieldname( wTicketFieldTypeFieldname.getText() );
-   inf.setTicketFieldTitleFieldname( wTicketFieldTitleFieldname.getText() );
-   inf.setTicketFieldActiveFieldname( wTicketFieldActiveFieldname.getText() );
-   inf.setTicketFieldRequiredFieldname( wTicketFieldRequiredFieldname.getText() );
-   inf.setTicketFieldVisibleEndUsersFieldname( wTicketFieldVisibleEndUsersFieldname.getText() );
-   inf.setCreatedAtFieldname( wCreatedAtFieldname.getText() );
-   inf.setUpdatedAtFieldname( wUpdatedAtFieldname.getText() );
+  private void getInfo( ZendeskInputTicketFieldsMeta inf ) {
+    inf.setSubDomain( wSubDomain.getText() );
+    inf.setUsername( wUsername.getText() );
+    inf.setPassword( wPassword.getText() );
+    inf.setToken( wToken.getSelection() );
 
-   stepname = wStepname.getText(); // return value
- }
+    int nrFields = wFields.nrNonEmpty();
+    List<TicketField> fields = new ArrayList<>();
+    for ( int i = 0; i < nrFields; i++ ) {
+      TableItem item = wFields.getNonEmpty( i );
+      String colName = item.getText( 1 );
+      Attribute colType = Attribute.getEnumFromValue( item.getText( 2 ) );
+      if ( colType != null && !Const.isEmpty( colName ) ) {
+        fields.add( new TicketField( colName, colType ) );
+      }
+    }
+    inf.setTicketFields( fields.toArray( new TicketField[]{} ) );
+
+    stepname = wStepname.getText(); // return value
+  }
 }
