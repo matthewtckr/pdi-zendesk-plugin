@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,49 +73,12 @@ public class ZendeskInputUsers extends ZendeskInput {
         data.userRowMeta = new RowMeta();
         meta.getFields( data.userRowMeta, getStepname(), null, meta.getUserStepMeta(), this, repository, metaStore );
         data.userOutputRowSet = findOutputRowSet( meta.getUserStepMeta().getName() );
-        data.userIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUserIdFieldname() ) );
-        data.urlIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUrlFieldname() ) );
-        data.externalIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getExternalIdFieldname() ) );
-        data.nameIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getNameFieldname() ) );
-        data.emailIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getEmailFieldname() ) );
-        data.aliasIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getAliasFieldname() ) );
-        data.createdAtIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getCreatedAtFieldname() ) );
-        data.updatedAtIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUpdatedAtFieldname() ) );
-        data.activeIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getActiveFieldname() ) );
-        data.verifiedIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getVerifiedFieldname() ) );
-        data.sharedIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getSharedFieldname() ) );
-        data.localeIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getLocaleIdFieldname() ) );
-        data.timeZoneIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getTimeZoneFieldname() ) );
-        data.lastLoginAtIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getLastLoginAtFieldname() ) );
-        data.phoneIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getPhoneFieldname() ) );
-        data.signatureIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getSignatureFieldname() ) );
-        data.detailsIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getDetailsFieldname() ) );
-        data.notesIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getNotesFieldname() ) );
-        data.organizationIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getOrganizationIdFieldname() ) );
-        data.roleIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getRoleFieldname() ) );
-        data.customRoleIdIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getCustomRoleIdFieldname() ) );
-        data.moderatorIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getModeratorFieldname() ) );
-        data.ticketRestrictionIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getTicketRestrictionFieldname() ) );
-        data.onlyPrivateCommentsIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getOnlyPrivateCommentsFieldname() ) );
-        data.tagsIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getTagsFieldname() ) );
-        data.suspendedIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getSuspendedFieldname() ) );
-        data.remotePhotoUrlIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getRemotePhotoUrlFieldname() ) );
-        data.userFieldsIndex = data.userRowMeta.indexOfValue( environmentSubstitute( meta.getUserFieldsFieldname() ) );
       }
 
       if ( meta.getUserIdentityStepMeta() != null ) {
         data.userIdentityRowMeta = new RowMeta();
         meta.getFields( data.userIdentityRowMeta, getStepname(), null, meta.getUserIdentityStepMeta(), this, repository, metaStore );
         data.userIdentityOutputRowSet = findOutputRowSet( meta.getUserIdentityStepMeta().getName() );
-        data.identityUserIdIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getUserIdFieldname() ) );
-        data.identityIdIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityIdFieldname() ) );
-        data.identityUrlIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityUrlFieldname() ) );
-        data.identityTypeIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityTypeFieldname() ) );
-        data.identityValueIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityValueFieldname() ) );
-        data.identityVerifiedIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityVerifiedFieldname() ) );
-        data.identityPrimaryIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityPrimaryFieldname() ) );
-        data.identityCreatedAtIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityCreatedAtFieldname() ) );
-        data.identityUpdatedAtIndex = data.userIdentityRowMeta.indexOfValue( environmentSubstitute( meta.getIdentityUpdatedAtFieldname() ) );
       }
     }
 
@@ -138,7 +101,7 @@ public class ZendeskInputUsers extends ZendeskInput {
           i++;
           List<Identity> identities = new ArrayList<Identity>();
           try {
-            if ( meta.getUserIdentityStepMeta() != null ) {
+            if ( meta.getUserIdentityStepMeta() != null && data.userIdentityOutputRowSet != null ) {
               for ( Identity identity : data.conn.getUserIdentities( user.getId() ) ) {
                 identities.add( identity );
               }
@@ -189,7 +152,7 @@ public class ZendeskInputUsers extends ZendeskInput {
       if ( user != null ) {
         List<Identity> identities = new ArrayList<Identity>();
         try {
-          if ( meta.getUserIdentityStepMeta() != null ) {
+          if ( meta.getUserIdentityStepMeta() != null && data.userIdentityOutputRowSet != null ) {
             for ( Identity identity : data.conn.getUserIdentities( user.getId() ) ) {
               identities.add( identity );
             }
@@ -224,128 +187,22 @@ public class ZendeskInputUsers extends ZendeskInput {
     }
 
     Object[] outputRow = RowDataUtil.allocateRowData( data.userRowMeta.size() );
-    if ( data.userIdIndex >= 0 ) {
-      outputRow[data.userIdIndex] = user.getId();
-    }
-    if ( data.urlIndex >= 0 ) {
-      outputRow[data.urlIndex] = user.getUrl();
-    }
-    if ( data.externalIdIndex >= 0 ) {
-      outputRow[data.externalIdIndex] = user.getExternalId();
-    }
-    if ( data.nameIndex >= 0 ) {
-      outputRow[data.nameIndex] = user.getName();
-    }
-    if ( data.emailIndex >= 0 ) {
-      outputRow[data.emailIndex] = user.getEmail();
-    }
-    if ( data.aliasIndex >= 0 ) {
-      outputRow[data.aliasIndex] = user.getAlias();
-    }
-    if ( data.createdAtIndex >= 0 ) {
-      outputRow[data.createdAtIndex] = user.getCreatedAt();
-    }
-    if ( data.updatedAtIndex >= 0 ) {
-      outputRow[data.updatedAtIndex] = user.getUpdatedAt();
-    }
-    if ( data.activeIndex >= 0 ) {
-      outputRow[data.activeIndex] = user.getActive();
-    }
-    if ( data.verifiedIndex >= 0 ) {
-      outputRow[data.verifiedIndex] = user.getVerified();
-    }
-    if ( data.sharedIndex >= 0 ) {
-      outputRow[data.sharedIndex] = user.getShared();
-    }
-    if ( data.localeIdIndex >= 0 ) {
-      outputRow[data.localeIdIndex] = user.getLocaleId();
-    }
-    if ( data.timeZoneIndex >= 0 ) {
-      outputRow[data.timeZoneIndex] = user.getTimeZone();
-    }
-    if ( data.lastLoginAtIndex >= 0 ) {
-      outputRow[data.lastLoginAtIndex] = user.getLastLoginAt();
-    }
-    if ( data.phoneIndex >= 0 ) {
-      outputRow[data.phoneIndex] = user.getPhone();
-    }
-    if ( data.signatureIndex >= 0 ) {
-      outputRow[data.signatureIndex] = user.getSignature();
-    }
-    if ( data.detailsIndex >= 0 ) {
-      outputRow[data.detailsIndex] = user.getDetails();
-    }
-    if ( data.notesIndex >= 0 ) {
-      outputRow[data.notesIndex] = user.getNotes();
-    }
-    if ( data.organizationIdIndex >= 0 ) {
-      outputRow[data.organizationIdIndex] = user.getOrganizationId();
-    }
-    if ( data.roleIndex >= 0 ) {
-      outputRow[data.roleIndex] = user.getRole() == null ? null : user.getRole().name();
-    }
-    if ( data.customRoleIdIndex >= 0 ) {
-      outputRow[data.customRoleIdIndex] = user.getCustomRoleId();
-    }
-    if ( data.moderatorIndex >= 0 ) {
-      outputRow[data.moderatorIndex] = user.getModerator();
-    }
-    if ( data.ticketRestrictionIndex >= 0 ) {
-      outputRow[data.ticketRestrictionIndex] = user.getTicketRestriction() == null ? null : user.getTicketRestriction().name();
-    }
-    if ( data.onlyPrivateCommentsIndex >= 0 ) {
-      outputRow[data.onlyPrivateCommentsIndex] = user.getOnlyPrivateComments();
-    }
-    if ( data.tagsIndex >= 0 ) {
-      outputRow[data.tagsIndex] = user.getTags().toString();
-    }
-    if ( data.suspendedIndex >= 0 ) {
-      outputRow[data.suspendedIndex] = user.getSuspended();
-    }
-    if ( data.remotePhotoUrlIndex >= 0 ) {
-      outputRow[data.remotePhotoUrlIndex] = user.getRemotePhotoUrl();
-    }
-    if ( data.userFieldsIndex >= 0 ) {
-      outputRow[data.userFieldsIndex] = user.getUserFields() == null ? null : user.getUserFields().toString();
+    for ( int i = 0; i < meta.getUserFields().length; i++ ) {
+    	outputRow[i] = data.getValue( user, meta.getUserFields()[i].getType() );
     }
     putRowTo( data.userRowMeta, outputRow, data.userOutputRowSet );
   }
 
   private void outputUserIdentityRow( List<Identity> identities ) throws KettleStepException {
     if ( data.userIdentityRowMeta == null || data.userIdentityRowMeta.isEmpty()
-        || identities == null || identities.isEmpty() ) {
+        || identities == null || identities.isEmpty() || data.userIdentityOutputRowSet == null ) {
       return;
     }
 
     for ( Identity ident : identities ) {
       Object[] outputRow = RowDataUtil.allocateRowData( data.userIdentityRowMeta.size() );
-
-      if ( data.identityUserIdIndex >= 0 ) {
-        outputRow[data.identityUserIdIndex] = Long.valueOf( ident.getUserId() );
-      }
-      if ( data.identityIdIndex >= 0 ) {
-        outputRow[data.identityIdIndex] = ident.getId();
-      }
-      if ( data.identityUrlIndex >= 0 ) {
-        outputRow[data.identityUrlIndex] = ident.getUrl();
-      }
-      if ( data.identityTypeIndex >= 0 ) {
-        outputRow[data.identityTypeIndex] = ident.getType();
-      }
-      if ( data.identityValueIndex >= 0 ) {
-        outputRow[data.identityValueIndex] = ident.getValue();
-      }
-      if ( data.identityVerifiedIndex >= 0 ) {
-        outputRow[data.identityVerifiedIndex] = ident.getVerified();
-      }
-      if ( data.identityPrimaryIndex >= 0 ) {
-        outputRow[data.identityPrimaryIndex] = ident.getPrimary();
-      }
-      if ( data.identityCreatedAtIndex >= 0 ) {
-        outputRow[data.identityCreatedAtIndex] = ident.getCreatedAt();
-      }
-      if ( data.identityUpdatedAtIndex >= 0 ) {
-        outputRow[data.identityUpdatedAtIndex] = ident.getUpdatedAt();
+      for ( int i = 0; i < meta.getIdentityFields().length; i++ ) {
+        outputRow[i] = data.getValue( ident, meta.getIdentityFields()[i].getType() );
       }
       putRowTo( data.userIdentityRowMeta, outputRow, data.userIdentityOutputRowSet );
     }

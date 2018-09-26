@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,10 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -63,43 +65,8 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
   private static final Class<?> PKG = ZendeskInputUsersMeta.class;
 
   private String incomingFieldname;
-
-  private String userIdFieldname;
-  private String urlFieldname;
-  private String externalIdFieldname;
-  private String nameFieldname;
-  private String emailFieldname;
-  private String aliasFieldname;
-  private String createdAtFieldname;
-  private String updatedAtFieldname;
-  private String activeFieldname;
-  private String verifiedFieldname;
-  private String sharedFieldname;
-  private String localeIdFieldname;
-  private String timeZoneFieldname;
-  private String lastLoginAtFieldname;
-  private String phoneFieldname;
-  private String signatureFieldname;
-  private String detailsFieldname;
-  private String notesFieldname;
-  private String organizationIdFieldname;
-  private String roleFieldname;
-  private String customRoleIdFieldname;
-  private String moderatorFieldname;
-  private String ticketRestrictionFieldname;
-  private String onlyPrivateCommentsFieldname;
-  private String tagsFieldname;
-  private String suspendedFieldname;
-  private String remotePhotoUrlFieldname;
-  private String userFieldsFieldname;
-  private String identityIdFieldname;
-  private String identityUrlFieldname;
-  private String identityTypeFieldname;
-  private String identityValueFieldname;
-  private String identityVerifiedFieldname;
-  private String identityPrimaryFieldname;
-  private String identityCreatedAtFieldname;
-  private String identityUpdatedAtFieldname;
+  private UserField[] userFields;
+  private IdentityField[] identityFields;
 
   private StepIOMetaInterface ioMeta;
   private String userStepName;
@@ -107,6 +74,30 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
 
   private StepMeta userStepMeta;
   private StepMeta userIdentityStepMeta;
+  
+  public UserField[] getUserFields() {
+    return userFields;
+  }
+
+  public void setUserFields( UserField[] fields ) {
+    this.userFields = fields;
+  }
+
+  public IdentityField[] getIdentityFields() {
+    return identityFields;
+  }
+
+  public void setIdentityFields( IdentityField[] fields ) {
+    this.identityFields = fields;
+  }
+
+  public void allocateUserFields( int count ) {
+    this.userFields = new UserField[count];
+  }
+
+  public void allocateIdentityFields( int count ) {
+    this.identityFields = new IdentityField[count];
+  }
 
   @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
@@ -123,47 +114,20 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
 
   private void prepareExecutionResultsUser( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
     inputRowMeta.clear();
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getUserIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getUrlFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getExternalIdFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getNameFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getEmailFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getAliasFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getCreatedAtFieldname() ), ValueMetaInterface.TYPE_DATE );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getUpdatedAtFieldname() ), ValueMetaInterface.TYPE_DATE );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getActiveFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getVerifiedFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getSharedFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getLocaleIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTimeZoneFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getLastLoginAtFieldname() ), ValueMetaInterface.TYPE_DATE );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getPhoneFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getSignatureFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getDetailsFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getNotesFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getOrganizationIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getRoleFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getCustomRoleIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getModeratorFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTicketRestrictionFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getOnlyPrivateCommentsFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getTagsFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getSuspendedFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getRemotePhotoUrlFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getUserFieldsFieldname() ), ValueMetaInterface.TYPE_STRING );
+    if ( userFields != null ) {
+      for ( int i = 0; i < userFields.length; i++ ) {
+        addFieldToRow( inputRowMeta, space.environmentSubstitute( userFields[i].getName() ), userFields[i].getType().getValueMetaType() );
+      }
+    }
   }
 
   private void prepareExecutionResultsUserIdentity( RowMetaInterface inputRowMeta, VariableSpace space ) throws KettleStepException {
     inputRowMeta.clear();
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getUserIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityIdFieldname() ), ValueMetaInterface.TYPE_INTEGER );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityUrlFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityTypeFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityValueFieldname() ), ValueMetaInterface.TYPE_STRING );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityVerifiedFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityPrimaryFieldname() ), ValueMetaInterface.TYPE_BOOLEAN );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityCreatedAtFieldname() ), ValueMetaInterface.TYPE_DATE );
-    addFieldToRow( inputRowMeta, space.environmentSubstitute( getIdentityUpdatedAtFieldname() ), ValueMetaInterface.TYPE_DATE );
+    if ( identityFields != null ) {
+      for ( int i = 0; i < identityFields.length; i++ ) {
+        addFieldToRow( inputRowMeta, space.environmentSubstitute( identityFields[i].getName() ), identityFields[i].getType().getValueMetaType() );
+      }
+    }
   }
 
   @Override
@@ -222,46 +186,32 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
     StringBuilder xml = new StringBuilder();
     xml.append( super.getXML() );
     xml.append( "    " ).append( XMLHandler.addTagValue( "incomingFieldname", getIncomingFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "userIdFieldname", getUserIdFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "urlFieldname", getUrlFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "externalIdFieldname", getExternalIdFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "nameFieldname", getNameFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "emailFieldname", getEmailFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "aliasFieldname", getAliasFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "createdAtFieldname", getCreatedAtFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "updatedAtFieldname", getUpdatedAtFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "activeFieldname", getActiveFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "verifiedFieldname", getVerifiedFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "sharedFieldname", getSharedFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "localeIdFieldname", getLocaleIdFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "timeZoneFieldname", getTimeZoneFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "lastLoginAtFieldname", getLastLoginAtFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "phoneFieldname", getPhoneFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "signatureFieldname", getSignatureFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "detailsFieldname", getDetailsFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "notesFieldname", getNotesFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "organizationIdFieldname", getOrganizationIdFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "roleFieldname", getRoleFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "customRoleIdFieldname", getCustomRoleIdFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "moderatorFieldname", getModeratorFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "ticketRestrictionFieldname", getTicketRestrictionFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "onlyPrivateCommentsFieldname", getOnlyPrivateCommentsFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "tagsFieldname", getTagsFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "suspendedFieldname", getSuspendedFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "remotePhotoUrlFieldname", getRemotePhotoUrlFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "userFieldsFieldname", getUserFieldsFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityIdFieldname", getIdentityIdFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityUrlFieldname", getIdentityUrlFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityTypeFieldname", getIdentityTypeFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityValueFieldname", getIdentityValueFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityVerifiedFieldname", getIdentityVerifiedFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityPrimaryFieldname", getIdentityPrimaryFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityCreatedAtFieldname", getIdentityCreatedAtFieldname() ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "identityUpdatedAtFieldname", getIdentityUpdatedAtFieldname() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "userStepName",
       getUserStepMeta() != null ? getUserStepMeta().getName() : getUserStepName() ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "userIdentityStepName",
       getUserIdentityStepMeta() != null ? getUserIdentityStepMeta().getName() : getUserIdentityStepName() ) );
+
+    xml.append( "    " ).append( XMLHandler.openTag( "userFields" ) ).append( Const.CR );
+    if ( userFields != null ) {
+      for ( int i = 0; i < userFields.length; i++ ) {
+        xml.append( "      " ).append( XMLHandler.openTag( "field" ) ).append( Const.CR );
+        xml.append( "        " ).append( XMLHandler.addTagValue( "name", userFields[i].getName() ) );
+        xml.append( "        " ).append( XMLHandler.addTagValue( "type", userFields[i].getType().name() ) );
+        xml.append( "      " ).append( XMLHandler.closeTag( "field" ) ).append( Const.CR );
+      }
+    }
+    xml.append( "    " ).append( XMLHandler.closeTag( "userFields" ) ).append( Const.CR );
+
+    xml.append( "    " ).append( XMLHandler.openTag( "identityFields" ) ).append( Const.CR );
+    if ( identityFields != null ) {
+      for ( int i = 0; i < identityFields.length; i++ ) {
+        xml.append( "      " ).append( XMLHandler.openTag( "field" ) ).append( Const.CR );
+        xml.append( "        " ).append( XMLHandler.addTagValue( "name", identityFields[i].getName() ) );
+        xml.append( "        " ).append( XMLHandler.addTagValue( "type", identityFields[i].getType().name() ) );
+        xml.append( "      " ).append( XMLHandler.closeTag( "field" ) ).append( Const.CR );
+      }
+    }
+    xml.append( "    " ).append( XMLHandler.closeTag( "identityFields" ) ).append( Const.CR );
     return xml.toString();
   }
 
@@ -269,44 +219,187 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
     setIncomingFieldname( XMLHandler.getTagValue( stepnode, "incomingFieldname" ) );
-    setUserIdFieldname( XMLHandler.getTagValue( stepnode, "userIdFieldname" ) );
-    setUrlFieldname( XMLHandler.getTagValue( stepnode, "urlFieldname" ) );
-    setExternalIdFieldname( XMLHandler.getTagValue( stepnode, "externalIdFieldname" ) );
-    setNameFieldname( XMLHandler.getTagValue( stepnode, "nameFieldname" ) );
-    setEmailFieldname( XMLHandler.getTagValue( stepnode, "emailFieldname" ) );
-    setAliasFieldname( XMLHandler.getTagValue( stepnode, "aliasFieldname" ) );
-    setCreatedAtFieldname( XMLHandler.getTagValue( stepnode, "createdAtFieldname" ) );
-    setUpdatedAtFieldname( XMLHandler.getTagValue( stepnode, "updatedAtFieldname" ) );
-    setActiveFieldname( XMLHandler.getTagValue( stepnode, "activeFieldname" ) );
-    setVerifiedFieldname( XMLHandler.getTagValue( stepnode, "verifiedFieldname" ) );
-    setSharedFieldname( XMLHandler.getTagValue( stepnode, "sharedFieldname" ) );
-    setLocaleIdFieldname( XMLHandler.getTagValue( stepnode, "localeIdFieldname" ) );
-    setTimeZoneFieldname( XMLHandler.getTagValue( stepnode, "timeZoneFieldname" ) );
-    setLastLoginAtFieldname( XMLHandler.getTagValue( stepnode, "lastLoginAtFieldname" ) );
-    setPhoneFieldname( XMLHandler.getTagValue( stepnode, "phoneFieldname" ) );
-    setSignatureFieldname( XMLHandler.getTagValue( stepnode, "signatureFieldname" ) );
-    setDetailsFieldname( XMLHandler.getTagValue( stepnode, "detailsFieldname" ) );
-    setNotesFieldname( XMLHandler.getTagValue( stepnode, "notesFieldname" ) );
-    setOrganizationIdFieldname( XMLHandler.getTagValue( stepnode, "organizationIdFieldname" ) );
-    setRoleFieldname( XMLHandler.getTagValue( stepnode, "roleFieldname" ) );
-    setCustomRoleIdFieldname( XMLHandler.getTagValue( stepnode, "customRoleIdFieldname" ) );
-    setModeratorFieldname( XMLHandler.getTagValue( stepnode, "moderatorFieldname" ) );
-    setTicketRestrictionFieldname( XMLHandler.getTagValue( stepnode, "ticketRestrictionFieldname" ) );
-    setOnlyPrivateCommentsFieldname( XMLHandler.getTagValue( stepnode, "onlyPrivateCommentsFieldname" ) );
-    setTagsFieldname( XMLHandler.getTagValue( stepnode, "tagsFieldname" ) );
-    setSuspendedFieldname( XMLHandler.getTagValue( stepnode, "suspendedFieldname" ) );
-    setRemotePhotoUrlFieldname( XMLHandler.getTagValue( stepnode, "remotePhotoUrlFieldname" ) );
-    setUserFieldsFieldname( XMLHandler.getTagValue( stepnode, "userFieldsFieldname" ) );
-    setIdentityIdFieldname( XMLHandler.getTagValue( stepnode, "identityIdFieldname" ) );
-    setIdentityUrlFieldname( XMLHandler.getTagValue( stepnode, "identityUrlFieldname" ) );
-    setIdentityTypeFieldname( XMLHandler.getTagValue( stepnode, "identityTypeFieldname" ) );
-    setIdentityValueFieldname( XMLHandler.getTagValue( stepnode, "identityValueFieldname" ) );
-    setIdentityVerifiedFieldname( XMLHandler.getTagValue( stepnode, "identityVerifiedFieldname" ) );
-    setIdentityPrimaryFieldname( XMLHandler.getTagValue( stepnode, "identityPrimaryFieldname" ) );
-    setIdentityCreatedAtFieldname( XMLHandler.getTagValue( stepnode, "identityCreatedAtFieldname" ) );
-    setIdentityUpdatedAtFieldname( XMLHandler.getTagValue( stepnode, "identityUpdatedAtFieldname" ) );
     setUserStepName( XMLHandler.getTagValue( stepnode, "userStepName" ) );
     setUserIdentityStepName( XMLHandler.getTagValue( stepnode, "userIdentityStepName" ) );
+
+    Node userFieldsNode = XMLHandler.getSubNode( stepnode,  "userFields" );
+    Node identityFieldsNode = XMLHandler.getSubNode( stepnode,  "identityFields" );
+    if ( userFieldsNode != null ) {
+      int userFieldsCount = XMLHandler.countNodes( userFieldsNode, "field" );
+      allocateUserFields( userFieldsCount );
+      for ( int i = 0; i < userFieldsCount; i++ ) {
+        Node userFieldNode = XMLHandler.getSubNodeByNr( userFieldsNode, "field", i );
+        String name = XMLHandler.getTagValue( userFieldNode, "name" );
+        UserField.Attribute type = UserField.Attribute.valueOf( XMLHandler.getTagValue( userFieldNode, "type" ) );
+        if ( type != null ) {
+          userFields[i] = new UserField( name, type );
+        }
+      }
+      if ( identityFieldsNode != null ) {
+        int identityFieldsCount = XMLHandler.countNodes( identityFieldsNode, "field" );
+        allocateIdentityFields( identityFieldsCount );
+        for ( int i = 0; i < identityFieldsCount; i++ ) {
+          Node identityFieldNode = XMLHandler.getSubNodeByNr( identityFieldsNode, "field", i );
+          String name = XMLHandler.getTagValue( identityFieldNode, "name" );
+          IdentityField.Attribute type = IdentityField.Attribute.valueOf( XMLHandler.getTagValue( identityFieldNode, "type" ) );
+          if ( type != null ) {
+            identityFields[i] = new IdentityField( name, type );
+          }
+        }
+      }
+    } else {
+      // Read Legacy XML
+      List<UserField> tempUserFields = new ArrayList<>();
+      String temp = null;
+      temp = XMLHandler.getTagValue( stepnode, "userIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.USERID ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "urlFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.URL ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "externalIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.EXTERNALID ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "nameFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.NAME ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "emailFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.EMAIL ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "aliasFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ALIAS ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "createdAtFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.CREATED_AT ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "updatedAtFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.UPDATED_AT ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "activeFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ACTIVE ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "verifiedFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.VERIFIED ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "sharedFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.SHARED ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "localeIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.LOCALE_ID ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "timeZoneFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.TIMEZONE ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "lastLoginAtFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.LAST_LOGIN_AT ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "phoneFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.PHONE ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "signatureFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.SIGNATURE ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "detailsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.DETAILS ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "notesFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.NOTES ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "organizationIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ORGANIZATION_ID ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "roleFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ROLE ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "customRoleIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.CUSTOM_ROLE_ID ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "moderatorFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.MODERATOR ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "onlyPrivateCommentsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ONLY_PRIVATE_COMMENTS ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "tagsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.TAGS ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "suspendedFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.SUSPENDED ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "remotePhotoUrlFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.REMOTE_PHOTO_URL ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "userFieldsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.USER_FIELDS ) );
+      }
+      userFields = tempUserFields.toArray( new UserField[0] );
+
+      // Identity Fields
+      List<IdentityField> tempIdentityFields = new ArrayList<IdentityField>();
+      temp = XMLHandler.getTagValue( stepnode, "identityIdFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.ID ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "identityUrlFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.URL ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "identityTypeFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.TYPE ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "identityValueFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.VALUE ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "identityVerifiedFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.VERIFIED ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "identityPrimaryFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.PRIMARY ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "identityCreatedAtFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.CREATED_AT ) );
+      }
+      temp = XMLHandler.getTagValue( stepnode, "identityUpdatedAtFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.UPDATED_AT ) );
+      }
+      if ( tempIdentityFields.size() > 0 ) {
+        tempIdentityFields.add( 0, new IdentityField( Const.NVL( XMLHandler.getTagValue( stepnode, "userIdFieldname" ), "User_ID" ), IdentityField.Attribute.USERID ) );
+      }
+      identityFields = tempIdentityFields.toArray( new IdentityField[0] );
+    }
   }
 
   @Override
@@ -314,44 +407,184 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
     throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     setIncomingFieldname( rep.getStepAttributeString( id_step, "incomingFieldname" ) );
-    setUserIdFieldname( rep.getStepAttributeString( id_step, "userIdFieldname" ) );
-    setUrlFieldname( rep.getStepAttributeString( id_step, "urlFieldname" ) );
-    setExternalIdFieldname( rep.getStepAttributeString( id_step, "externalIdFieldname" ) );
-    setNameFieldname( rep.getStepAttributeString( id_step, "nameFieldname" ) );
-    setEmailFieldname( rep.getStepAttributeString( id_step, "emailFieldname" ) );
-    setAliasFieldname( rep.getStepAttributeString( id_step, "aliasFieldname" ) );
-    setCreatedAtFieldname( rep.getStepAttributeString( id_step, "createdAtFieldname" ) );
-    setUpdatedAtFieldname( rep.getStepAttributeString( id_step, "updatedAtFieldname" ) );
-    setActiveFieldname( rep.getStepAttributeString( id_step, "activeFieldname" ) );
-    setVerifiedFieldname( rep.getStepAttributeString( id_step, "verifiedFieldname" ) );
-    setSharedFieldname( rep.getStepAttributeString( id_step, "sharedFieldname" ) );
-    setLocaleIdFieldname( rep.getStepAttributeString( id_step, "localeIdFieldname" ) );
-    setTimeZoneFieldname( rep.getStepAttributeString( id_step, "timeZoneFieldname" ) );
-    setLastLoginAtFieldname( rep.getStepAttributeString( id_step, "lastLoginAtFieldname" ) );
-    setPhoneFieldname( rep.getStepAttributeString( id_step, "phoneFieldname" ) );
-    setSignatureFieldname( rep.getStepAttributeString( id_step, "signatureFieldname" ) );
-    setDetailsFieldname( rep.getStepAttributeString( id_step, "detailsFieldname" ) );
-    setNotesFieldname( rep.getStepAttributeString( id_step, "notesFieldname" ) );
-    setOrganizationIdFieldname( rep.getStepAttributeString( id_step, "organizationIdFieldname" ) );
-    setRoleFieldname( rep.getStepAttributeString( id_step, "roleFieldname" ) );
-    setCustomRoleIdFieldname( rep.getStepAttributeString( id_step, "customRoleIdFieldname" ) );
-    setModeratorFieldname( rep.getStepAttributeString( id_step, "moderatorFieldname" ) );
-    setTicketRestrictionFieldname( rep.getStepAttributeString( id_step, "ticketRestrictionFieldname" ) );
-    setOnlyPrivateCommentsFieldname( rep.getStepAttributeString( id_step, "onlyPrivateCommentsFieldname" ) );
-    setTagsFieldname( rep.getStepAttributeString( id_step, "tagsFieldname" ) );
-    setSuspendedFieldname( rep.getStepAttributeString( id_step, "suspendedFieldname" ) );
-    setRemotePhotoUrlFieldname( rep.getStepAttributeString( id_step, "remotePhotoUrlFieldname" ) );
-    setUserFieldsFieldname( rep.getStepAttributeString( id_step, "userFieldsFieldname" ) );
-    setIdentityIdFieldname( rep.getStepAttributeString( id_step, "identityIdFieldname" ) );
-    setIdentityUrlFieldname( rep.getStepAttributeString( id_step, "identityUrlFieldname" ) );
-    setIdentityTypeFieldname( rep.getStepAttributeString( id_step, "identityTypeFieldname" ) );
-    setIdentityValueFieldname( rep.getStepAttributeString( id_step, "identityValueFieldname" ) );
-    setIdentityVerifiedFieldname( rep.getStepAttributeString( id_step, "identityVerifiedFieldname" ) );
-    setIdentityPrimaryFieldname( rep.getStepAttributeString( id_step, "identityPrimaryFieldname" ) );
-    setIdentityCreatedAtFieldname( rep.getStepAttributeString( id_step, "identityCreatedAtFieldname" ) );
-    setIdentityUpdatedAtFieldname( rep.getStepAttributeString( id_step, "identityUpdatedAtFieldname" ) );
     setUserStepName( rep.getStepAttributeString( id_step, "userStepName" ) );
     setUserIdentityStepName( rep.getStepAttributeString( id_step, "userIdentityStepName" ) );
+
+    int userFieldCount = rep.countNrStepAttributes( id_step, "userFieldName" );
+    if ( userFieldCount > 0 ) {
+      allocateUserFields( userFieldCount );
+      for ( int i = 0; i < userFieldCount; i++ ) {
+        String name = rep.getStepAttributeString( id_step, i, "userFieldName" );
+        UserField.Attribute type = UserField.Attribute.valueOf( rep.getStepAttributeString( id_step, i, "userFieldType" ) );
+        userFields[i] = new UserField( name, type );
+      }
+    }
+    int identityFieldCount = rep.countNrStepAttributes( id_step, "identityFieldName" );
+    if ( identityFieldCount > 0  ) {
+      allocateIdentityFields( identityFieldCount );
+      for ( int i = 0; i < identityFieldCount; i++ ) {
+        String name = rep.getStepAttributeString( id_step, i, "identityFieldName" );
+        IdentityField.Attribute type = IdentityField.Attribute.valueOf( rep.getStepAttributeString( id_step, i, "identityFieldType" ) );
+        identityFields[i] = new IdentityField( name, type );
+      }
+    }
+    if ( identityFieldCount == 0 && identityFieldCount == 0 ) {
+      // Legacy Repo Import
+      List<UserField> tempUserFields = new ArrayList<>();
+      String temp = null;
+      temp = rep.getStepAttributeString( id_step, "userIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.USERID ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "urlFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.URL ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "externalIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.EXTERNALID ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "nameFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.NAME ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "emailFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.EMAIL ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "aliasFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ALIAS ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "createdAtFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.CREATED_AT ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "updatedAtFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.UPDATED_AT ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "activeFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ACTIVE ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "verifiedFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.VERIFIED ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "sharedFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.SHARED ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "localeIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.LOCALE_ID ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "timeZoneFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.TIMEZONE ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "lastLoginAtFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.LAST_LOGIN_AT ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "phoneFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.PHONE ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "signatureFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.SIGNATURE ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "detailsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.DETAILS ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "notesFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.NOTES ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "organizationIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ORGANIZATION_ID ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "roleFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ROLE ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "customRoleIdFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.CUSTOM_ROLE_ID ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "moderatorFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.MODERATOR ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "ticketRestrictionFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.TICKET_RESTRICTION ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "onlyPrivateCommentsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.ONLY_PRIVATE_COMMENTS ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "tagsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.TAGS ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "suspendedFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.SUSPENDED ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "remotePhotoUrlFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.REMOTE_PHOTO_URL ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "userFieldsFieldname" );
+      if ( temp != null ) {
+        tempUserFields.add( new UserField( temp, UserField.Attribute.USER_FIELDS ) );
+      }
+      userFields = tempUserFields.toArray( new UserField[0] );
+
+      // Identity Fields
+      List<IdentityField> tempIdentityFields = new ArrayList<>();
+      temp = rep.getStepAttributeString( id_step, "identityIdFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.ID ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "identityUrlFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.URL ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "identityTypeFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.TYPE ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "identityValueFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.VALUE ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "identityVerifiedFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.VERIFIED ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "identityPrimaryFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.PRIMARY ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "identityCreatedAtFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.CREATED_AT ) );
+      }
+      temp = rep.getStepAttributeString( id_step, "identityUpdatedAtFieldname" );
+      if ( temp != null ) {
+        tempIdentityFields.add( new IdentityField( temp, IdentityField.Attribute.UPDATED_AT ) );
+      }
+      if ( tempIdentityFields.size() > 0 ) {
+        tempIdentityFields.add( 0, new IdentityField( Const.NVL( rep.getStepAttributeString( id_step, "userIdFieldname" ), "User_ID" ), IdentityField.Attribute.USERID ) );
+      }
+      identityFields = tempIdentityFields.toArray( new IdentityField[0] );
+    }
   }
 
   @Override
@@ -359,88 +592,39 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
     throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute( id_transformation, id_step, "incomingFieldname", getIncomingFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "userIdFieldname", getUserIdFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "urlFieldname", getUrlFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "externalIdFieldname", getExternalIdFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "nameFieldname", getNameFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "emailFieldname", getEmailFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "aliasFieldname", getAliasFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "createdAtFieldname", getCreatedAtFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "updatedAtFieldname", getUpdatedAtFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "activeFieldname", getActiveFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "verifiedFieldname", getVerifiedFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "sharedFieldname", getSharedFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "localeIdFieldname", getLocaleIdFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "timeZoneFieldname", getTimeZoneFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "lastLoginAtFieldname", getLastLoginAtFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "phoneFieldname", getPhoneFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "signatureFieldname", getSignatureFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "detailsFieldname", getDetailsFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "notesFieldname", getNotesFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "organizationIdFieldname", getOrganizationIdFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "roleFieldname", getRoleFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "customRoleIdFieldname", getCustomRoleIdFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "moderatorFieldname", getModeratorFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "ticketRestrictionFieldname", getTicketRestrictionFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "onlyPrivateCommentsFieldname", getOnlyPrivateCommentsFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "tagsFieldname", getTagsFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "suspendedFieldname", getSuspendedFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "remotePhotoUrlFieldname", getRemotePhotoUrlFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "userFieldsFieldname", getUserFieldsFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityIdFieldname", getIdentityIdFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityUrlFieldname", getIdentityUrlFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityTypeFieldname", getIdentityTypeFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityValueFieldname", getIdentityValueFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityVerifiedFieldname", getIdentityVerifiedFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityPrimaryFieldname", getIdentityPrimaryFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityCreatedAtFieldname", getIdentityCreatedAtFieldname() );
-    rep.saveStepAttribute( id_transformation, id_step, "identityUpdatedAtFieldname", getIdentityUpdatedAtFieldname() );
     rep.saveStepAttribute( id_transformation, id_step, "userStepName",
       getUserStepMeta() != null ? getUserStepMeta().getName() : getUserStepName() );
     rep.saveStepAttribute( id_transformation, id_step, "userIdentityStepName",
       getUserIdentityStepMeta() != null ? getUserIdentityStepMeta().getName() : getUserIdentityStepName() );
+
+    if ( userFields != null ) {
+      for ( int i = 0; i < userFields.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "userFieldName", userFields[i].getName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "userFieldType", userFields[i].getType().name() );
+      }
+    }
+    if ( identityFields != null ) {
+      for ( int i = 0; i < identityFields.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "identityFieldName", identityFields[i].getName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "identityFieldType", identityFields[i].getType().name() );
+      }
+    }
   }
 
   @Override
   public void setDefault() {
     super.setDefault();
-    setIncomingFieldname( "" );
-    setUserIdFieldname( "User_ID" );
-    setUrlFieldname( "User_URL" );
-    setExternalIdFieldname( "User_External_ID" );
-    setNameFieldname( "User_Name" );
-    setEmailFieldname( "User_Email" );
-    setAliasFieldname( "User_Alias" );
-    setCreatedAtFieldname( "Created_Time" );
-    setUpdatedAtFieldname( "Updated_Time" );
-    setActiveFieldname( "Is_Active" );
-    setVerifiedFieldname( "Is_Verified" );
-    setSharedFieldname( "Is_Shared" );
-    setLocaleIdFieldname( "Locale_ID" );
-    setTimeZoneFieldname( "Timezone" );
-    setLastLoginAtFieldname( "Last_Login_Time" );
-    setPhoneFieldname( "Phone" );
-    setSignatureFieldname( "Signature" );
-    setDetailsFieldname( "Details" );
-    setNotesFieldname( "Notes" );
-    setOrganizationIdFieldname( "Organization_ID" );
-    setRoleFieldname( "Role" );
-    setCustomRoleIdFieldname( "Custom_Role_ID" );
-    setModeratorFieldname( "Is_Moderator" );
-    setTicketRestrictionFieldname( "Ticket_Restriction" );
-    setOnlyPrivateCommentsFieldname( "Is_Only_Private_Comments" );
-    setTagsFieldname( "User_Tags" );
-    setSuspendedFieldname( "Is_Suspended" );
-    setRemotePhotoUrlFieldname( "Photo_URL" );
-    setUserFieldsFieldname( "User_Fields" );
-    setIdentityIdFieldname( "Identity_ID" );
-    setIdentityUrlFieldname( "Identity_URL" );
-    setIdentityTypeFieldname( "Identity_Type" );
-    setIdentityValueFieldname( "Identity_Value" );
-    setIdentityVerifiedFieldname( "Identity_Verified" );
-    setIdentityPrimaryFieldname( "Identity_Primary" );
-    setIdentityCreatedAtFieldname( "Identity_Created_Time" );
-    setIdentityUpdatedAtFieldname( "Identity_Updated_Time" );
+    UserField.Attribute[] values = UserField.Attribute.values();
+    allocateUserFields( values.length );
+    for ( int i = 0; i < values.length; i++ ) {
+      userFields[i] = new UserField( values[i].toString(), values[i] );
+    }
+
+    IdentityField.Attribute[] idValues = IdentityField.Attribute.values();
+    allocateIdentityFields( idValues.length );
+    for ( int i = 0; i < idValues.length; i++ ) {
+      identityFields[i] = new IdentityField( idValues[i].toString(), idValues[i] );
+    }
   }
 
   public String getIncomingFieldname() {
@@ -449,295 +633,6 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
 
   public void setIncomingFieldname( String incomingFieldname ) {
     this.incomingFieldname = incomingFieldname;
-  }
-
-  public String getUserIdFieldname() {
-    return userIdFieldname;
-  }
-
-  public void setUserIdFieldname( String userIdFieldname ) {
-    this.userIdFieldname = userIdFieldname;
-  }
-
-  public String getUrlFieldname() {
-    return urlFieldname;
-  }
-
-  public void setUrlFieldname( String urlFieldname ) {
-    this.urlFieldname = urlFieldname;
-  }
-
-  public String getExternalIdFieldname() {
-    return externalIdFieldname;
-  }
-
-  public void setExternalIdFieldname( String externalIdFieldname ) {
-    this.externalIdFieldname = externalIdFieldname;
-  }
-
-  public String getNameFieldname() {
-    return nameFieldname;
-  }
-
-  public void setNameFieldname( String nameFieldname ) {
-    this.nameFieldname = nameFieldname;
-  }
-
-  public String getEmailFieldname() {
-    return emailFieldname;
-  }
-
-  public void setEmailFieldname( String emailFieldname ) {
-    this.emailFieldname = emailFieldname;
-  }
-
-  public String getAliasFieldname() {
-    return aliasFieldname;
-  }
-
-  public void setAliasFieldname( String aliasFieldname ) {
-    this.aliasFieldname = aliasFieldname;
-  }
-
-  public String getUpdatedAtFieldname() {
-    return updatedAtFieldname;
-  }
-
-  public void setUpdatedAtFieldname( String updatedAtFieldname ) {
-    this.updatedAtFieldname = updatedAtFieldname;
-  }
-
-  public String getActiveFieldname() {
-    return activeFieldname;
-  }
-
-  public void setActiveFieldname( String activeFieldname ) {
-    this.activeFieldname = activeFieldname;
-  }
-
-  public String getVerifiedFieldname() {
-    return verifiedFieldname;
-  }
-
-  public void setVerifiedFieldname( String verifiedFieldname ) {
-    this.verifiedFieldname = verifiedFieldname;
-  }
-
-  public String getSharedFieldname() {
-    return sharedFieldname;
-  }
-
-  public void setSharedFieldname( String sharedFieldname ) {
-    this.sharedFieldname = sharedFieldname;
-  }
-
-  public String getLocaleIdFieldname() {
-    return localeIdFieldname;
-  }
-
-  public void setLocaleIdFieldname( String localeIdFieldname ) {
-    this.localeIdFieldname = localeIdFieldname;
-  }
-
-  public String getTimeZoneFieldname() {
-    return timeZoneFieldname;
-  }
-
-  public void setTimeZoneFieldname( String timeZoneFieldname ) {
-    this.timeZoneFieldname = timeZoneFieldname;
-  }
-
-  public String getLastLoginAtFieldname() {
-    return lastLoginAtFieldname;
-  }
-
-  public void setLastLoginAtFieldname( String lastLoginAtFieldname ) {
-    this.lastLoginAtFieldname = lastLoginAtFieldname;
-  }
-
-  public String getPhoneFieldname() {
-    return phoneFieldname;
-  }
-
-  public void setPhoneFieldname( String phoneFieldname ) {
-    this.phoneFieldname = phoneFieldname;
-  }
-
-  public String getSignatureFieldname() {
-    return signatureFieldname;
-  }
-
-  public void setSignatureFieldname( String signatureFieldname ) {
-    this.signatureFieldname = signatureFieldname;
-  }
-
-  public String getDetailsFieldname() {
-    return detailsFieldname;
-  }
-
-  public void setDetailsFieldname( String detailsFieldname ) {
-    this.detailsFieldname = detailsFieldname;
-  }
-
-  public String getNotesFieldname() {
-    return notesFieldname;
-  }
-
-  public void setNotesFieldname( String notesFieldname ) {
-    this.notesFieldname = notesFieldname;
-  }
-
-  public String getOrganizationIdFieldname() {
-    return organizationIdFieldname;
-  }
-
-  public void setOrganizationIdFieldname( String organizationIdFieldname ) {
-    this.organizationIdFieldname = organizationIdFieldname;
-  }
-
-  public String getRoleFieldname() {
-    return roleFieldname;
-  }
-
-  public void setRoleFieldname( String roleFieldname ) {
-    this.roleFieldname = roleFieldname;
-  }
-
-  public String getCustomRoleIdFieldname() {
-    return customRoleIdFieldname;
-  }
-
-  public void setCustomRoleIdFieldname( String customRoleIdFieldname ) {
-    this.customRoleIdFieldname = customRoleIdFieldname;
-  }
-
-  public String getModeratorFieldname() {
-    return moderatorFieldname;
-  }
-
-  public void setModeratorFieldname( String moderatorFieldname ) {
-    this.moderatorFieldname = moderatorFieldname;
-  }
-
-  public String getTicketRestrictionFieldname() {
-    return ticketRestrictionFieldname;
-  }
-
-  public void setTicketRestrictionFieldname( String ticketRestrictionFieldname ) {
-    this.ticketRestrictionFieldname = ticketRestrictionFieldname;
-  }
-
-  public String getOnlyPrivateCommentsFieldname() {
-    return onlyPrivateCommentsFieldname;
-  }
-
-  public void setOnlyPrivateCommentsFieldname( String onlyPrivateCommentsFieldname ) {
-    this.onlyPrivateCommentsFieldname = onlyPrivateCommentsFieldname;
-  }
-
-  public String getTagsFieldname() {
-    return tagsFieldname;
-  }
-
-  public void setTagsFieldname( String tagsFieldname ) {
-    this.tagsFieldname = tagsFieldname;
-  }
-
-  public String getSuspendedFieldname() {
-    return suspendedFieldname;
-  }
-
-  public void setSuspendedFieldname( String suspendedFieldname ) {
-    this.suspendedFieldname = suspendedFieldname;
-  }
-
-  public String getRemotePhotoUrlFieldname() {
-    return remotePhotoUrlFieldname;
-  }
-
-  public void setRemotePhotoUrlFieldname( String remotePhotoUrlFieldname ) {
-    this.remotePhotoUrlFieldname = remotePhotoUrlFieldname;
-  }
-
-  public String getUserFieldsFieldname() {
-    return userFieldsFieldname;
-  }
-
-  public void setUserFieldsFieldname( String userFieldsFieldname ) {
-    this.userFieldsFieldname = userFieldsFieldname;
-  }
-
-  public String getCreatedAtFieldname() {
-    return createdAtFieldname;
-  }
-
-  public void setCreatedAtFieldname( String createdAtFieldname ) {
-    this.createdAtFieldname = createdAtFieldname;
-  }
-
-
-  public String getIdentityIdFieldname() {
-    return identityIdFieldname;
-  }
-
-  public void setIdentityIdFieldname( String identityIdFieldname ) {
-    this.identityIdFieldname = identityIdFieldname;
-  }
-
-  public String getIdentityUrlFieldname() {
-    return identityUrlFieldname;
-  }
-
-  public void setIdentityUrlFieldname( String identityUrlFieldname ) {
-    this.identityUrlFieldname = identityUrlFieldname;
-  }
-
-  public String getIdentityTypeFieldname() {
-    return identityTypeFieldname;
-  }
-
-  public void setIdentityTypeFieldname( String identityTypeFieldname ) {
-    this.identityTypeFieldname = identityTypeFieldname;
-  }
-
-  public String getIdentityValueFieldname() {
-    return identityValueFieldname;
-  }
-
-  public void setIdentityValueFieldname( String identityValueFieldname ) {
-    this.identityValueFieldname = identityValueFieldname;
-  }
-
-  public String getIdentityVerifiedFieldname() {
-    return identityVerifiedFieldname;
-  }
-
-  public void setIdentityVerifiedFieldname( String identityVerifiedFieldname ) {
-    this.identityVerifiedFieldname = identityVerifiedFieldname;
-  }
-
-  public String getIdentityPrimaryFieldname() {
-    return identityPrimaryFieldname;
-  }
-
-  public void setIdentityPrimaryFieldname( String identityPrimaryFieldname ) {
-    this.identityPrimaryFieldname = identityPrimaryFieldname;
-  }
-
-  public String getIdentityCreatedAtFieldname() {
-    return identityCreatedAtFieldname;
-  }
-
-  public void setIdentityCreatedAtFieldname( String identityCreatedAtFieldname ) {
-    this.identityCreatedAtFieldname = identityCreatedAtFieldname;
-  }
-
-  public String getIdentityUpdatedAtFieldname() {
-    return identityUpdatedAtFieldname;
-  }
-
-  public void setIdentityUpdatedAtFieldname( String identityUpdatedAtFieldname ) {
-    this.identityUpdatedAtFieldname = identityUpdatedAtFieldname;
   }
 
   public StepIOMetaInterface getIoMeta() {
@@ -778,5 +673,329 @@ public class ZendeskInputUsersMeta extends ZendeskInputMeta {
 
   public void setUserIdentityStepMeta( StepMeta userIdentityStepMeta ) {
     this.userIdentityStepMeta = userIdentityStepMeta;
+  }
+
+  public static class UserField {
+    private String name;
+    private Attribute type;
+
+    public UserField( String name, Attribute type ) {
+      this.name = name;
+      this.type = type;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public Attribute getType() {
+      return type;
+    }
+
+    public void setType(Attribute type) {
+      this.type = type;
+    }
+
+    public enum Attribute {
+      USERID( ValueMetaInterface.TYPE_INTEGER ) {
+        @Override
+        public String toString() {
+          return "User_ID";
+        }
+      },
+      URL( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "User_URL";
+        }
+      },
+      EXTERNALID( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "User_External_ID";
+        }
+      },
+      NAME( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "User_Name";
+        }
+      },
+      EMAIL( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "User_Email";
+        }
+      },
+      ALIAS( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "User_Alias";
+        }
+      },
+      CREATED_AT( ValueMetaInterface.TYPE_DATE ) {
+        @Override
+        public String toString() {
+          return "Created_Time";
+        }
+      },
+      UPDATED_AT( ValueMetaInterface.TYPE_DATE ) {
+        @Override
+        public String toString() {
+          return "Updated_Time";
+        }
+      },
+      ACTIVE( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Is_Active";
+        }
+      },
+      VERIFIED( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Is_Verified";
+        }
+      },
+      SHARED( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Is_Shared";
+        }
+      },
+      LOCALE_ID( ValueMetaInterface.TYPE_INTEGER ) {
+        @Override
+        public String toString() {
+          return "Locale_ID";
+        }
+      },
+      TIMEZONE( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Timezone";
+        }
+      },
+      LAST_LOGIN_AT( ValueMetaInterface.TYPE_DATE ) {
+        @Override
+        public String toString() {
+          return "Last_Login_Time";
+        }
+      },
+      PHONE( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Phone";
+        }
+      },
+      SIGNATURE( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Signature";
+        }
+      },
+      DETAILS( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Details";
+        }
+      },
+      NOTES( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Notes";
+        }
+      },
+      ORGANIZATION_ID( ValueMetaInterface.TYPE_INTEGER ) {
+        @Override
+        public String toString() {
+          return "Organization_ID";
+        }
+      },
+      ROLE( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Role";
+        }
+      },
+      CUSTOM_ROLE_ID( ValueMetaInterface.TYPE_INTEGER ) {
+        @Override
+        public String toString() {
+          return "Custom_Role_ID";
+        }
+      },
+      MODERATOR( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Is_Moderator";
+        }
+      },
+      TICKET_RESTRICTION( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Ticket_Restriction";
+        }
+      },
+      ONLY_PRIVATE_COMMENTS( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Is_Only_Private_Comments";
+        }
+      },
+      TAGS( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "User_Tags";
+        }
+      },
+      SUSPENDED( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Is_Suspended";
+        }
+      },
+      REMOTE_PHOTO_URL( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Photo_URL";
+        }
+      },
+      USER_FIELDS( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "User_Fields";
+        }
+      };
+
+      private final int dataType;
+
+      private Attribute( int type ) {
+        this.dataType = type;
+      }
+
+      public int getValueMetaType() {
+        return this.dataType;
+      }
+
+      public static Attribute getEnumFromValue( String name ) {
+        if ( Const.isEmpty( name ) ) {
+          return null;
+        }
+        for ( Attribute value : Attribute.values() ) {
+          if ( value.toString().equals( name ) ) {
+            return value;
+          }
+        }
+        return null;
+      }
+    };
+  }
+
+  public static class IdentityField {
+    private String name;
+    private Attribute type;
+
+    public IdentityField( String name, Attribute type ) {
+      this.name = name;
+      this.type = type;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public Attribute getType() {
+      return type;
+    }
+
+    public void setType(Attribute type) {
+      this.type = type;
+    }
+
+    public enum Attribute {
+      USERID( ValueMetaInterface.TYPE_INTEGER ) {
+        @Override
+        public String toString() {
+          return "User_ID";
+        }
+      },
+      ID( ValueMetaInterface.TYPE_INTEGER ) {
+        @Override
+        public String toString() {
+          return "Identity_ID";
+        }
+      },
+      URL( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Identity_URL";
+        }
+      },
+      TYPE( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Identity_Type";
+        }
+      },
+      VALUE( ValueMetaInterface.TYPE_STRING ) {
+        @Override
+        public String toString() {
+          return "Identity_Value";
+        }
+      },
+      VERIFIED( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Identity_Verified";
+        }
+      },
+      PRIMARY( ValueMetaInterface.TYPE_BOOLEAN ) {
+        @Override
+        public String toString() {
+          return "Identity_Primary";
+        }
+      },
+      CREATED_AT( ValueMetaInterface.TYPE_DATE ) {
+        @Override
+        public String toString() {
+          return "Identity_Created_Time";
+        }
+      },
+      UPDATED_AT( ValueMetaInterface.TYPE_DATE ) {
+        @Override
+        public String toString() {
+          return "Identity_Updated_Time";
+        }
+      };
+
+      private final int dataType;
+
+      private Attribute( int type ) {
+        this.dataType = type;
+      }
+
+      public int getValueMetaType() {
+        return this.dataType;
+      }
+
+      public static Attribute getEnumFromValue( String name ) {
+        if ( Const.isEmpty( name ) ) {
+          return null;
+        }
+        for ( Attribute value : Attribute.values() ) {
+          if ( value.toString().equals( name ) ) {
+            return value;
+          }
+        }
+        return null;
+      }
+    };
   }
 }

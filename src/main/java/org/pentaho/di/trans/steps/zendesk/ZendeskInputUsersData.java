@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,10 @@ package org.pentaho.di.trans.steps.zendesk;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputUsersMeta.IdentityField;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputUsersMeta.UserField;
+import org.zendesk.client.v2.model.Identity;
+import org.zendesk.client.v2.model.User;
 
 public class ZendeskInputUsersData extends ZendeskInputData {
 
@@ -34,45 +38,98 @@ public class ZendeskInputUsersData extends ZendeskInputData {
   RowSet userIdentityOutputRowSet;
 
   boolean isReceivingInput;
+  public int incomingIndex;
 
-  int incomingIndex;
-  int userIdIndex;
-  int urlIndex;
-  int externalIdIndex;
-  int nameIndex;
-  int emailIndex;
-  int aliasIndex;
-  int createdAtIndex;
-  int updatedAtIndex;
-  int activeIndex;
-  int verifiedIndex;
-  int sharedIndex;
-  int localeIdIndex;
-  int timeZoneIndex;
-  int lastLoginAtIndex;
-  int phoneIndex;
-  int signatureIndex;
-  int detailsIndex;
-  int notesIndex;
-  int organizationIdIndex;
-  int roleIndex;
-  int customRoleIdIndex;
-  int moderatorIndex;
-  int ticketRestrictionIndex;
-  int onlyPrivateCommentsIndex;
-  int tagsIndex;
-  int suspendedIndex;
-  int photoIndex;
-  int identitiesIndex;
-  int remotePhotoUrlIndex;
-  int userFieldsIndex;
-  int identityUserIdIndex;
-  int identityIdIndex;
-  int identityUrlIndex;
-  int identityTypeIndex;
-  int identityValueIndex;
-  int identityVerifiedIndex;
-  int identityPrimaryIndex;
-  int identityCreatedAtIndex;
-  int identityUpdatedAtIndex;
+  public Object getValue( User user, UserField.Attribute attribute ) {
+	if ( user == null || attribute == null ) {
+      return null;
+	}
+	switch ( attribute ) {
+      case USERID:
+        return user.getId();
+      case URL:
+        return user.getUrl();
+      case EXTERNALID:
+        return user.getExternalId();
+      case NAME:
+        return user.getName();
+      case EMAIL:
+        return user.getEmail();
+      case ALIAS:
+        return user.getAlias();
+      case CREATED_AT:
+        return user.getCreatedAt();
+      case UPDATED_AT:
+        return user.getUpdatedAt();
+      case ACTIVE:
+        return user.getActive();
+      case VERIFIED:
+        return user.getVerified();
+      case SHARED:
+        return user.getShared();
+      case LOCALE_ID:
+        return user.getLocaleId();
+      case TIMEZONE:
+        return user.getTimeZone();
+      case LAST_LOGIN_AT:
+        return user.getLastLoginAt();
+      case PHONE:
+        return user.getPhone();
+      case SIGNATURE:
+        return user.getSignature();
+      case DETAILS:
+        return user.getDetails();
+      case NOTES:
+        return user.getNotes();
+      case ORGANIZATION_ID:
+        return user.getOrganizationId();
+      case ROLE:
+        return user.getRole() == null ? null : user.getRole();
+      case CUSTOM_ROLE_ID:
+        return user.getCustomRoleId();
+      case MODERATOR:
+        return user.getModerator();
+      case TICKET_RESTRICTION:
+        return user.getTicketRestriction() == null ? null : user.getTicketRestriction().name();
+      case ONLY_PRIVATE_COMMENTS:
+        return user.getOnlyPrivateComments();
+      case TAGS:
+        return user.getTags().toString();
+      case SUSPENDED:
+        return user.getSuspended();
+      case REMOTE_PHOTO_URL:
+        return user.getRemotePhotoUrl();
+      case USER_FIELDS:
+        return user.getUserFields() == null ? null : user.getUserFields().toString();
+      default:
+    	return null;
+	}
+  }
+  public Object getValue( Identity identity, IdentityField.Attribute attribute ) {
+    if ( identity == null || attribute == null ) {
+      return null;
+    }
+    switch ( attribute ) {
+      case ID:
+        return identity.getId();
+      case USERID:
+        return identity.getUserId();
+      case URL:
+        return identity.getUrl();
+      case TYPE:
+        return identity.getType();
+      case VALUE:
+        return identity.getValue();
+      case VERIFIED:
+        return identity.getVerified();
+      case PRIMARY:
+        return identity.getPrimary();
+      case CREATED_AT:
+        return identity.getCreatedAt();
+      case UPDATED_AT:
+        return identity.getUpdatedAt();
+      default:
+        return null;
+    }
+  }
 }
