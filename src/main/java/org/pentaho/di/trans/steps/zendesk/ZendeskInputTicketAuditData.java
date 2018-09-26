@@ -26,10 +26,13 @@ import org.apache.commons.collections4.map.AbstractLinkedMap;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.zendesk.client.v2.model.Audit;
 
 public class ZendeskInputTicketAuditData extends ZendeskInputData {
+
+  LogChannelInterface log;
 
   AbstractLinkedMap<Long, ZendeskTicketAuditHistory> auditSummaries;
 
@@ -45,6 +48,10 @@ public class ZendeskInputTicketAuditData extends ZendeskInputData {
   RowSet ticketTagsOutputRowSet;
   RowSet ticketCollaboratorsOutputRowSet;
 
+  void setLogChannel( LogChannelInterface log ) {
+    this.log = log;
+  }
+
   void newTicket() {
     auditSummaries = null;
   }
@@ -54,7 +61,7 @@ public class ZendeskInputTicketAuditData extends ZendeskInputData {
       auditSummaries = new LinkedMap<Long, ZendeskTicketAuditHistory>();
     }
     if ( auditSummaries.size() <= 0 ) {
-      auditSummaries.put( audit.getId(), new ZendeskTicketAuditHistory( audit ) );
+      auditSummaries.put( audit.getId(), new ZendeskTicketAuditHistory( audit, log ) );
     } else {
       try {
         ZendeskTicketAuditHistory newAudit =

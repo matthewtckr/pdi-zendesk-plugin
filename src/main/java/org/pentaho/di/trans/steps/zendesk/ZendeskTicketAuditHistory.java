@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,8 @@ import java.util.Map;
 import org.apache.commons.collections4.map.AbstractLinkedMap;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.zendesk.client.v2.model.Audit;
 import org.zendesk.client.v2.model.events.AttachmentRedactionEvent;
 import org.zendesk.client.v2.model.events.CcEvent;
@@ -46,12 +48,17 @@ import org.zendesk.client.v2.model.events.Event;
 import org.zendesk.client.v2.model.events.ExternalEvent;
 import org.zendesk.client.v2.model.events.NotificationEvent;
 import org.zendesk.client.v2.model.events.OrganizationActivityEvent;
+import org.zendesk.client.v2.model.events.UnknownEvent;
 import org.zendesk.client.v2.model.events.VoiceCommentEvent;
 
 public class ZendeskTicketAuditHistory implements Cloneable {
 
+  private static final Class<?> PKG = ZendeskTicketAuditHistory.class;
+
   private static final String DUE_AT_DATE_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
   private static final SimpleDateFormat DUE_AT_DATE_FORMAT = new SimpleDateFormat( DUE_AT_DATE_FORMAT_STRING );
+
+  private LogChannelInterface log;
 
   Long ticketId;
   Long auditId;
@@ -77,10 +84,12 @@ public class ZendeskTicketAuditHistory implements Cloneable {
   Map<String, String> customFields;
   TicketAuditComment comment;
 
-  public ZendeskTicketAuditHistory() {
+  public ZendeskTicketAuditHistory( LogChannelInterface log ) {
+    this.log = log;
   }
 
-  public ZendeskTicketAuditHistory( Audit audit ) throws KettleValueException {
+  public ZendeskTicketAuditHistory( Audit audit, LogChannelInterface log ) throws KettleValueException {
+    this( log );
     this.ticketId = audit.getTicketId();
     this.auditId = audit.getId();
     this.createdTime = audit.getCreatedAt();
@@ -90,7 +99,7 @@ public class ZendeskTicketAuditHistory implements Cloneable {
 
   @Override
   public ZendeskTicketAuditHistory clone() {
-    ZendeskTicketAuditHistory cloned = new ZendeskTicketAuditHistory();
+    ZendeskTicketAuditHistory cloned = new ZendeskTicketAuditHistory( log );
     cloned.ticketId = this.ticketId == null ? null : new Long( this.ticketId );
     cloned.createdTime = null;
     cloned.organizationId = this.organizationId == null ? null : new Long( this.organizationId );
@@ -160,6 +169,8 @@ public class ZendeskTicketAuditHistory implements Cloneable {
         this.comment = new TicketAuditComment( (VoiceCommentEvent) event );
       } else if ( fieldType.equals( CcEvent.class.getName() ) ) {
         this.collaborators = ( (CcEvent) event ).getRecipients();
+      } else if ( fieldType.equals( UnknownEvent.class.getName() ) ) {
+        log.logDetailed( BaseMessages.getString( PKG, "ZendeskInputTicketAudit.Error.UnknownTicketEventType", ((UnknownEvent) event).getType() ) );
       }
 
       if ( !Const.isEmpty( fieldName ) ) {

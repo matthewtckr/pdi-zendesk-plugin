@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,34 @@
 
 package org.pentaho.di.trans.steps.zendesk;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputUsersMeta.IdentityField;
+import org.pentaho.di.trans.steps.zendesk.ZendeskInputUsersMeta.UserField;
+import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class ZendeskInputUsersMetaTest {
 
@@ -46,20 +61,16 @@ public class ZendeskInputUsersMetaTest {
   @Test
   public void testRoundTrip() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "subDomain", "username", "password", "token", "incomingFieldname", "userIdFieldname",
-        "urlFieldname", "externalIdFieldname", "nameFieldname", "emailFieldname", "aliasFieldname",
-        "createdAtFieldname", "updatedAtFieldname", "activeFieldname", "verifiedFieldname", "sharedFieldname",
-        "localeIdFieldname", "timeZoneFieldname", "lastLoginAtFieldname", "phoneFieldname", "signatureFieldname",
-        "detailsFieldname", "notesFieldname", "organizationIdFieldname", "roleFieldname", "customRoleIdFieldname",
-        "moderatorFieldname", "ticketRestrictionFieldname", "onlyPrivateCommentsFieldname", "tagsFieldname",
-        "suspendedFieldname", "remotePhotoUrlFieldname", "userFieldsFieldname", "identityIdFieldname",
-        "identityUrlFieldname", "identityTypeFieldname", "identityValueFieldname", "identityVerifiedFieldname",
-        "identityPrimaryFieldname", "identityCreatedAtFieldname", "identityUpdatedAtFieldname", "userStepName",
-        "userIdentityStepName" );
+      Arrays.asList( "subDomain", "username", "password", "token", "incomingFieldname", "userFields", "identityFields" );
+    Map<String, FieldLoadSaveValidator<?>> attrValidators = new HashMap<>();
+    attrValidators.put( "userFields",
+      new ArrayLoadSaveValidator<UserField>( new UserFieldLoadSaveValidator(), 10 ) );
+    attrValidators.put( "identityFields",
+      new ArrayLoadSaveValidator<IdentityField>( new IdentityFieldLoadSaveValidator(), 5 ) );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ZendeskInputUsersMeta.class, attributes, new HashMap<String, String>(),
-        new HashMap<String, String>() );
+        new HashMap<String, String>(), attrValidators, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testRepoRoundTrip();
     loadSaveTester.testXmlRoundTrip();
@@ -70,41 +81,78 @@ public class ZendeskInputUsersMetaTest {
     ZendeskInputUsersMeta meta = new ZendeskInputUsersMeta();
     meta.setDefault();
     assertTrue( Const.isEmpty( meta.getIncomingFieldname() ) );
-    assertNotNull( meta.getUserIdFieldname() );
-    assertNotNull( meta.getUrlFieldname() );
-    assertNotNull( meta.getExternalIdFieldname() );
-    assertNotNull( meta.getNameFieldname() );
-    assertNotNull( meta.getEmailFieldname() );
-    assertNotNull( meta.getAliasFieldname() );
-    assertNotNull( meta.getCreatedAtFieldname() );
-    assertNotNull( meta.getUpdatedAtFieldname() );
-    assertNotNull( meta.getActiveFieldname() );
-    assertNotNull( meta.getVerifiedFieldname() );
-    assertNotNull( meta.getSharedFieldname() );
-    assertNotNull( meta.getLocaleIdFieldname() );
-    assertNotNull( meta.getTimeZoneFieldname() );
-    assertNotNull( meta.getLastLoginAtFieldname() );
-    assertNotNull( meta.getPhoneFieldname() );
-    assertNotNull( meta.getSignatureFieldname() );
-    assertNotNull( meta.getDetailsFieldname() );
-    assertNotNull( meta.getNotesFieldname() );
-    assertNotNull( meta.getOrganizationIdFieldname() );
-    assertNotNull( meta.getRoleFieldname() );
-    assertNotNull( meta.getCustomRoleIdFieldname() );
-    assertNotNull( meta.getModeratorFieldname() );
-    assertNotNull( meta.getTicketRestrictionFieldname() );
-    assertNotNull( meta.getOnlyPrivateCommentsFieldname() );
-    assertNotNull( meta.getTagsFieldname() );
-    assertNotNull( meta.getSuspendedFieldname() );
-    assertNotNull( meta.getRemotePhotoUrlFieldname() );
-    assertNotNull( meta.getUserFieldsFieldname() );
-    assertNotNull( meta.getIdentityIdFieldname() );
-    assertNotNull( meta.getIdentityUrlFieldname() );
-    assertNotNull( meta.getIdentityTypeFieldname() );
-    assertNotNull( meta.getIdentityValueFieldname() );
-    assertNotNull( meta.getIdentityVerifiedFieldname() );
-    assertNotNull( meta.getIdentityPrimaryFieldname() );
-    assertNotNull( meta.getIdentityCreatedAtFieldname() );
-    assertNotNull( meta.getIdentityUpdatedAtFieldname() );
+    assertNotNull( meta.getUserFields() );
+    assertNotNull( meta.getIdentityFields() );
+  }
+
+  @Test
+  public void testLegacyXML() throws KettleXMLException {
+    ZendeskInputUsersMeta meta = new ZendeskInputUsersMeta();
+    InputStream legacyXMLStream = this.getClass().getResourceAsStream( "ZendeskInputUsers_LegacyStep.xml" );
+    Document doc = XMLHandler.loadXMLFile( legacyXMLStream );
+    Node transformationSteps = XMLHandler.getSubNode( doc, "transformation-steps" );
+    Node steps = XMLHandler.getSubNode( transformationSteps, "steps" );
+    List<Node> stepList = XMLHandler.getNodes( steps, "step" );
+    Node usersStep = null;
+    for ( Node step : stepList ) {
+      if ( "ZendeskInputUsers".equals( XMLHandler.getTagValue( step, "type" ) ) ) {
+        usersStep = step;
+        break;
+      }
+    }
+    assertNotNull( usersStep );
+    meta.loadXML( usersStep, (List<DatabaseMeta>) null, (IMetaStore) null );
+
+    assertEquals( "${ZENDESK_APITOKEN_SUBDOMAIN}", meta.getSubDomain() );
+    assertEquals( "${ZENDESK_APITOKEN_USER}", meta.getUsername() );
+    assertEquals( "${ZENDESK_APITOKEN_PASS}", meta.getPassword() );
+    assertEquals( true, meta.isToken() );
+    assertEquals( "User_ID", meta.getIncomingFieldname() );
+    assertEquals( 27, meta.getUserFields().length );
+    assertEquals( 9, meta.getIdentityFields().length );
+  }
+
+  public static class UserFieldLoadSaveValidator implements FieldLoadSaveValidator<UserField> {
+
+    @Override
+    public UserField getTestObject() {
+      UserField.Attribute[] values = UserField.Attribute.values();
+		
+      return new UserField(
+        UUID.randomUUID().toString(),
+        values[new Random().nextInt( values.length )] );
+	}
+
+    @Override
+    public boolean validateTestObject( UserField testObject, Object actual ) {
+      if ( !( actual instanceof UserField ) ) {
+        return false;
+      }
+      UserField actualObject = (UserField) actual;
+      return testObject.getName().equals( actualObject.getName() ) &&
+        testObject.getType() == actualObject.getType();
+    }
+  }
+
+  public static class IdentityFieldLoadSaveValidator implements FieldLoadSaveValidator<IdentityField> {
+
+    @Override
+    public IdentityField getTestObject() {
+      IdentityField.Attribute[] values = IdentityField.Attribute.values();
+
+      return new IdentityField(
+        UUID.randomUUID().toString(),
+        values[new Random().nextInt( values.length )] );
+    }
+
+    @Override
+    public boolean validateTestObject( IdentityField testObject, Object actual ) {
+      if ( !(actual instanceof IdentityField ) ) {
+        return false;
+      }
+      IdentityField actualObject = (IdentityField) actual;
+      return testObject.getName().equals( actualObject.getName() ) &&
+        testObject.getType() == actualObject.getType();
+    }
   }
 }

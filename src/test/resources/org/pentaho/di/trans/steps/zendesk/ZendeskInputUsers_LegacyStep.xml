@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation-steps>
+<steps>
+  <step>
+    <name>Zendesk Input Users</name>
+    <type>ZendeskInputUsers</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>3</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <subdomain>${ZENDESK_APITOKEN_SUBDOMAIN}</subdomain>
+    <username>${ZENDESK_APITOKEN_USER}</username>
+    <password>${ZENDESK_APITOKEN_PASS}</password>
+    <isToken>Y</isToken>
+    <incomingFieldname>User_ID</incomingFieldname>
+    <userIdFieldname>User_ID</userIdFieldname>
+    <urlFieldname>User_URL</urlFieldname>
+    <externalIdFieldname>User_External_ID</externalIdFieldname>
+    <nameFieldname>User_Name</nameFieldname>
+    <emailFieldname>User_Email</emailFieldname>
+    <aliasFieldname>User_Alias</aliasFieldname>
+    <createdAtFieldname>Created_Time</createdAtFieldname>
+    <updatedAtFieldname>Updated_Time</updatedAtFieldname>
+    <activeFieldname>Is_Active</activeFieldname>
+    <verifiedFieldname>Is_Verified</verifiedFieldname>
+    <sharedFieldname>Is_Shared</sharedFieldname>
+    <localeIdFieldname>Locale_ID</localeIdFieldname>
+    <timeZoneFieldname>Timezone</timeZoneFieldname>
+    <lastLoginAtFieldname>Last_Login_Time</lastLoginAtFieldname>
+    <phoneFieldname>Phone</phoneFieldname>
+    <signatureFieldname>Signature</signatureFieldname>
+    <detailsFieldname>Details</detailsFieldname>
+    <notesFieldname>Notes</notesFieldname>
+    <organizationIdFieldname>Organization_ID</organizationIdFieldname>
+    <roleFieldname>Role</roleFieldname>
+    <customRoleIdFieldname>Custom_Role_ID</customRoleIdFieldname>
+    <moderatorFieldname>Is_Moderator</moderatorFieldname>
+    <ticketRestrictionFieldname>Ticket_Restriction</ticketRestrictionFieldname>
+    <onlyPrivateCommentsFieldname>Is_Only_Private_Comments</onlyPrivateCommentsFieldname>
+    <tagsFieldname>User_Tags</tagsFieldname>
+    <suspendedFieldname>Is_Suspended</suspendedFieldname>
+    <remotePhotoUrlFieldname>Photo_URL</remotePhotoUrlFieldname>
+    <userFieldsFieldname>User_Fields</userFieldsFieldname>
+    <identityIdFieldname>Identity_ID</identityIdFieldname>
+    <identityUrlFieldname>Identity_URL</identityUrlFieldname>
+    <identityTypeFieldname>Identity_Type</identityTypeFieldname>
+    <identityValueFieldname>Identity_Value</identityValueFieldname>
+    <identityVerifiedFieldname>Identity_Verified</identityVerifiedFieldname>
+    <identityPrimaryFieldname>Identity_Primary</identityPrimaryFieldname>
+    <identityCreatedAtFieldname>Identity_Created_Time</identityCreatedAtFieldname>
+    <identityUpdatedAtFieldname>Identity_Updated_Time</identityUpdatedAtFieldname>
+    <userStepName>User Fields</userStepName>
+    <userIdentityStepName/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>672</xloc>
+      <yloc>592</yloc>
+      <draw>Y</draw>
+    </GUI>
+    </step>
+
+</steps>
+<order>
+</order>
+<notepads>
+</notepads>
+<step_error_handling>
+</step_error_handling>
+</transformation-steps>
