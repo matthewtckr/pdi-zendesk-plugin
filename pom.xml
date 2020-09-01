@@ -8,7 +8,7 @@
   <name>PDI Zendesk Plugin</name>
 
   <properties>
-    <zendesk.client.version>0.8.0</zendesk.client.version>
+    <zendesk.client.version>0.14.0</zendesk.client.version>
     <kettle.version>5.4.0.1-130</kettle.version>
     <dependency.mockito.version>1.10.19</dependency.mockito.version>
   </properties>
